@@ -1,8 +1,9 @@
 package pokemon
 
 import (
+	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/database/factories"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/driver"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/factories"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
 	"testing"
 
@@ -16,7 +17,7 @@ func TestDetailsAcquisition(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := driver.Migrate(db); err != nil {
+	if err := database.Migrate(db); err != nil {
 		t.Fatal(err)
 	}
 

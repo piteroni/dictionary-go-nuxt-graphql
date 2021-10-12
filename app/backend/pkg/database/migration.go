@@ -1,4 +1,4 @@
-package driver
+package database
 
 import (
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
@@ -24,7 +24,7 @@ func Migrate(db *gorm.DB) error {
 	return nil
 }
 
-func Drop(db *gorm.DB) error {
+func DropTables(db *gorm.DB) error {
 	return db.Migrator().DropTable(
 		&models.Type{},
 		&models.Gender{},

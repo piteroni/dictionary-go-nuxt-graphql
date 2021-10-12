@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/driver"
 
 	"github.com/joho/godotenv"
@@ -20,13 +21,13 @@ func main() {
 		os.Exit(statusFatal)
 	}
 
-	db, err := driver.ConnectToDatabase()
+	db, err := database.ConnectToDatabase()
 	if err != nil {
 		logger.Errorf("unexpected error occurred during connect database: %v", err)
 		os.Exit(statusFatal)
 	}
 
-	if err := driver.Drop(db); err != nil {
+	if err := database.DropTables(db); err != nil {
 		logger.Error(err)
 		os.Exit(statusError)
 	}

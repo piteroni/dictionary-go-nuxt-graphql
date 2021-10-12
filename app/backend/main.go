@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/driver"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, err := driver.ConnectToDatabase()
+	_, err := database.ConnectToDatabase()
 	if err != nil {
 		logger.Errorf("unexpected error occurred during connect database: %v", err)
 		os.Exit(1)
