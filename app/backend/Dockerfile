@@ -1,0 +1,19 @@
+FROM golang:1.16-alpine
+
+RUN apk upgrade --update && \
+    apk --no-cache add git gcc libc-dev
+
+ENV TZ=Asia/Tokyo
+
+RUN cd /tmp && \
+    go get -u github.com/cosmtrek/air
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go get -u gorm.io/driver/sqlite && \
+    go get -u gopkg.in/yaml.v2@v2.3.0 && \
+    go mod download
+
+CMD ["air", "-c", ".air.toml"]

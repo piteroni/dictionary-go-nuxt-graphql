@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eu
+
+cd "$(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")"
+
+(cd frontend && rm -rf node_modules node_modules_tmp)
+
+docker-compose build ui
+
+./scripts/attach-ui cp -R node_modules node_modules_tmp
+
+cd frontend
+
+mv node_modules_tmp/* node_modules/.
+rm -rf node_modules_tmp

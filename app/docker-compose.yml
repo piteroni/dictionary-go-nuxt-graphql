@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    hostname: api
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8080:8080
+  db:
+    build:
+      context: ./
+      dockerfile: db.Dockerfile
+    hostname: db
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    volumes:
+      - 7ca68c27cf80449e54cbf07c:/var/lib/mysql
+      - 11eaa23ef3c226f65104912e:/var/run/mysqld
+      - ./dbaccess.cnf:/dbaccess.cnf
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: dictionary_go_nuxt_graphql
+      MYSQL_ROOT_PASSWORD: password
+  ui:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    hostname: ui
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+
+volumes:
+  # database data
+  7ca68c27cf80449e54cbf07c:
+  # database socket
+  11eaa23ef3c226f65104912e:

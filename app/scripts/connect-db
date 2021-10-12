@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -eu
+
+cd "$(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")"
+
+./scripts/attach-db mysql --defaults-extra-file="/dbaccess.cnf" dictionary_go_nuxt_graphql
