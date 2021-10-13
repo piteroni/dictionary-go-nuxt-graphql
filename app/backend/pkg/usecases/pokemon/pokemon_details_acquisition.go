@@ -8,17 +8,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type pokemonDetailsAcquisition struct {
+type PokemonDetailsAcquisition struct {
 	db *gorm.DB
 }
 
-func NewPokemonDetailsAcquisition(db *gorm.DB) *pokemonDetailsAcquisition {
-	return &pokemonDetailsAcquisition{
+func NewPokemonDetailsAcquisition(db *gorm.DB) *PokemonDetailsAcquisition {
+	return &PokemonDetailsAcquisition{
 		db: db,
 	}
 }
 
-func (u *pokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDetails, error) {
+func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDetails, error) {
 	pokemon := &models.Pokemon{}
 
 	if err := u.db.Model(&models.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {

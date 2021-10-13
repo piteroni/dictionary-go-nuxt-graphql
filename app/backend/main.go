@@ -4,6 +4,7 @@ import (
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/routes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -17,21 +18,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, err := database.ConnectToDatabase()
+	db, err := database.ConnectToDatabase()
 	if err != nil {
 		logger.Errorf("unexpected error occurred during connect database: %v", err)
 		os.Exit(1)
 	}
 
-	r := gin.Default()
+	e := gin.Default()
 
-	r.Static("/assets", "./assets")
+	routes.InitAPIRouting(e, db)
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-
-	r.Run(":8080")
+	e.Run(":8080")
 }
