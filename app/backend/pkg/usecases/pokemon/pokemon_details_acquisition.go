@@ -18,7 +18,7 @@ func NewPokemonDetailsAcquisition(db *gorm.DB) *pokemonDetailsAcquisition {
 	}
 }
 
-func (u *pokemonDetailsAcquisition) GetDetailsOfPokemon(pokemonId int) (*PokemonDetails, error) {
+func (u *pokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDetails, error) {
 	pokemon := &models.Pokemon{}
 
 	if err := u.db.Model(&models.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {

@@ -24,7 +24,7 @@ func (f *pokemonFactory) CreateGender(gender *models.Gender) (*models.Gender, er
 		IconName: gofakeit.UUID(),
 	}
 
-	if err := mergo.Merge(gender, *defaults, mergo.WithOverride); err != nil {
+	if err := mergo.Merge(gender, *defaults); err != nil {
 		return nil, err
 	}
 
@@ -51,7 +51,7 @@ func (f *pokemonFactory) CreatePokemon(pokemon *models.Pokemon) (*models.Pokemon
 		SpeedPoint:          gofakeit.Number(1, 100),
 	}
 
-	if err := mergo.Merge(pokemon, *defaults, mergo.WithOverride); err != nil {
+	if err := mergo.Merge(pokemon, *defaults); err != nil {
 		return nil, err
 	}
 

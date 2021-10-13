@@ -38,7 +38,7 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 	})
 
 	t.Run("指定したIDに一致するポケモンの詳細を取得できる", func(t *testing.T) {
-		details, err := detailsAcquisition.GetDetailsOfPokemon(1)
+		details, err := detailsAcquisition.GetPokemonDetails(1)
 
 		assert.NotNil(t, details)
 		assert.Nil(t, err)
@@ -46,6 +46,7 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		assert.Equal(t, details.NationalNo, 30)
 		assert.Equal(t, details.Name, "pokemon-30")
 		assert.Equal(t, details.ImageName, "pokemon-30.jpg")
+
 		assert.Len(t, details.Genders, 2)
 		assert.Contains(t, details.Genders, Gender{
 			Name:     "gender-1",
@@ -58,7 +59,7 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 	})
 
 	t.Run("指定したIDに一致するポケモンが存在しない場合、エラーが送出される", func(t *testing.T) {
-		details, err := detailsAcquisition.GetDetailsOfPokemon(3)
+		details, err := detailsAcquisition.GetPokemonDetails(3)
 
 		assert.Nil(t, details)
 		assert.NotNil(t, err)
