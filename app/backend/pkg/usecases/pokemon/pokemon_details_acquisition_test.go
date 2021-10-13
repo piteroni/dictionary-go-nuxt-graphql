@@ -71,6 +71,7 @@ func seed(db *gorm.DB) error {
 	factory := factories.NewPokemonFactory(db)
 
 	pokemon, err := factory.CreatePokemon(&models.Pokemon{
+		Model:      gorm.Model{ID: 1},
 		NationalNo: 30,
 		Name:       "pokemon-30",
 		ImageName:  "pokemon-30.jpg",
