@@ -3,7 +3,7 @@ package pokemon
 import (
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database/factories"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/driver"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
 	"testing"
 
@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestDetailsAcquisition(t *testing.T) {
-	db, err := driver.ConnnectToInMemoryDatabase()
+func TestPokemonDetailsAcquisition(t *testing.T) {
+	db, err := drivers.ConnnectToInMemoryDatabase()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,10 +25,10 @@ func TestDetailsAcquisition(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	detailsAcquisition := NewDetailsAcquisition(db)
+	detailsAcquisition := NewPokemonDetailsAcquisition(db)
 
 	t.Cleanup(func() {
-		if err := driver.RefreshInMemoryDatabase(db); err != nil {
+		if err := drivers.RefreshInMemoryDatabase(db); err != nil {
 			t.Fatal(err)
 		}
 
@@ -45,7 +45,7 @@ func TestDetailsAcquisition(t *testing.T) {
 
 		assert.Equal(t, details.NationalNo, 30)
 		assert.Equal(t, details.Name, "pokemon-30")
-		assert.Equal(t, details.ImagePath, "pokemon-30.jpg")
+		assert.Equal(t, details.ImageName, "pokemon-30.jpg")
 		assert.Len(t, details.Genders, 2)
 		assert.Contains(t, details.Genders, Gender{
 			Name:     "gender-1",

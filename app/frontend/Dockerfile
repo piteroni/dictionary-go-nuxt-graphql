@@ -9,13 +9,11 @@ ENV TZ=Asia/Tokyo
 
 WORKDIR /app
     
-ENV PS1='\u@\h:/\W\# '
+ENV PS1='\h /\W\ # '
 
 COPY package.json /app/package.json
 COPY yarn.lock /app/yarn.lock
 
 RUN yarn
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-
-CMD ["/docker-entrypoint.sh"]
+CMD ["yarn", "dev"]

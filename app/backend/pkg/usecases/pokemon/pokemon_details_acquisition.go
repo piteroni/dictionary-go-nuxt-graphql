@@ -8,17 +8,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type DetailsAcquisition struct {
+type pokemonDetailsAcquisition struct {
 	db *gorm.DB
 }
 
-func NewDetailsAcquisition(db *gorm.DB) *DetailsAcquisition {
-	return &DetailsAcquisition{
+func NewPokemonDetailsAcquisition(db *gorm.DB) *pokemonDetailsAcquisition {
+	return &pokemonDetailsAcquisition{
 		db: db,
 	}
 }
 
-func (u *DetailsAcquisition) GetDetailsOfPokemon(pokemonId int) (*PokemonDetails, error) {
+func (u *pokemonDetailsAcquisition) GetDetailsOfPokemon(pokemonId int) (*PokemonDetails, error) {
 	pokemon := &models.Pokemon{}
 
 	if err := u.db.Model(&models.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {
@@ -49,7 +49,7 @@ func (u *DetailsAcquisition) GetDetailsOfPokemon(pokemonId int) (*PokemonDetails
 	return &PokemonDetails{
 		NationalNo: pokemon.NationalNo,
 		Name:       pokemon.Name,
-		ImagePath:  pokemon.ImageName,
+		ImageName:  pokemon.ImageName,
 		Genders:    genders,
 	}, nil
 }
@@ -57,7 +57,7 @@ func (u *DetailsAcquisition) GetDetailsOfPokemon(pokemonId int) (*PokemonDetails
 type PokemonDetails struct {
 	NationalNo int
 	Name       string
-	ImagePath  string
+	ImageName  string
 	Genders    []Gender
 }
 

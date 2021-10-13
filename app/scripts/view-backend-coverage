@@ -4,4 +4,4 @@ set -eu
 
 cd "$(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")"
 
-open tmp/cover.html
+open backend/tmp/cover.html

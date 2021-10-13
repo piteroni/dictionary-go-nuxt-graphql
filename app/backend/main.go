@@ -3,14 +3,14 @@ package main
 import (
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/driver"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	logger := driver.NewLogger(os.Stdout)
+	logger := drivers.NewLogger(os.Stdout)
 
 	if err := godotenv.Load(); err != nil {
 		logger.Errorf("unexpected error occurred during loading .env: %v", err)
@@ -24,6 +24,8 @@ func main() {
 	}
 
 	r := gin.Default()
+
+	r.Static("/assets", "./assets")
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
