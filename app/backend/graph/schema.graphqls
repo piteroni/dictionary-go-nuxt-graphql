@@ -1,0 +1,11 @@
+type Pokemon {
+  nationalNo: Int!
+  name: String!
+  imageName: String!
+  genders: [Gender]
+}
+
+type Gender {
+  name: String!
+  iconName: String!
+}

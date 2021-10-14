@@ -14,7 +14,10 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 
-RUN go get -u gorm.io/driver/sqlite && \
+RUN \
+    # for testing
+    go get -u gorm.io/driver/sqlite && \
+    # for test coverage
     go get -u gopkg.in/yaml.v2@v2.3.0 && \
     go mod download
 
