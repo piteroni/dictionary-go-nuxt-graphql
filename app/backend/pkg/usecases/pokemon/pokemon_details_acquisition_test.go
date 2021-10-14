@@ -50,11 +50,11 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		assert.Len(t, details.Genders, 2)
 		assert.Contains(t, details.Genders, Gender{
 			Name:     "gender-1",
-			IconPath: "gender-1.jpg",
+			IconName: "gender-1.jpg",
 		})
 		assert.Contains(t, details.Genders, Gender{
 			Name:     "gender-2",
-			IconPath: "gender-2.jpg",
+			IconName: "gender-2.jpg",
 		})
 	})
 

@@ -1,7 +1,12 @@
 package graph
 
-// This file will not be regenerated automatically.
-//
-// It serves as dependency injection for your app, add any dependencies you require here.
+import (
+	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 
-type Resolver struct{}
+	"gorm.io/gorm"
+)
+
+type Resolver struct {
+	DB     *gorm.DB
+	Logger drivers.AppLogger
+}

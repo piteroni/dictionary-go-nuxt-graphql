@@ -2,10 +2,14 @@ type Pokemon {
   nationalNo: Int!
   name: String!
   imageName: String!
-  genders: [Gender]
+  genders: [Gender!]!
 }
 
 type Gender {
   name: String!
   iconName: String!
+}
+
+type Query {
+  pokemon(pokemonId: Int!): Pokemon
 }

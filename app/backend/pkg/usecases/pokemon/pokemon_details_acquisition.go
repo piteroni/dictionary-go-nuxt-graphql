@@ -37,12 +37,12 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		return nil, err
 	}
 
-	var genders []Gender
+	var genders []*Gender
 
 	for _, g := range s.Pokemon.Genders {
-		genders = append(genders, Gender{
+		genders = append(genders, &Gender{
 			Name:     g.Name,
-			IconPath: g.IconName,
+			IconName: g.IconName,
 		})
 	}
 
@@ -58,12 +58,12 @@ type PokemonDetails struct {
 	NationalNo int
 	Name       string
 	ImageName  string
-	Genders    []Gender
+	Genders    []*Gender
 }
 
 type Gender struct {
 	Name     string
-	IconPath string
+	IconName string
 }
 
 var _ error = (*PokemonNotFoundException)(nil)

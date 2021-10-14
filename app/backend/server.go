@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"os"
 
@@ -23,16 +22,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, err := database.ConnectToDatabase()
+	db, err := database.ConnectToDatabase()
 	if err != nil {
 		logger.Errorf("unexpected error occurred during connect database: %v", err)
 		os.Exit(1)
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	r := &graph.Resolver{
+		DB:     db,
+		Logger: *logger,
+	}
 
-	http.Handle("/query", srv)
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: r}))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	http.Handle("/api/i/query", srv)
+	http.Handle("/", playground.Handler("GraphQL playground", "/api/i/query"))
+
+	logger.Error(http.ListenAndServe(":8080", nil))
 }
