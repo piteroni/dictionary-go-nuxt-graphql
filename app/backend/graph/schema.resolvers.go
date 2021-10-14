@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"errors"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/usecases/pokemon"
@@ -24,7 +23,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 
 		r.Logger.Error(err)
 
-		return nil, errors.New("internal system error")
+		return nil, internalSystemError
 	}
 
 	genders := []*model.Gender{}
