@@ -43,10 +43,9 @@
 </template>
 
 <script lang="ts">
-import gql from "graphql-tag"
 import { reactive, defineComponent } from "@nuxtjs/composition-api"
 import { useQuery } from "@vue/apollo-composable"
-import { PokemonQuery, PokemonQueryVariables } from "@/graphql/generated/client"
+import { PokemonDocument, PokemonQuery, PokemonQueryVariables } from "@/graphql/generated/client"
 
 type PokemonGender = {
   name: string
@@ -55,20 +54,6 @@ type PokemonGender = {
 
 export default defineComponent({
   setup() {
-    const query = gql`
-      query pokemon($pokemonId: Int!) {
-        pokemon(pokemonId: $pokemonId) {
-          nationalNo,
-          name,
-          imageName,
-          genders {
-            name,
-            iconName
-          }
-        }
-      }
-    `
-
     const state = reactive<{
       nationalNo: string,
       name: string,
@@ -85,7 +70,7 @@ export default defineComponent({
       pokemonId: 1
     }
     
-    const { onResult } = useQuery<PokemonQuery>(query, variables)
+    const { onResult } = useQuery<PokemonQuery>(PokemonDocument, variables)
 
     if (process.client) {
       const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)

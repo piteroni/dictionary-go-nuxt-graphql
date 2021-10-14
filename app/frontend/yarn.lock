@@ -1228,6 +1228,17 @@
     lodash "~4.17.0"
     tslib "~2.3.0"
 
+"@graphql-codegen/typed-document-node@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typed-document-node/-/typed-document-node-2.1.5.tgz#9efdb665ed772554d5288db747ad4b79b32ae7fc"
+  integrity sha512-QDamZx8dPtToN6uc62QnAzTzA4Abjv1+zVJUNLFy/6URd6dQ39y2D8doSbAHMXJ24xwdt9xUnWxGNSXXi9MKfw==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.2.0"
+    "@graphql-codegen/visitor-plugin-common" "2.3.0"
+    auto-bind "~4.0.0"
+    change-case-all "1.0.14"
+    tslib "~2.3.0"
+
 "@graphql-codegen/typescript-operations@^2.1.7":
   version "2.1.7"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-operations/-/typescript-operations-2.1.7.tgz#8f11ea509d9fec6e7ae6bba78041f1b3c4c6fd9c"

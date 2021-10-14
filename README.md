@@ -18,6 +18,19 @@ docker-compose build
 ## runs application
 
 ```sh
-basename $(pwd) # => dictionary-go-nuxt-graphql
 ./app/scripts/up # go to http://localhost:3000/
+```
+
+## sub commands
+
+### generarte graphql server
+
+```
+./app/scripts/attach-api scripts/gqlgen
+```
+
+### generarte graphql client
+
+```
+./app/scripts/attach-ui npm run codegen
 ```
