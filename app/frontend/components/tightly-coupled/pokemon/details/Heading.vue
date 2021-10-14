@@ -7,24 +7,24 @@
     </div>
 
     <div class="pokemon-heading flex flex-wrap content-center">
-      <div>
-        <img height="338px" width="338px" :src="pokemonImageURL" alt="image-of-pokemon">
+      <div class="fixed-aria">
+        <img v-if="state.imageURL !== ''" height="338px" width="338px" :src="state.imageURL" alt="image-of-pokemon">
       </div>
 
       <div class="flex flex-wrap content-center">
         <div class="pokemon-abstract">
           <div class="national-no">
-            {{ nationalNo }}
+            {{ state.nationalNo }}
           </div>
 
           <div class="pokemon-name">
-            {{ name }}
+            {{ state.name }}
           </div>
 
           <div class="flex mt-6">
             <img
               class="mr-2"
-              v-for="(gender, key) in genders"
+              v-for="(gender, key) in state.genders"
               :key="key"
               :src="gender.iconURL"
               :alt="gender.name"
@@ -43,7 +43,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@nuxtjs/composition-api"
+import gql from "graphql-tag"
+import { reactive, defineComponent } from "@nuxtjs/composition-api"
+import { useQuery } from "@vue/apollo-composable"
 
 export type PokemonGender = {
   name: string
@@ -52,29 +54,68 @@ export type PokemonGender = {
 
 export default defineComponent({
   setup() {
-    const nationalNo = "No.001"
-    const name = "フシギダネ"
-
-    const pokemonImageName = "afa02eaba4c39820fc57f4e8abaeea80.png"
-    const pokemonImageURL = require(`~/assets/image/${pokemonImageName}`)
-
-    const genders: PokemonGender[] = [
-      {
-        name: "male",
-        iconURL: require(`~/assets/image/icon_male.svg`)
-      },
-      {
-        name: "female",
-        iconURL: require(`~/assets/image/icon_female.svg`)
+    const query = gql`
+      query pokemon($pokemonId: Int!) {
+        pokemon(pokemonId: $pokemonId) {
+          nationalNo,
+          name,
+          imageName,
+          genders {
+            name,
+            iconName
+          }
+        }
       }
-    ]
+    `
 
-    return {
-      nationalNo,
-      name,
-      pokemonImageURL,
-      genders
+    type R = {
+      pokemon: {
+        nationalNo: number,
+        name: string,
+        imageName: string,
+        genders: {name: string, iconName: string}[]
+      }
     }
+
+    const state = reactive<{
+      nationalNo: string,
+      name: string,
+      imageURL: string,
+      genders: PokemonGender[]
+    }>({
+      nationalNo: "",
+      name: "",
+      imageURL: "",
+      genders: []
+    })
+    
+    const { onResult } = useQuery<R>(query, {
+      pokemonId: 1
+    })
+
+    if (process.client) {
+      const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)
+
+      onResult(result => {
+        if (!result.loading && !result.error) {
+          const nationalNo = format(result.data.pokemon.nationalNo)
+
+          const genders: PokemonGender[] = result.data.pokemon.genders.map(gender => {
+            return {
+              name: gender.name,
+              iconURL: `/_nuxt/assets/image/${gender.iconName}`
+            }
+          })
+
+          state.nationalNo = `No.${nationalNo}`
+          state.name = result.data.pokemon.name
+          state.imageURL = `/_nuxt/assets/image/${result.data.pokemon.imageName}`
+          state.genders = genders
+        }
+      })
+    }
+
+    return { state }
   }
 })
 </script>
@@ -123,5 +164,10 @@ export default defineComponent({
 .pokemon-name {
   font-size: 28px;
   font-weight: 700;
+}
+
+.fixed-aria {
+  height: 338px;
+  width: 338px;
 }
 </style>

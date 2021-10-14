@@ -1,6 +1,7 @@
 package pokemon
 
 import (
+	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database/factories"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
@@ -48,11 +49,12 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		assert.Equal(t, details.ImageName, "pokemon-30.jpg")
 
 		assert.Len(t, details.Genders, 2)
-		assert.Contains(t, details.Genders, Gender{
+		fmt.Printf("details.Genders[0]: %v\n", details.Genders[0])
+		assert.Contains(t, details.Genders, &Gender{
 			Name:     "gender-1",
 			IconName: "gender-1.jpg",
 		})
-		assert.Contains(t, details.Genders, Gender{
+		assert.Contains(t, details.Genders, &Gender{
 			Name:     "gender-2",
 			IconName: "gender-2.jpg",
 		})

@@ -11,7 +11,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -35,8 +37,24 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: r}))
 
-	http.Handle("/api/i/query", srv)
-	http.Handle("/", playground.Handler("GraphQL playground", "/api/i/query"))
+	router := mux.NewRouter()
 
-	logger.Error(http.ListenAndServe(":8080", nil))
+	router.Handle("/api/i/query", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/api/i/query"))
+
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedHeaders: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
+			http.MethodHead,
+		},
+	})
+
+	logger.Error(http.ListenAndServe(":8080", c.Handler(router)))
 }
