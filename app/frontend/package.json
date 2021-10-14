@@ -20,6 +20,9 @@
     "nuxt": "^2.15.7"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^2.2.1",
+    "@graphql-codegen/typescript": "^2.2.3",
+    "@graphql-codegen/typescript-operations": "^2.1.7",
     "@nuxt/types": "^2.15.8",
     "@nuxt/typescript-build": "^2.1.0",
     "@nuxtjs/tailwindcss": "^4.2.0",

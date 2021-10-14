@@ -1,0 +1,11 @@
+query pokemon($pokemonId: Int!) {
+  pokemon(pokemonId: $pokemonId) {
+    nationalNo,
+    name,
+    imageName,
+    genders {
+      name,
+      iconName
+    }
+  }
+}

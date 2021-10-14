@@ -46,8 +46,9 @@
 import gql from "graphql-tag"
 import { reactive, defineComponent } from "@nuxtjs/composition-api"
 import { useQuery } from "@vue/apollo-composable"
+import { PokemonQuery, PokemonQueryVariables } from "@/graphql/generated/client"
 
-export type PokemonGender = {
+type PokemonGender = {
   name: string
   iconURL: string
 }
@@ -68,15 +69,6 @@ export default defineComponent({
       }
     `
 
-    type R = {
-      pokemon: {
-        nationalNo: number,
-        name: string,
-        imageName: string,
-        genders: {name: string, iconName: string}[]
-      }
-    }
-
     const state = reactive<{
       nationalNo: string,
       name: string,
@@ -88,10 +80,12 @@ export default defineComponent({
       imageURL: "",
       genders: []
     })
-    
-    const { onResult } = useQuery<R>(query, {
+
+    const variables: PokemonQueryVariables = {
       pokemonId: 1
-    })
+    }
+    
+    const { onResult } = useQuery<PokemonQuery>(query, variables)
 
     if (process.client) {
       const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)
@@ -103,13 +97,13 @@ export default defineComponent({
           const genders: PokemonGender[] = result.data.pokemon.genders.map(gender => {
             return {
               name: gender.name,
-              iconURL: `/_nuxt/assets/image/${gender.iconName}`
+              iconURL: `/image/${gender.iconName}`
             }
           })
 
           state.nationalNo = `No.${nationalNo}`
           state.name = result.data.pokemon.name
-          state.imageURL = `/_nuxt/assets/image/${result.data.pokemon.imageName}`
+          state.imageURL = `/image/${result.data.pokemon.imageName}`
           state.genders = genders
         }
       })
