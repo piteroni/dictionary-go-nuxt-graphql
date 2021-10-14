@@ -10,7 +10,7 @@ type AppLogger struct {
 }
 
 func NewLogger(f io.Writer) *AppLogger {
-	logger := log.New(f, "", log.LstdFlags|log.Ldate)
+	logger := log.New(f, "", log.LstdFlags|log.Ldate|log.Llongfile)
 
 	return &AppLogger{
 		logger: logger,

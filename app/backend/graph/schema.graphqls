@@ -11,5 +11,5 @@ type Gender {
 }
 
 type Query {
-  pokemon(pokemonId: Int!): Pokemon
+  pokemon(pokemonId: Int!): Pokemon!
 }
