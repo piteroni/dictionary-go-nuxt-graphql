@@ -2,14 +2,29 @@
 
 package model
 
+type Characteristic struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type Gender struct {
 	Name     string `json:"name"`
 	IconName string `json:"iconName"`
 }
 
 type Pokemon struct {
-	NationalNo int       `json:"nationalNo"`
-	Name       string    `json:"name"`
-	ImageName  string    `json:"imageName"`
-	Genders    []*Gender `json:"genders"`
+	NationalNo      int               `json:"nationalNo"`
+	Name            string            `json:"name"`
+	ImageName       string            `json:"imageName"`
+	Species         string            `json:"species"`
+	Height          string            `json:"height"`
+	Weight          string            `json:"weight"`
+	Genders         []*Gender         `json:"genders"`
+	Types           []*Type           `json:"types"`
+	Characteristics []*Characteristic `json:"characteristics"`
+}
+
+type Type struct {
+	Name     string `json:"name"`
+	IconName string `json:"iconName"`
 }

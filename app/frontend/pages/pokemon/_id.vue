@@ -13,15 +13,21 @@
       :genders="state.genders"
     />
 
-    <pokemon-details />
+    <pokemon-details
+      :species="state.species"
+      :height="state.height"
+      :weight="state.weight"
+      :types="state.types"
+      :characteristics="state.characteristics"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, useContext, useFetch } from "@nuxtjs/composition-api"
 import { useQuery } from "@vue/apollo-composable"
-import { PokemonDocument, PokemonQuery, PokemonQueryVariables } from "@/graphql/generated/client"
-import { PokemonGender } from "@/components/tightly-coupled/pokemon/_id/types"
+import { PokemonDocument, PokemonQuery, PokemonQueryVariables, Characteristic } from "@/graphql/generated/client"
+import { PokemonGender, PokemonType } from "@/components/tightly-coupled/pokemon/_id/types"
 import Header from "@/components/singleton/Header.vue"
 import PokemonHeading from "@/components/tightly-coupled/pokemon/_id/PokemonHeading.vue"
 import PokemonDetails from "@/components/tightly-coupled/pokemon/_id/PokemonDetails.vue"
@@ -37,12 +43,22 @@ export default defineComponent({
       nationalNo: string,
       name: string,
       imageURL: string,
+      species: string,
+      weight: string,
+      height: string,
+      types: PokemonType[],
+      characteristics: Characteristic[],
       genders: PokemonGender[]
     }>({
       nationalNo: "",
       name: "",
       imageURL: "",
-      genders: []
+      species: "",
+      weight: "",
+      height: "",
+      genders: [],
+      types: [],
+      characteristics: []
     })
 
     const { route, error, redirect } = useContext()
@@ -70,20 +86,29 @@ export default defineComponent({
 
           const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)
 
-          const pokemonDetails = result.data.pokemon
-
-          const nationalNo = format(pokemonDetails.nationalNo)
-          const genders: PokemonGender[] = pokemonDetails.genders.map(gender => {
+          const nationalNo = format(result.data.pokemon.nationalNo)
+          const genders: PokemonGender[] = result.data.pokemon.genders.map(gender => {
             return {
               name: gender.name,
               iconURL: `/image/${gender.iconName}`
             }
           })
+          const types: PokemonType[] = result.data.pokemon.types.map(type => {
+            return {
+              name: type.name,
+              iconURL: `/image/${type.iconName}`
+            }
+          })
 
           state.nationalNo = `No.${nationalNo}`
-          state.name = pokemonDetails.name
-          state.imageURL = `/image/${pokemonDetails.imageName}`
+          state.name = result.data.pokemon.name
+          state.species = result.data.pokemon.species
+          state.height = result.data.pokemon.height
+          state.weight = result.data.pokemon.weight
+          state.imageURL = `/image/${result.data.pokemon.imageName}`
           state.genders = genders
+          state.types = types
+          state.characteristics = result.data.pokemon.characteristics
 
           resolve()
         })

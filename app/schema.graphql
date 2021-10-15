@@ -2,12 +2,27 @@ type Pokemon {
   nationalNo: Int!
   name: String!
   imageName: String!
+  species: String!
+  height: String!
+  weight: String!
   genders: [Gender!]!
+  types: [Type!]!
+  characteristics: [Characteristic!]!
 }
 
 type Gender {
   name: String!
   iconName: String!
+}
+
+type Type {
+  name: String!
+  iconName: String!
+}
+
+type Characteristic {
+  name: String!
+  description: String!
 }
 
 type Query {

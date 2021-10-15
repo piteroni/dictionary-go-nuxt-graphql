@@ -12,6 +12,12 @@ export type Scalars = {
   Float: number;
 };
 
+export type Characteristic = {
+  __typename?: 'Characteristic';
+  description: Scalars['String'];
+  name: Scalars['String'];
+};
+
 export type Gender = {
   __typename?: 'Gender';
   iconName: Scalars['String'];
@@ -20,10 +26,15 @@ export type Gender = {
 
 export type Pokemon = {
   __typename?: 'Pokemon';
+  characteristics: Array<Characteristic>;
   genders: Array<Gender>;
+  height: Scalars['String'];
   imageName: Scalars['String'];
   name: Scalars['String'];
   nationalNo: Scalars['Int'];
+  species: Scalars['String'];
+  types: Array<Type>;
+  weight: Scalars['String'];
 };
 
 export type Query = {
@@ -36,12 +47,18 @@ export type QueryPokemonArgs = {
   pokemonId: Scalars['Int'];
 };
 
+export type Type = {
+  __typename?: 'Type';
+  iconName: Scalars['String'];
+  name: Scalars['String'];
+};
+
 export type PokemonQueryVariables = Exact<{
   pokemonId: Scalars['Int'];
 }>;
 
 
-export type PokemonQuery = { __typename?: 'Query', pokemon: { __typename?: 'Pokemon', nationalNo: number, name: string, imageName: string, genders: Array<{ __typename?: 'Gender', name: string, iconName: string }> } };
+export type PokemonQuery = { __typename?: 'Query', pokemon: { __typename?: 'Pokemon', nationalNo: number, name: string, imageName: string, species: string, weight: string, height: string, genders: Array<{ __typename?: 'Gender', name: string, iconName: string }>, types: Array<{ __typename?: 'Type', name: string, iconName: string }>, characteristics: Array<{ __typename?: 'Characteristic', name: string, description: string }> } };
 
 
-export const PokemonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"pokemon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pokemonId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pokemon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pokemonId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pokemonId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nationalNo"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imageName"}},{"kind":"Field","name":{"kind":"Name","value":"genders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"iconName"}}]}}]}}]}}]} as unknown as DocumentNode<PokemonQuery, PokemonQueryVariables>;
+export const PokemonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"pokemon"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pokemonId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pokemon"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pokemonId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pokemonId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nationalNo"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imageName"}},{"kind":"Field","name":{"kind":"Name","value":"species"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"genders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"iconName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"types"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"iconName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"characteristics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<PokemonQuery, PokemonQueryVariables>;

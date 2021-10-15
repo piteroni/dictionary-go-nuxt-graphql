@@ -1,11 +1,22 @@
 query pokemon($pokemonId: Int!) {
   pokemon(pokemonId: $pokemonId) {
-    nationalNo,
-    name,
-    imageName,
+    nationalNo
+    name
+    imageName
+    species
+    weight
+    height
     genders {
-      name,
+      name
       iconName
+    }
+    types {
+      name
+      iconName
+    }
+    characteristics {
+      name
+      description
     }
   }
 }
