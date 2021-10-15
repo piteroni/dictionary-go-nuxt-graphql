@@ -18,13 +18,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "@nuxtjs/composition-api"
+import { defineComponent, reactive, useContext, useFetch } from "@nuxtjs/composition-api"
 import { useQuery } from "@vue/apollo-composable"
 import { PokemonDocument, PokemonQuery, PokemonQueryVariables } from "@/graphql/generated/client"
-import { PokemonGender } from "~/components/tightly-coupled/pokemon/details/_id/types"
+import { PokemonGender } from "@/components/tightly-coupled/pokemon/_id/types"
 import Header from "@/components/singleton/Header.vue"
-import PokemonHeading from "@/components/tightly-coupled/pokemon/details/_id/PokemonHeading.vue"
-import PokemonDetails from "@/components/tightly-coupled/pokemon/details/_id/PokemonDetails.vue"
+import PokemonHeading from "@/components/tightly-coupled/pokemon/_id/PokemonHeading.vue"
+import PokemonDetails from "@/components/tightly-coupled/pokemon/_id/PokemonDetails.vue"
 
 export default defineComponent({
   components: {
@@ -45,18 +45,35 @@ export default defineComponent({
       genders: []
     })
 
-    const variables: PokemonQueryVariables = {
-      pokemonId: 1
+    const { route, error, redirect } = useContext()
+
+    const pokemonId = parseInt(route.value.params.id)
+
+    if (isNaN(pokemonId)) {
+      redirect("/404")
+
+      return { state }
     }
 
-    const { onResult } = useQuery<PokemonQuery>(PokemonDocument, variables)
+    const variables: PokemonQueryVariables = {
+      pokemonId: pokemonId
+    }
 
-    if (process.client) {
-      const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)
-      onResult(result => {
-        if (!result.loading && !result.error) {
-          const nationalNo = format(result.data.pokemon.nationalNo)
-          const genders: PokemonGender[] = result.data.pokemon.genders.map(gender => {
+    useFetch(async () => {
+      const { onError, onResult } = useQuery<PokemonQuery>(PokemonDocument, variables)
+
+      await new Promise<void>((resolve, reject) => {
+        onResult(result => {
+          if (result.loading || result.error) {
+            return
+          }
+
+          const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)
+
+          const pokemonDetails = result.data.pokemon
+
+          const nationalNo = format(pokemonDetails.nationalNo)
+          const genders: PokemonGender[] = pokemonDetails.genders.map(gender => {
             return {
               name: gender.name,
               iconURL: `/image/${gender.iconName}`
@@ -64,13 +81,20 @@ export default defineComponent({
           })
 
           state.nationalNo = `No.${nationalNo}`
-          state.name = result.data.pokemon.name
-          state.imageURL = `/image/${result.data.pokemon.imageName}`
+          state.name = pokemonDetails.name
+          state.imageURL = `/image/${pokemonDetails.imageName}`
           state.genders = genders
-        }
-      })
-    }
 
+          resolve()
+        })
+
+        onError(e => {
+          error({ statusCode: 404 })
+          reject(e)
+        })
+      })
+    })
+      
     return { state }
   }
 })

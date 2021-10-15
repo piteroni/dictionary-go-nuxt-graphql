@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api"
-import { PokemonGender } from "@/components/tightly-coupled/pokemon/details/_id/types"
+import { PokemonGender } from "./types"
 
 type Props = {
   nationalNo: string
