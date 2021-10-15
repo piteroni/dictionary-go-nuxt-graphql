@@ -35,48 +35,46 @@ type Pokemon struct {
 	SpeedPoint          int
 }
 
-func (p *Pokemon) Schema(db *gorm.DB) *PokemonSchema {
-	return &PokemonSchema{
-		db:      db,
-		Pokemon: p,
+type PokemonDAO struct {
+	db *gorm.DB
+}
+
+func NewPokemonDAO(db *gorm.DB) *PokemonDAO {
+	return &PokemonDAO{
+		db: db,
 	}
 }
 
-type PokemonSchema struct {
-	db      *gorm.DB
-	Pokemon *Pokemon
+func (dao *PokemonDAO) ScanTypes(p *Pokemon) error {
+	return dao.db.Model(p).Association("Types").Find(&p.Types)
 }
 
-func (s *PokemonSchema) ScanTypes() error {
-	return s.db.Model(s.Pokemon).Association("Types").Find(&s.Pokemon.Types)
+func (dao *PokemonDAO) AddType(p *Pokemon, t *Type) error {
+	return dao.db.Model(p).Association("Types").Append(t)
 }
 
-func (s *PokemonSchema) AddType(t *Type) error {
-	return s.db.Model(s.Pokemon).Association("Types").Append(t)
+func (dao *PokemonDAO) ScanGenders(p *Pokemon) error {
+	return dao.db.Model(p).Association("Genders").Find(&p.Genders)
 }
 
-func (s *PokemonSchema) ScanGenders() error {
-	return s.db.Model(s.Pokemon).Association("Genders").Find(&s.Pokemon.Genders)
+func (dao *PokemonDAO) AddGender(p *Pokemon, g *Gender) error {
+	return dao.db.Model(p).Association("Genders").Append(g)
 }
 
-func (s *PokemonSchema) AddGender(g *Gender) error {
-	return s.db.Model(s.Pokemon).Association("Genders").Append(g)
+func (dao *PokemonDAO) ScanDescriptons(p *Pokemon) error {
+	return dao.db.Model(p).Association("Descripton").Find(&p.Descriptions)
 }
 
-func (s *PokemonSchema) ScanDescriptons() error {
-	return s.db.Model(s.Pokemon).Association("Descripton").Find(&s.Pokemon.Descriptions)
+func (dao *PokemonDAO) AddDescripton(p *Pokemon, d *Description) error {
+	d.PokemonID = p.ID
+
+	return dao.db.Create(d).Error
 }
 
-func (s *PokemonSchema) AddDescripton(d *Description) error {
-	d.PokemonID = s.Pokemon.ID
-
-	return s.db.Create(d).Error
+func (dao *PokemonDAO) ScanCharacteristics(p *Pokemon) error {
+	return dao.db.Model(p).Association("Characteristics").Find(&p.Characteristics)
 }
 
-func (s *PokemonSchema) ScanCharacteristics() error {
-	return s.db.Model(s.Pokemon).Association("Characteristics").Find(&s.Pokemon.Characteristics)
-}
-
-func (s *PokemonSchema) AddCharacteristics(c *Characteristic) error {
-	return s.db.Model(s.Pokemon).Association("Characteristics").Append(c)
+func (dao *PokemonDAO) AddCharacteristics(p *Pokemon, c *Characteristic) error {
+	return dao.db.Model(p).Association("Characteristics").Append(c)
 }

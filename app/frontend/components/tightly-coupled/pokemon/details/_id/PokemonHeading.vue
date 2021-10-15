@@ -8,23 +8,23 @@
 
     <div class="pokemon-heading flex flex-wrap content-center">
       <div class="fixed-aria">
-        <img v-if="state.imageURL !== ''" height="338px" width="338px" :src="state.imageURL" alt="image-of-pokemon">
+        <img v-if="imageURL !== ''" height="338px" width="338px" :src="imageURL" alt="image-of-pokemon">
       </div>
 
       <div class="flex flex-wrap content-center">
         <div class="pokemon-abstract">
           <div class="national-no">
-            {{ state.nationalNo }}
+            {{ nationalNo }}
           </div>
 
           <div class="pokemon-name">
-            {{ state.name }}
+            {{ name }}
           </div>
 
           <div class="flex mt-6">
             <img
               class="mr-2"
-              v-for="(gender, key) in state.genders"
+              v-for="(gender, key) in genders"
               :key="key"
               :src="gender.iconURL"
               :alt="gender.name"
@@ -43,58 +43,34 @@
 </template>
 
 <script lang="ts">
-import { reactive, defineComponent } from "@nuxtjs/composition-api"
-import { useQuery } from "@vue/apollo-composable"
-import { PokemonDocument, PokemonQuery, PokemonQueryVariables } from "@/graphql/generated/client"
+import { defineComponent } from "@nuxtjs/composition-api"
+import { PokemonGender } from "@/components/tightly-coupled/pokemon/details/_id/types"
 
-type PokemonGender = {
+type Props = {
+  nationalNo: string
   name: string
-  iconURL: string
+  imageURL: string
+  genders: PokemonGender[]
 }
 
-export default defineComponent({
-  setup() {
-    const state = reactive<{
-      nationalNo: string,
-      name: string,
-      imageURL: string,
-      genders: PokemonGender[]
-    }>({
-      nationalNo: "",
-      name: "",
-      imageURL: "",
-      genders: []
-    })
-
-    const variables: PokemonQueryVariables = {
-      pokemonId: 1
-    }
-    
-    const { onResult } = useQuery<PokemonQuery>(PokemonDocument, variables)
-
-    if (process.client) {
-      const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)
-
-      onResult(result => {
-        if (!result.loading && !result.error) {
-          const nationalNo = format(result.data.pokemon.nationalNo)
-
-          const genders: PokemonGender[] = result.data.pokemon.genders.map(gender => {
-            return {
-              name: gender.name,
-              iconURL: `/image/${gender.iconName}`
-            }
-          })
-
-          state.nationalNo = `No.${nationalNo}`
-          state.name = result.data.pokemon.name
-          state.imageURL = `/image/${result.data.pokemon.imageName}`
-          state.genders = genders
-        }
-      })
-    }
-
-    return { state }
+export default defineComponent<Props>({
+  props: {
+    nationalNo: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    imageURL: {
+      type: String,
+      required: true
+    },
+    genders: {
+      type: Array,
+      required: true
+    }, 
   }
 })
 </script>

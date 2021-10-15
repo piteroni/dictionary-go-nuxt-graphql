@@ -8,7 +8,8 @@ ENV TZ=Asia/Tokyo
 ENV PS1='\h /\W\ # '
 
 RUN cd /tmp && \
-    go get -u github.com/cosmtrek/air
+    go get -u github.com/cosmtrek/air && \
+    go get -u github.com/rakyll/gotest
 
 WORKDIR /app
 
