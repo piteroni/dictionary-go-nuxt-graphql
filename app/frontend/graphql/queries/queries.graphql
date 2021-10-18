@@ -18,5 +18,9 @@ query pokemon($pokemonId: Int!) {
       name
       description
     }
+    description {
+      text
+      series
+    }
   }
 }

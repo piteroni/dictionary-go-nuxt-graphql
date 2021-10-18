@@ -62,7 +62,8 @@
       <div class="details-container">
       </div>
 
-      <div class="details-container pokemon-description mt-8">
+      <div v-if="description.text !== ''" class="details-container pokemon-description mt-8">
+        {{ description.text }} （{{ description.series }}）
       </div>
     </div>
   </div>
@@ -70,7 +71,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api"
-import { Characteristic } from "~/graphql/generated/client"
+import { Characteristic, Description } from "~/graphql/generated/client"
 import { PokemonType } from "./types"
 
 type Props = {
@@ -79,9 +80,10 @@ type Props = {
   height: string,
   types: PokemonType[],
   characteristics: Characteristic[],
+  description: Description
 }
 
-export default defineComponent<Props>({
+export default defineComponent<Props, Props>({
   props: {
     species: {
       type: String,
@@ -102,6 +104,10 @@ export default defineComponent<Props>({
     characteristics: {
       type: Array,
       required: true,
+    },
+    description: {
+      type: Object,
+      required: true
     }
   }
 })
@@ -127,6 +133,9 @@ export default defineComponent<Props>({
 
 .pokemon-description {
   width: 994px;
+  font-size: 20px;
+  font-weight: 200;
+  text-align: center;
 }
 
 .type-icon {

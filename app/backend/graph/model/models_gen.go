@@ -9,7 +9,7 @@ type Characteristic struct {
 
 type Description struct {
 	Text   string `json:"text"`
-	Series string `json:"Series"`
+	Series string `json:"series"`
 }
 
 type Gender struct {

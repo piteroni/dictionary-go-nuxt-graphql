@@ -19,6 +19,7 @@
       :weight="state.weight"
       :types="state.types"
       :characteristics="state.characteristics"
+      :description="state.description"
     />
   </div>
 </template>
@@ -26,11 +27,11 @@
 <script lang="ts">
 import { defineComponent, reactive, useContext, useFetch } from "@nuxtjs/composition-api"
 import { useQuery } from "@vue/apollo-composable"
-import { PokemonDocument, PokemonQuery, PokemonQueryVariables, Characteristic } from "@/graphql/generated/client"
-import { PokemonGender, PokemonType } from "@/components/tightly-coupled/pokemon/_id/types"
+import { PokemonDocument, PokemonQuery, PokemonQueryVariables, Characteristic, Description } from "@/graphql/generated/client"
+import { PokemonGender, PokemonType } from "@/components/tightly-coupled/pokemons/_id/types"
 import Header from "@/components/singleton/Header.vue"
-import PokemonHeading from "@/components/tightly-coupled/pokemon/_id/PokemonHeading.vue"
-import PokemonDetails from "@/components/tightly-coupled/pokemon/_id/PokemonDetails.vue"
+import PokemonHeading from "@/components/tightly-coupled/pokemons/_id/PokemonHeading.vue"
+import PokemonDetails from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
 
 export default defineComponent({
   components: {
@@ -48,7 +49,8 @@ export default defineComponent({
       height: string,
       types: PokemonType[],
       characteristics: Characteristic[],
-      genders: PokemonGender[]
+      genders: PokemonGender[],
+      description: Description
     }>({
       nationalNo: "",
       name: "",
@@ -58,7 +60,8 @@ export default defineComponent({
       height: "",
       genders: [],
       types: [],
-      characteristics: []
+      characteristics: [],
+      description: { text: "", series: "" }
     })
 
     const { route, error } = useContext()
@@ -109,6 +112,7 @@ export default defineComponent({
           state.genders = genders
           state.types = types
           state.characteristics = result.data.pokemon.characteristics
+          state.description = result.data.pokemon.description
 
           resolve()
         })

@@ -53,7 +53,7 @@ type Props = {
   genders: PokemonGender[]
 }
 
-export default defineComponent<Props>({
+export default defineComponent<Props, Props>({
   props: {
     nationalNo: {
       type: String,

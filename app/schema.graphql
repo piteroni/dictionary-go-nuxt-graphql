@@ -28,7 +28,7 @@ type Characteristic {
 
 type Description {
   text: String!
-  Series: String!
+  series: String!
 }
 
 type Query {

@@ -113,7 +113,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Characteristic.Name(childComplexity), true
 
-	case "Description.Series":
+	case "Description.series":
 		if e.complexity.Description.Series == nil {
 			break
 		}
@@ -317,7 +317,7 @@ type Characteristic {
 
 type Description {
   text: String!
-  Series: String!
+  series: String!
 }
 
 type Query {
@@ -504,7 +504,7 @@ func (ec *executionContext) _Description_text(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Description_Series(ctx context.Context, field graphql.CollectedField, obj *model.Description) (ret graphql.Marshaler) {
+func (ec *executionContext) _Description_series(ctx context.Context, field graphql.CollectedField, obj *model.Description) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2320,8 +2320,8 @@ func (ec *executionContext) _Description(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Series":
-			out.Values[i] = ec._Description_Series(ctx, field, obj)
+		case "series":
+			out.Values[i] = ec._Description_series(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
