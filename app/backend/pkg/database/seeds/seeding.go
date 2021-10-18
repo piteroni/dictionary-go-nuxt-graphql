@@ -136,7 +136,7 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 		return nil, err
 	}
 
-	s := pokemon.Schema(db)
+	dao := models.NewPokemonDAO(db)
 
 	for _, name := range []string{"くさタイプ", "どくタイプ"} {
 		t := &models.Type{}
@@ -145,7 +145,7 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 			return nil, err
 		}
 
-		if err := s.AddType(t); err != nil {
+		if err := dao.AddType(pokemon, t); err != nil {
 			return nil, err
 		}
 	}
@@ -157,7 +157,7 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 			return nil, err
 		}
 
-		if err := s.AddGender(g); err != nil {
+		if err := dao.AddGender(pokemon, g); err != nil {
 			return nil, err
 		}
 	}
@@ -173,7 +173,7 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 			Series: series,
 		}
 
-		if err := s.AddDescripton(d); err != nil {
+		if err := dao.AddDescripton(pokemon, d); err != nil {
 			return nil, err
 		}
 	}
@@ -185,7 +185,7 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 			return nil, err
 		}
 
-		if err := s.AddCharacteristics(c); err != nil {
+		if err := dao.AddCharacteristics(pokemon, c); err != nil {
 			return nil, err
 		}
 	}
@@ -213,7 +213,7 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 		return nil, err
 	}
 
-	s := pokemon.Schema(db)
+	dao := models.NewPokemonDAO(db)
 
 	for _, name := range []string{"くさタイプ", "どくタイプ"} {
 		t := &models.Type{}
@@ -222,7 +222,7 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 			return nil, err
 		}
 
-		if err := s.AddType(t); err != nil {
+		if err := dao.AddType(pokemon, t); err != nil {
 			return nil, err
 		}
 	}
@@ -234,7 +234,7 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 			return nil, err
 		}
 
-		if err := s.AddGender(g); err != nil {
+		if err := dao.AddGender(pokemon, g); err != nil {
 			return nil, err
 		}
 	}
@@ -250,7 +250,7 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 			Series: series,
 		}
 
-		if err := s.AddDescripton(d); err != nil {
+		if err := dao.AddDescripton(pokemon, d); err != nil {
 			return nil, err
 		}
 	}
@@ -262,7 +262,7 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 			return nil, err
 		}
 
-		if err := s.AddCharacteristics(c); err != nil {
+		if err := dao.AddCharacteristics(pokemon, c); err != nil {
 			return nil, err
 		}
 	}

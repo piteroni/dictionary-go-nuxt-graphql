@@ -18,6 +18,23 @@ docker-compose build
 ## runs application
 
 ```sh
-basename $(pwd) # => dictionary-go-nuxt-graphql
 ./app/scripts/up # go to http://localhost:3000/
 ```
+
+## sub commands
+
+### generarte graphql server code
+
+```
+./app/scripts/attach-api scripts/gqlgen
+```
+
+### generarte graphql client code
+
+```
+./app/scripts/attach-ui npm run codegen
+```
+
+## やりのこしたこと
+
+- GraphQLでエラー種別をスキーマで定義すること、[参考リンク](https://www.youtube.com/watch?v=RDNTP66oY2o)

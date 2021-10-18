@@ -35,6 +35,40 @@ func (f *pokemonFactory) CreateGender(gender *models.Gender) (*models.Gender, er
 	return gender, nil
 }
 
+func (f *pokemonFactory) CreateType(t *models.Type) (*models.Type, error) {
+	defaults := &models.Type{
+		Name:     gofakeit.Name(),
+		IconName: gofakeit.UUID(),
+	}
+
+	if err := mergo.Merge(t, *defaults); err != nil {
+		return nil, err
+	}
+
+	if err := f.db.Create(t).Error; err != nil {
+		return nil, err
+	}
+
+	return t, nil
+}
+
+func (f *pokemonFactory) CreateCharacteristic(c *models.Characteristic) (*models.Characteristic, error) {
+	defaults := &models.Characteristic{
+		Name:        gofakeit.Name(),
+		Description: gofakeit.Name(),
+	}
+
+	if err := mergo.Merge(c, *defaults); err != nil {
+		return nil, err
+	}
+
+	if err := f.db.Create(c).Error; err != nil {
+		return nil, err
+	}
+
+	return c, nil
+}
+
 func (f *pokemonFactory) CreatePokemon(pokemon *models.Pokemon) (*models.Pokemon, error) {
 	defaults := &models.Pokemon{
 		NationalNo:          gofakeit.Number(1, 2048),

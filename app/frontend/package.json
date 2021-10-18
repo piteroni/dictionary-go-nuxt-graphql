@@ -7,16 +7,24 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "test": "jest"
+    "test": "jest",
+    "codegen": "graphql-codegen"
   },
   "dependencies": {
+    "@nuxtjs/apollo": "^4.0.1-rc.5",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/composition-api": "^0.29.3",
+    "@vue/apollo-composable": "^4.0.0-alpha.15",
     "@vue/composition-api": "^1.2.4",
     "core-js": "^3.15.1",
+    "graphql-tag": "^2.12.5",
     "nuxt": "^2.15.7"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^2.2.1",
+    "@graphql-codegen/typed-document-node": "^2.1.5",
+    "@graphql-codegen/typescript": "^2.2.3",
+    "@graphql-codegen/typescript-operations": "^2.1.7",
     "@nuxt/types": "^2.15.8",
     "@nuxt/typescript-build": "^2.1.0",
     "@nuxtjs/tailwindcss": "^4.2.0",

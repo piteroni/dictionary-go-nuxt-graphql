@@ -7,8 +7,8 @@
     </div>
 
     <div class="pokemon-heading flex flex-wrap content-center">
-      <div>
-        <img height="338px" width="338px" :src="pokemonImageURL" alt="image-of-pokemon">
+      <div class="fixed-aria">
+        <img v-if="imageURL !== ''" height="338px" width="338px" :src="imageURL" alt="image-of-pokemon">
       </div>
 
       <div class="flex flex-wrap content-center">
@@ -44,37 +44,33 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api"
+import { PokemonGender } from "./types"
 
-export type PokemonGender = {
+type Props = {
+  nationalNo: string
   name: string
-  iconURL: string
+  imageURL: string
+  genders: PokemonGender[]
 }
 
-export default defineComponent({
-  setup() {
-    const nationalNo = "No.001"
-    const name = "フシギダネ"
-
-    const pokemonImageName = "afa02eaba4c39820fc57f4e8abaeea80.png"
-    const pokemonImageURL = require(`~/assets/image/${pokemonImageName}`)
-
-    const genders: PokemonGender[] = [
-      {
-        name: "male",
-        iconURL: require(`~/assets/image/icon_male.svg`)
-      },
-      {
-        name: "female",
-        iconURL: require(`~/assets/image/icon_female.svg`)
-      }
-    ]
-
-    return {
-      nationalNo,
-      name,
-      pokemonImageURL,
-      genders
-    }
+export default defineComponent<Props, Props>({
+  props: {
+    nationalNo: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    imageURL: {
+      type: String,
+      required: true
+    },
+    genders: {
+      type: Array,
+      required: true
+    }, 
   }
 })
 </script>
@@ -123,5 +119,10 @@ export default defineComponent({
 .pokemon-name {
   font-size: 28px;
   font-weight: 700;
+}
+
+.fixed-aria {
+  height: 338px;
+  width: 338px;
 }
 </style>

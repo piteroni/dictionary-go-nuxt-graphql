@@ -5,49 +5,53 @@ import (
 	"log"
 )
 
-type appLogger struct {
+type AppLogger struct {
 	logger *log.Logger
 }
 
-func NewLogger(f io.Writer) *appLogger {
-	logger := log.New(f, "", log.LstdFlags|log.Ldate)
+func NewLogger(f io.Writer) *AppLogger {
+	logger := log.New(f, "", log.LstdFlags|log.Ldate|log.Llongfile)
 
-	return &appLogger{
+	return &AppLogger{
 		logger: logger,
 	}
 }
 
-func (l *appLogger) Errorf(format string, a ...interface{}) {
+func (l *AppLogger) Errorf(format string, a ...interface{}) {
 	l.error(format, a...)
 }
 
-func (l *appLogger) Error(err error) {
+func (l *AppLogger) Error(err error) {
 	l.error(err.Error())
 }
 
-func (l *appLogger) Warnf(format string, a ...interface{}) {
+func (l *AppLogger) Warnf(format string, a ...interface{}) {
 	l.warn(format, a...)
 }
 
-func (l *appLogger) Info(message string) {
+func (l *AppLogger) Warn(message string) {
+	l.warn(message)
+}
+
+func (l *AppLogger) Info(message string) {
 	l.info(message)
 }
 
-func (l *appLogger) Infof(format string, a ...interface{}) {
+func (l *AppLogger) Infof(format string, a ...interface{}) {
 	l.info(format, a...)
 }
 
-func (l *appLogger) error(format string, a ...interface{}) {
+func (l *AppLogger) error(format string, a ...interface{}) {
 	l.logger.SetPrefix("[ERROR] ")
 	l.logger.Printf(format, a...)
 }
 
-func (l *appLogger) warn(format string, a ...interface{}) {
+func (l *AppLogger) warn(format string, a ...interface{}) {
 	l.logger.SetPrefix("[WARN] ")
 	l.logger.Printf(format, a...)
 }
 
-func (l *appLogger) info(format string, a ...interface{}) {
+func (l *AppLogger) info(format string, a ...interface{}) {
 	l.logger.SetPrefix("[INFO] ")
 	l.logger.Printf(format, a...)
 }

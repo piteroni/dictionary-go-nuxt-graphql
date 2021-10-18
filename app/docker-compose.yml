@@ -10,6 +10,7 @@ services:
     hostname: api
     volumes:
       - ./backend:/app
+      - ./schema.graphql:/schema.graphql
     ports:
       - 8080:8080
   db:
@@ -37,6 +38,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - ./schema.graphql:/schema.graphql
     ports:
       - 3000:3000
 

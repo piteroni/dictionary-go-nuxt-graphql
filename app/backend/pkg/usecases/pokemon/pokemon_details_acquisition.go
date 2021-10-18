@@ -31,39 +31,101 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		return nil, err
 	}
 
-	s := pokemon.Schema(u.db)
+	dao := models.NewPokemonDAO(u.db)
 
-	if err := s.ScanGenders(); err != nil {
+	if err := dao.ScanGenders(pokemon); err != nil {
 		return nil, err
 	}
 
-	var genders []Gender
+	if err := dao.ScanTypes(pokemon); err != nil {
+		return nil, err
+	}
 
-	for _, g := range s.Pokemon.Genders {
-		genders = append(genders, Gender{
+	if err := dao.ScanCharacteristics(pokemon); err != nil {
+		return nil, err
+	}
+
+	if err := dao.ScanDescriptions(pokemon); err != nil {
+		return nil, err
+	}
+
+	genders := []*Gender{}
+	for _, g := range pokemon.Genders {
+		genders = append(genders, &Gender{
 			Name:     g.Name,
-			IconPath: g.IconName,
+			IconName: g.IconName,
 		})
 	}
 
+	types := []*Type{}
+	for _, t := range pokemon.Types {
+		types = append(types, &Type{
+			Name:     t.Name,
+			IconName: t.IconName,
+		})
+	}
+
+	characteristics := []*Characteristic{}
+	for _, c := range pokemon.Characteristics {
+		characteristics = append(characteristics, &Characteristic{
+			Name:        c.Name,
+			Description: c.Description,
+		})
+	}
+
+	description := &Description{}
+	if len(pokemon.Descriptions) > 0 {
+		description = &Description{
+			Text:   pokemon.Descriptions[0].Text,
+			Series: pokemon.Descriptions[0].Series,
+		}
+	}
+
 	return &PokemonDetails{
-		NationalNo: pokemon.NationalNo,
-		Name:       pokemon.Name,
-		ImageName:  pokemon.ImageName,
-		Genders:    genders,
+		NationalNo:      pokemon.NationalNo,
+		Name:            pokemon.Name,
+		ImageName:       pokemon.ImageName,
+		Genders:         genders,
+		Species:         pokemon.Species,
+		Types:           types,
+		HeightText:      pokemon.Height,
+		WeightText:      pokemon.Weight,
+		Characteristics: characteristics,
+		Description:     description,
 	}, nil
 }
 
 type PokemonDetails struct {
-	NationalNo int
-	Name       string
-	ImageName  string
-	Genders    []Gender
+	NationalNo      int
+	Name            string
+	ImageName       string
+	Species         string
+	Types           []*Type
+	HeightText      string
+	WeightText      string
+	Genders         []*Gender
+	Characteristics []*Characteristic
+	Description     *Description
+}
+
+type Type struct {
+	Name     string
+	IconName string
 }
 
 type Gender struct {
 	Name     string
-	IconPath string
+	IconName string
+}
+
+type Characteristic struct {
+	Name        string
+	Description string
+}
+
+type Description struct {
+	Text   string
+	Series string
 }
 
 var _ error = (*PokemonNotFoundException)(nil)
