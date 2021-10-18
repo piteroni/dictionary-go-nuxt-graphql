@@ -71,7 +71,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api"
-import { Characteristic, Description } from "~/graphql/generated/client"
+import { Characteristic, Description } from "@/graphql/generated/client"
 import { PokemonType } from "./types"
 
 type Props = {
@@ -135,7 +135,6 @@ export default defineComponent<Props, Props>({
   width: 994px;
   font-size: 20px;
   font-weight: 200;
-  text-align: center;
 }
 
 .type-icon {

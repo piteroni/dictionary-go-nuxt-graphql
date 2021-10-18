@@ -45,34 +45,34 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 
 		assert.Equal(t, details.NationalNo, 30)
 		assert.Equal(t, details.Name, "pokemon-30")
-		assert.Equal(t, details.ImageName, "pokemon-30.jpg")
+		assert.Equal(t, details.ImageURL, "pokemon-30.jpg")
 		assert.Equal(t, details.HeightText, "2m")
 		assert.Equal(t, details.WeightText, "84kg")
 		assert.Equal(t, details.Species, "normal")
 
 		assert.Equal(t, details.Description, &Description{
-			Text:   "",
-			Series: "",
+			Text:   "description",
+			Series: "series-1",
 		})
 
 		assert.Len(t, details.Genders, 2)
 		assert.Contains(t, details.Genders, &Gender{
-			Name:     "gender-1",
-			IconName: "gender-1.jpg",
+			Name:    "gender-1",
+			IconURL: "gender-1.jpg",
 		})
 		assert.Contains(t, details.Genders, &Gender{
-			Name:     "gender-2",
-			IconName: "gender-2.jpg",
+			Name:    "gender-2",
+			IconURL: "gender-2.jpg",
 		})
 
 		assert.Len(t, details.Types, 2)
 		assert.Contains(t, details.Types, &Type{
-			Name:     "type-1",
-			IconName: "type-1.jpg",
+			Name:    "type-1",
+			IconURL: "type-1.jpg",
 		})
 		assert.Contains(t, details.Types, &Type{
-			Name:     "type-2",
-			IconName: "type-2.jpg",
+			Name:    "type-2",
+			IconURL: "type-2.jpg",
 		})
 
 		assert.Len(t, details.Characteristics, 2)
@@ -102,7 +102,7 @@ func seed(db *gorm.DB) error {
 		Model:      gorm.Model{ID: 1},
 		NationalNo: 30,
 		Name:       "pokemon-30",
-		ImageName:  "pokemon-30.jpg",
+		ImageURL:   "pokemon-30.jpg",
 		Height:     "2m",
 		Weight:     "84kg",
 		Species:    "normal",
@@ -115,12 +115,12 @@ func seed(db *gorm.DB) error {
 
 	genders := []*models.Gender{}
 	genders = append(genders, &models.Gender{
-		Name:     "gender-1",
-		IconName: "gender-1.jpg",
+		Name:    "gender-1",
+		IconURL: "gender-1.jpg",
 	})
 	genders = append(genders, &models.Gender{
-		Name:     "gender-2",
-		IconName: "gender-2.jpg",
+		Name:    "gender-2",
+		IconURL: "gender-2.jpg",
 	})
 
 	for _, gender := range genders {
@@ -136,12 +136,12 @@ func seed(db *gorm.DB) error {
 
 	types := []*models.Type{}
 	types = append(types, &models.Type{
-		Name:     "type-1",
-		IconName: "type-1.jpg",
+		Name:    "type-1",
+		IconURL: "type-1.jpg",
 	})
 	types = append(types, &models.Type{
-		Name:     "type-2",
-		IconName: "type-2.jpg",
+		Name:    "type-2",
+		IconURL: "type-2.jpg",
 	})
 
 	for _, t := range types {

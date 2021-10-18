@@ -1,7 +1,7 @@
 type Pokemon {
   nationalNo: Int!
   name: String!
-  imageName: String!
+  imageURL: String!
   species: String!
   height: String!
   weight: String!
@@ -13,12 +13,12 @@ type Pokemon {
 
 type Gender {
   name: String!
-  iconName: String!
+  iconURL: String!
 }
 
 type Type {
   name: String!
-  iconName: String!
+  iconURL: String!
 }
 
 type Characteristic {

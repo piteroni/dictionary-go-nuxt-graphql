@@ -27,11 +27,10 @@
 <script lang="ts">
 import { defineComponent, reactive, useContext, useFetch } from "@nuxtjs/composition-api"
 import { useQuery } from "@vue/apollo-composable"
-import { PokemonDocument, PokemonQuery, PokemonQueryVariables, Characteristic, Description } from "@/graphql/generated/client"
-import { PokemonGender, PokemonType } from "@/components/tightly-coupled/pokemons/_id/types"
-import Header from "@/components/singleton/Header.vue"
-import PokemonHeading from "@/components/tightly-coupled/pokemons/_id/PokemonHeading.vue"
-import PokemonDetails from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
+import { PokemonDocument, PokemonQuery, PokemonQueryVariables, Type, Gender, Characteristic, Description } from "@/graphql/generated/client"
+import Header from "@/components/Header.vue"
+import PokemonHeading from "@/composable/pokemons/_id/PokemonHeading.vue"
+import PokemonDetails from "@/composable/pokemons/_id/PokemonDetails.vue"
 
 export default defineComponent({
   components: {
@@ -47,9 +46,9 @@ export default defineComponent({
       species: string,
       weight: string,
       height: string,
-      types: PokemonType[],
+      types: Type[],
       characteristics: Characteristic[],
-      genders: PokemonGender[],
+      genders: Gender[],
       description: Description
     }>({
       nationalNo: "",
@@ -90,27 +89,15 @@ export default defineComponent({
           const format = (nationalNo: number) => ("000" + nationalNo.toString()).slice(-3)
 
           const nationalNo = format(result.data.pokemon.nationalNo)
-          const genders: PokemonGender[] = result.data.pokemon.genders.map(gender => {
-            return {
-              name: gender.name,
-              iconURL: `/image/${gender.iconName}`
-            }
-          })
-          const types: PokemonType[] = result.data.pokemon.types.map(type => {
-            return {
-              name: type.name,
-              iconURL: `/image/${type.iconName}`
-            }
-          })
 
           state.nationalNo = `No.${nationalNo}`
           state.name = result.data.pokemon.name
           state.species = result.data.pokemon.species
           state.height = result.data.pokemon.height
           state.weight = result.data.pokemon.weight
-          state.imageURL = `/image/${result.data.pokemon.imageName}`
-          state.genders = genders
-          state.types = types
+          state.imageURL = result.data.pokemon.imageURL
+          state.genders = result.data.pokemon.genders
+          state.types = result.data.pokemon.types
           state.characteristics = result.data.pokemon.characteristics
           state.description = result.data.pokemon.description
 

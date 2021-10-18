@@ -13,14 +13,14 @@ type Description struct {
 }
 
 type Gender struct {
-	Name     string `json:"name"`
-	IconName string `json:"iconName"`
+	Name    string `json:"name"`
+	IconURL string `json:"iconURL"`
 }
 
 type Pokemon struct {
 	NationalNo      int               `json:"nationalNo"`
 	Name            string            `json:"name"`
-	ImageName       string            `json:"imageName"`
+	ImageURL        string            `json:"imageURL"`
 	Species         string            `json:"species"`
 	Height          string            `json:"height"`
 	Weight          string            `json:"weight"`
@@ -31,6 +31,6 @@ type Pokemon struct {
 }
 
 type Type struct {
-	Name     string `json:"name"`
-	IconName string `json:"iconName"`
+	Name    string `json:"name"`
+	IconURL string `json:"iconURL"`
 }

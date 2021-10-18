@@ -53,8 +53,8 @@ type ComplexityRoot struct {
 	}
 
 	Gender struct {
-		IconName func(childComplexity int) int
-		Name     func(childComplexity int) int
+		IconURL func(childComplexity int) int
+		Name    func(childComplexity int) int
 	}
 
 	Pokemon struct {
@@ -62,7 +62,7 @@ type ComplexityRoot struct {
 		Description     func(childComplexity int) int
 		Genders         func(childComplexity int) int
 		Height          func(childComplexity int) int
-		ImageName       func(childComplexity int) int
+		ImageURL        func(childComplexity int) int
 		Name            func(childComplexity int) int
 		NationalNo      func(childComplexity int) int
 		Species         func(childComplexity int) int
@@ -75,8 +75,8 @@ type ComplexityRoot struct {
 	}
 
 	Type struct {
-		IconName func(childComplexity int) int
-		Name     func(childComplexity int) int
+		IconURL func(childComplexity int) int
+		Name    func(childComplexity int) int
 	}
 }
 
@@ -127,12 +127,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Description.Text(childComplexity), true
 
-	case "Gender.iconName":
-		if e.complexity.Gender.IconName == nil {
+	case "Gender.iconURL":
+		if e.complexity.Gender.IconURL == nil {
 			break
 		}
 
-		return e.complexity.Gender.IconName(childComplexity), true
+		return e.complexity.Gender.IconURL(childComplexity), true
 
 	case "Gender.name":
 		if e.complexity.Gender.Name == nil {
@@ -169,12 +169,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pokemon.Height(childComplexity), true
 
-	case "Pokemon.imageName":
-		if e.complexity.Pokemon.ImageName == nil {
+	case "Pokemon.imageURL":
+		if e.complexity.Pokemon.ImageURL == nil {
 			break
 		}
 
-		return e.complexity.Pokemon.ImageName(childComplexity), true
+		return e.complexity.Pokemon.ImageURL(childComplexity), true
 
 	case "Pokemon.name":
 		if e.complexity.Pokemon.Name == nil {
@@ -223,12 +223,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Pokemon(childComplexity, args["pokemonId"].(int)), true
 
-	case "Type.iconName":
-		if e.complexity.Type.IconName == nil {
+	case "Type.iconURL":
+		if e.complexity.Type.IconURL == nil {
 			break
 		}
 
-		return e.complexity.Type.IconName(childComplexity), true
+		return e.complexity.Type.IconURL(childComplexity), true
 
 	case "Type.name":
 		if e.complexity.Type.Name == nil {
@@ -290,7 +290,7 @@ var sources = []*ast.Source{
 	{Name: "/schema.graphql", Input: `type Pokemon {
   nationalNo: Int!
   name: String!
-  imageName: String!
+  imageURL: String!
   species: String!
   height: String!
   weight: String!
@@ -302,12 +302,12 @@ var sources = []*ast.Source{
 
 type Gender {
   name: String!
-  iconName: String!
+  iconURL: String!
 }
 
 type Type {
   name: String!
-  iconName: String!
+  iconURL: String!
 }
 
 type Characteristic {
@@ -574,7 +574,7 @@ func (ec *executionContext) _Gender_name(ctx context.Context, field graphql.Coll
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Gender_iconName(ctx context.Context, field graphql.CollectedField, obj *model.Gender) (ret graphql.Marshaler) {
+func (ec *executionContext) _Gender_iconURL(ctx context.Context, field graphql.CollectedField, obj *model.Gender) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -592,7 +592,7 @@ func (ec *executionContext) _Gender_iconName(ctx context.Context, field graphql.
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.IconName, nil
+		return obj.IconURL, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -679,7 +679,7 @@ func (ec *executionContext) _Pokemon_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Pokemon_imageName(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
+func (ec *executionContext) _Pokemon_imageURL(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -697,7 +697,7 @@ func (ec *executionContext) _Pokemon_imageName(ctx context.Context, field graphq
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ImageName, nil
+		return obj.ImageURL, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1107,7 +1107,7 @@ func (ec *executionContext) _Type_name(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Type_iconName(ctx context.Context, field graphql.CollectedField, obj *model.Type) (ret graphql.Marshaler) {
+func (ec *executionContext) _Type_iconURL(ctx context.Context, field graphql.CollectedField, obj *model.Type) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1125,7 +1125,7 @@ func (ec *executionContext) _Type_iconName(ctx context.Context, field graphql.Co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.IconName, nil
+		return obj.IconURL, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2352,8 +2352,8 @@ func (ec *executionContext) _Gender(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "iconName":
-			out.Values[i] = ec._Gender_iconName(ctx, field, obj)
+		case "iconURL":
+			out.Values[i] = ec._Gender_iconURL(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2389,8 +2389,8 @@ func (ec *executionContext) _Pokemon(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "imageName":
-			out.Values[i] = ec._Pokemon_imageName(ctx, field, obj)
+		case "imageURL":
+			out.Values[i] = ec._Pokemon_imageURL(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2500,8 +2500,8 @@ func (ec *executionContext) _Type(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "iconName":
-			out.Values[i] = ec._Type_iconName(ctx, field, obj)
+		case "iconURL":
+			out.Values[i] = ec._Type_iconURL(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

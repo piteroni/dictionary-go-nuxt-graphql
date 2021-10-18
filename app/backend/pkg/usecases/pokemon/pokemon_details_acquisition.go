@@ -52,16 +52,16 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 	genders := []*Gender{}
 	for _, g := range pokemon.Genders {
 		genders = append(genders, &Gender{
-			Name:     g.Name,
-			IconName: g.IconName,
+			Name:    g.Name,
+			IconURL: g.IconURL,
 		})
 	}
 
 	types := []*Type{}
 	for _, t := range pokemon.Types {
 		types = append(types, &Type{
-			Name:     t.Name,
-			IconName: t.IconName,
+			Name:    t.Name,
+			IconURL: t.IconURL,
 		})
 	}
 
@@ -84,7 +84,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 	return &PokemonDetails{
 		NationalNo:      pokemon.NationalNo,
 		Name:            pokemon.Name,
-		ImageName:       pokemon.ImageName,
+		ImageURL:        pokemon.ImageURL,
 		Genders:         genders,
 		Species:         pokemon.Species,
 		Types:           types,
@@ -98,7 +98,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 type PokemonDetails struct {
 	NationalNo      int
 	Name            string
-	ImageName       string
+	ImageURL        string
 	Species         string
 	Types           []*Type
 	HeightText      string
@@ -109,13 +109,13 @@ type PokemonDetails struct {
 }
 
 type Type struct {
-	Name     string
-	IconName string
+	Name    string
+	IconURL string
 }
 
 type Gender struct {
-	Name     string
-	IconName string
+	Name    string
+	IconURL string
 }
 
 type Characteristic struct {

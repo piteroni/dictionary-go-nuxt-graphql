@@ -27,16 +27,16 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 	genders := []*model.Gender{}
 	for _, gender := range p.Genders {
 		genders = append(genders, &model.Gender{
-			Name:     gender.Name,
-			IconName: gender.IconName,
+			Name:    gender.Name,
+			IconURL: gender.IconURL,
 		})
 	}
 
 	types := []*model.Type{}
 	for _, t := range p.Types {
 		types = append(types, &model.Type{
-			Name:     t.Name,
-			IconName: t.IconName,
+			Name:    t.Name,
+			IconURL: t.IconURL,
 		})
 	}
 
@@ -56,7 +56,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 	return &model.Pokemon{
 		NationalNo:      p.NationalNo,
 		Name:            p.Name,
-		ImageName:       p.ImageName,
+		ImageURL:        p.ImageURL,
 		Species:         p.Species,
 		Height:          p.HeightText,
 		Weight:          p.WeightText,

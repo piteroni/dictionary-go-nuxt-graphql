@@ -18,7 +18,7 @@ type Pokemon struct {
 
 	// profile
 	Name         string `gorm:"unique"`
-	ImageName    string
+	ImageURL     string
 	Descriptions []Description
 
 	// physical
