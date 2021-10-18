@@ -61,8 +61,8 @@ func (dao *PokemonDAO) AddGender(p *Pokemon, g *Gender) error {
 	return dao.db.Model(p).Association("Genders").Append(g)
 }
 
-func (dao *PokemonDAO) ScanDescriptons(p *Pokemon) error {
-	return dao.db.Model(p).Association("Descripton").Find(&p.Descriptions)
+func (dao *PokemonDAO) ScanDescriptions(p *Pokemon) error {
+	return dao.db.Model(p).Association("Descriptions").Find(&p.Descriptions)
 }
 
 func (dao *PokemonDAO) AddDescripton(p *Pokemon, d *Description) error {

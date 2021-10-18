@@ -61,21 +61,21 @@ export default defineComponent({
       characteristics: []
     })
 
-    const { route, error, redirect } = useContext()
+    const { route, error } = useContext()
 
     const pokemonId = parseInt(route.value.params.id)
 
     if (isNaN(pokemonId)) {
-      redirect("/404")
+      error({ statusCode: 404 })
 
       return { state }
     }
 
-    const variables: PokemonQueryVariables = {
-      pokemonId: pokemonId
-    }
-
     useFetch(async () => {
+      const variables: PokemonQueryVariables = {
+        pokemonId: pokemonId
+      }
+
       const { onError, onResult } = useQuery<PokemonQuery>(PokemonDocument, variables)
 
       await new Promise<void>((resolve, reject) => {

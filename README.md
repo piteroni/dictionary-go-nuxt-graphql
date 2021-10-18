@@ -23,14 +23,18 @@ docker-compose build
 
 ## sub commands
 
-### generarte graphql server
+### generarte graphql server code
 
 ```
 ./app/scripts/attach-api scripts/gqlgen
 ```
 
-### generarte graphql client
+### generarte graphql client code
 
 ```
 ./app/scripts/attach-ui npm run codegen
 ```
+
+## やりのこしたこと
+
+- GraphQLでエラー種別をスキーマで定義すること、[参考リンク](https://www.youtube.com/watch?v=RDNTP66oY2o)

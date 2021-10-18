@@ -47,6 +47,11 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 	}
 
+	Description struct {
+		Series func(childComplexity int) int
+		Text   func(childComplexity int) int
+	}
+
 	Gender struct {
 		IconName func(childComplexity int) int
 		Name     func(childComplexity int) int
@@ -54,6 +59,7 @@ type ComplexityRoot struct {
 
 	Pokemon struct {
 		Characteristics func(childComplexity int) int
+		Description     func(childComplexity int) int
 		Genders         func(childComplexity int) int
 		Height          func(childComplexity int) int
 		ImageName       func(childComplexity int) int
@@ -107,6 +113,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Characteristic.Name(childComplexity), true
 
+	case "Description.Series":
+		if e.complexity.Description.Series == nil {
+			break
+		}
+
+		return e.complexity.Description.Series(childComplexity), true
+
+	case "Description.text":
+		if e.complexity.Description.Text == nil {
+			break
+		}
+
+		return e.complexity.Description.Text(childComplexity), true
+
 	case "Gender.iconName":
 		if e.complexity.Gender.IconName == nil {
 			break
@@ -127,6 +147,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Pokemon.Characteristics(childComplexity), true
+
+	case "Pokemon.description":
+		if e.complexity.Pokemon.Description == nil {
+			break
+		}
+
+		return e.complexity.Pokemon.Description(childComplexity), true
 
 	case "Pokemon.genders":
 		if e.complexity.Pokemon.Genders == nil {
@@ -270,6 +297,7 @@ var sources = []*ast.Source{
   genders: [Gender!]!
   types: [Type!]!
   characteristics: [Characteristic!]!
+  description: Description!
 }
 
 type Gender {
@@ -285,6 +313,11 @@ type Type {
 type Characteristic {
   name: String!
   description: String!
+}
+
+type Description {
+  text: String!
+  Series: String!
 }
 
 type Query {
@@ -420,6 +453,76 @@ func (ec *executionContext) _Characteristic_description(ctx context.Context, fie
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Description_text(ctx context.Context, field graphql.CollectedField, obj *model.Description) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Description",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Text, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Description_Series(ctx context.Context, field graphql.CollectedField, obj *model.Description) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Description",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Series, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -819,6 +922,41 @@ func (ec *executionContext) _Pokemon_characteristics(ctx context.Context, field 
 	res := resTmp.([]*model.Characteristic)
 	fc.Result = res
 	return ec.marshalNCharacteristic2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐCharacteristicᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pokemon_description(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pokemon",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Description)
+	fc.Result = res
+	return ec.marshalNDescription2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐDescription(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_pokemon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2166,6 +2304,38 @@ func (ec *executionContext) _Characteristic(ctx context.Context, sel ast.Selecti
 	return out
 }
 
+var descriptionImplementors = []string{"Description"}
+
+func (ec *executionContext) _Description(ctx context.Context, sel ast.SelectionSet, obj *model.Description) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, descriptionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Description")
+		case "text":
+			out.Values[i] = ec._Description_text(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Series":
+			out.Values[i] = ec._Description_Series(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var genderImplementors = []string{"Gender"}
 
 func (ec *executionContext) _Gender(ctx context.Context, sel ast.SelectionSet, obj *model.Gender) graphql.Marshaler {
@@ -2251,6 +2421,11 @@ func (ec *executionContext) _Pokemon(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "characteristics":
 			out.Values[i] = ec._Pokemon_characteristics(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "description":
+			out.Values[i] = ec._Pokemon_description(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2658,6 +2833,16 @@ func (ec *executionContext) marshalNCharacteristic2ᚖpiteroniᚋdictionaryᚑgo
 		return graphql.Null
 	}
 	return ec._Characteristic(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDescription2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐDescription(ctx context.Context, sel ast.SelectionSet, v *model.Description) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Description(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNGender2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐGenderᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Gender) graphql.Marshaler {

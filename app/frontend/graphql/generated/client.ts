@@ -18,6 +18,12 @@ export type Characteristic = {
   name: Scalars['String'];
 };
 
+export type Description = {
+  __typename?: 'Description';
+  Series: Scalars['String'];
+  text: Scalars['String'];
+};
+
 export type Gender = {
   __typename?: 'Gender';
   iconName: Scalars['String'];
@@ -27,6 +33,7 @@ export type Gender = {
 export type Pokemon = {
   __typename?: 'Pokemon';
   characteristics: Array<Characteristic>;
+  description: Description;
   genders: Array<Gender>;
   height: Scalars['String'];
   imageName: Scalars['String'];

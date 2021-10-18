@@ -8,6 +8,7 @@ type Pokemon {
   genders: [Gender!]!
   types: [Type!]!
   characteristics: [Characteristic!]!
+  description: Description!
 }
 
 type Gender {
@@ -23,6 +24,11 @@ type Type {
 type Characteristic {
   name: String!
   description: String!
+}
+
+type Description {
+  text: String!
+  Series: String!
 }
 
 type Query {

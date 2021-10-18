@@ -45,8 +45,11 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		return nil, err
 	}
 
-	var genders []*Gender
+	if err := dao.ScanDescriptions(pokemon); err != nil {
+		return nil, err
+	}
 
+	genders := []*Gender{}
 	for _, g := range pokemon.Genders {
 		genders = append(genders, &Gender{
 			Name:     g.Name,
@@ -54,8 +57,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		})
 	}
 
-	var types []*Type
-
+	types := []*Type{}
 	for _, t := range pokemon.Types {
 		types = append(types, &Type{
 			Name:     t.Name,
@@ -63,13 +65,20 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		})
 	}
 
-	var characteristics []*Characteristic
-
+	characteristics := []*Characteristic{}
 	for _, c := range pokemon.Characteristics {
 		characteristics = append(characteristics, &Characteristic{
 			Name:        c.Name,
 			Description: c.Description,
 		})
+	}
+
+	description := &Description{}
+	if len(pokemon.Descriptions) > 0 {
+		description = &Description{
+			Text:   pokemon.Descriptions[0].Text,
+			Series: pokemon.Descriptions[0].Series,
+		}
 	}
 
 	return &PokemonDetails{
@@ -82,6 +91,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		HeightText:      pokemon.Height,
 		WeightText:      pokemon.Weight,
 		Characteristics: characteristics,
+		Description:     description,
 	}, nil
 }
 
@@ -95,6 +105,7 @@ type PokemonDetails struct {
 	WeightText      string
 	Genders         []*Gender
 	Characteristics []*Characteristic
+	Description     *Description
 }
 
 type Type struct {
@@ -110,6 +121,11 @@ type Gender struct {
 type Characteristic struct {
 	Name        string
 	Description string
+}
+
+type Description struct {
+	Text   string
+	Series string
 }
 
 var _ error = (*PokemonNotFoundException)(nil)

@@ -50,6 +50,11 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		assert.Equal(t, details.WeightText, "84kg")
 		assert.Equal(t, details.Species, "normal")
 
+		assert.Equal(t, details.Description, &Description{
+			Text:   "",
+			Series: "",
+		})
+
 		assert.Len(t, details.Genders, 2)
 		assert.Contains(t, details.Genders, &Gender{
 			Name:     "gender-1",
@@ -169,6 +174,15 @@ func seed(db *gorm.DB) error {
 		if err := dao.AddCharacteristics(pokemon, c); err != nil {
 			return err
 		}
+	}
+
+	description := &models.Description{
+		Text:   "description",
+		Series: "series-1",
+	}
+
+	if err := dao.AddDescripton(pokemon, description); err != nil {
+		return err
 	}
 
 	return nil

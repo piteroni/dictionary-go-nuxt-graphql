@@ -7,6 +7,11 @@ type Characteristic struct {
 	Description string `json:"description"`
 }
 
+type Description struct {
+	Text   string `json:"text"`
+	Series string `json:"Series"`
+}
+
 type Gender struct {
 	Name     string `json:"name"`
 	IconName string `json:"iconName"`
@@ -22,6 +27,7 @@ type Pokemon struct {
 	Genders         []*Gender         `json:"genders"`
 	Types           []*Type           `json:"types"`
 	Characteristics []*Characteristic `json:"characteristics"`
+	Description     *Description      `json:"description"`
 }
 
 type Type struct {

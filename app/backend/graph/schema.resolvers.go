@@ -21,13 +21,10 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 			return nil, err
 		}
 
-		r.Logger.Error(err)
-
 		return nil, internalSystemError
 	}
 
 	genders := []*model.Gender{}
-
 	for _, gender := range p.Genders {
 		genders = append(genders, &model.Gender{
 			Name:     gender.Name,
@@ -51,6 +48,11 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		})
 	}
 
+	description := &model.Description{
+		Text:   p.Description.Text,
+		Series: p.Description.Series,
+	}
+
 	return &model.Pokemon{
 		NationalNo:      p.NationalNo,
 		Name:            p.Name,
@@ -61,6 +63,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		Genders:         genders,
 		Types:           types,
 		Characteristics: characteristics,
+		Description:     description,
 	}, nil
 }
 
