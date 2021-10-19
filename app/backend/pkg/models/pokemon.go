@@ -26,7 +26,7 @@ type Pokemon struct {
 	Weight  string
 	Genders []Gender `gorm:"many2many:gender_possessed"`
 
-	// ability status
+	// ability status, see https://pokemondb.net/pokedex
 	HeartPoint          int
 	AttackPoint         int
 	DefensePoint        int

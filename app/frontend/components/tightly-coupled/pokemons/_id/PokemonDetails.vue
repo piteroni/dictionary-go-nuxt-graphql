@@ -77,6 +77,8 @@ export default defineComponent({
   setup() {
     const { pokemon } = inject(pokemonDetailsKey)!!
 
+    console.log(pokemon.ability)
+
     return {
       species: pokemon.species,
       weight: pokemon.weight,

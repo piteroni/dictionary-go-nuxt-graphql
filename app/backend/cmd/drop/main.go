@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 
 	"github.com/joho/godotenv"
@@ -27,7 +28,7 @@ func main() {
 		os.Exit(statusFatal)
 	}
 
-	if err := database.DropTables(db); err != nil {
+	if err := migration.DropTables(db); err != nil {
 		logger.Error(err)
 		os.Exit(statusError)
 	}

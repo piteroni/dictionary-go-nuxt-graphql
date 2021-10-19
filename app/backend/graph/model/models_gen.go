@@ -2,6 +2,15 @@
 
 package model
 
+type Ability struct {
+	Heart          int `json:"heart"`
+	Attack         int `json:"attack"`
+	Defense        int `json:"defense"`
+	SpecialAttack  int `json:"specialAttack"`
+	SpecialDefense int `json:"specialDefense"`
+	Speed          int `json:"speed"`
+}
+
 type Characteristic struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -28,6 +37,7 @@ type Pokemon struct {
 	Types           []*Type           `json:"types"`
 	Characteristics []*Characteristic `json:"characteristics"`
 	Description     *Description      `json:"description"`
+	Ability         *Ability          `json:"ability"`
 }
 
 type Type struct {

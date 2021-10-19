@@ -1,4 +1,4 @@
-package database
+package migration
 
 import (
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"

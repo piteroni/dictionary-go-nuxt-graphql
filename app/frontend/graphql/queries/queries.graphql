@@ -22,5 +22,13 @@ query pokemon($pokemonId: Int!) {
       text
       series
     }
+    ability {
+      heart
+      attack
+      defense
+      specialAttack
+      specialDefense
+      speed
+		}
   }
 }

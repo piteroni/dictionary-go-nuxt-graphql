@@ -81,6 +81,15 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		}
 	}
 
+	ability := &Ability{
+		Heart:          pokemon.HeartPoint,
+		Attack:         pokemon.AttackPoint,
+		Defense:        pokemon.DefensePoint,
+		SpecialAttack:  pokemon.SpecialAttachPoint,
+		SpecialDefense: pokemon.SpecialDefensePoint,
+		Speed:          pokemon.SpeedPoint,
+	}
+
 	return &PokemonDetails{
 		NationalNo:      pokemon.NationalNo,
 		Name:            pokemon.Name,
@@ -92,6 +101,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		WeightText:      pokemon.Weight,
 		Characteristics: characteristics,
 		Description:     description,
+		Ability:         ability,
 	}, nil
 }
 
@@ -106,6 +116,16 @@ type PokemonDetails struct {
 	Genders         []*Gender
 	Characteristics []*Characteristic
 	Description     *Description
+	Ability         *Ability
+}
+
+type Ability struct {
+	Heart          int
+	Attack         int
+	Defense        int
+	SpecialAttack  int
+	SpecialDefense int
+	Speed          int
 }
 
 type Type struct {

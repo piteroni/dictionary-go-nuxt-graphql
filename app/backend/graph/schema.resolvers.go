@@ -48,10 +48,9 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		})
 	}
 
-	description := &model.Description{
-		Text:   p.Description.Text,
-		Series: p.Description.Series,
-	}
+	description := (*model.Description)(p.Description)
+
+	ability := (*model.Ability)(p.Ability)
 
 	return &model.Pokemon{
 		NationalNo:      p.NationalNo,
@@ -64,6 +63,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		Types:           types,
 		Characteristics: characteristics,
 		Description:     description,
+		Ability:         ability,
 	}, nil
 }
 

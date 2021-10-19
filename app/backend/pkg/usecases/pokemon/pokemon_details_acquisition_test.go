@@ -1,10 +1,10 @@
 package pokemon
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/database/factories"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/testing/factories"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,7 +17,7 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := database.Migrate(db); err != nil {
+	if err := migration.Migrate(db); err != nil {
 		t.Fatal(err)
 	}
 
@@ -53,6 +53,15 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		assert.Equal(t, details.Description, &Description{
 			Text:   "description",
 			Series: "series-1",
+		})
+
+		assert.Equal(t, details.Ability, &Ability{
+			Heart:          30,
+			Attack:         31,
+			Defense:        32,
+			SpecialAttack:  33,
+			SpecialDefense: 34,
+			Speed:          35,
 		})
 
 		assert.Len(t, details.Genders, 2)
@@ -99,13 +108,19 @@ func seed(db *gorm.DB) error {
 	factory := factories.NewPokemonFactory(db)
 
 	pokemon, err := factory.CreatePokemon(&models.Pokemon{
-		Model:      gorm.Model{ID: 1},
-		NationalNo: 30,
-		Name:       "pokemon-30",
-		ImageURL:   "pokemon-30.jpg",
-		Height:     "2m",
-		Weight:     "84kg",
-		Species:    "normal",
+		Model:               gorm.Model{ID: 1},
+		NationalNo:          30,
+		Name:                "pokemon-30",
+		ImageURL:            "pokemon-30.jpg",
+		Height:              "2m",
+		Weight:              "84kg",
+		Species:             "normal",
+		HeartPoint:          30,
+		AttackPoint:         31,
+		DefensePoint:        32,
+		SpecialAttachPoint:  33,
+		SpecialDefensePoint: 34,
+		SpeedPoint:          35,
 	})
 	if err != nil {
 		return err

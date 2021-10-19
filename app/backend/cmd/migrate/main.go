@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/database/seeds"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 
 	"github.com/joho/godotenv"
@@ -28,12 +28,12 @@ func main() {
 		os.Exit(statusFatal)
 	}
 
-	if err := database.Migrate(db); err != nil {
+	if err := migration.Migrate(db); err != nil {
 		logger.Error(err)
 		os.Exit(statusError)
 	}
 
-	if err := seeds.Seed(db); err != nil {
+	if err := migration.Seed(db); err != nil {
 		logger.Error(err)
 		os.Exit(statusError)
 	}
