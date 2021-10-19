@@ -50,8 +50,16 @@ export default defineComponent({
   setup() {
     const { pokemon } = inject(pokemonDetailsKey)!!
 
+    const formatNationalNo = (nationalNo: number) => {
+      const formated = ("000" + nationalNo.toString()).slice(-3)
+
+      return `No.${formated}`
+    }
+
+    const nationalNo = formatNationalNo(pokemon.nationalNo)
+
     return {
-      nationalNo: pokemon.nationalNo,
+      nationalNo: nationalNo,
       name: pokemon.name,
       imageURL: pokemon.imageURL,
       genders: pokemon.genders,

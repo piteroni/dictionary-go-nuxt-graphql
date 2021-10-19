@@ -3,7 +3,7 @@ import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocumen
 import { useQuery } from "@vue/apollo-composable"
 
 type State = {
-  nationalNo: string,
+  nationalNo: number,
   name: string,
   imageURL: string,
   species: string,
@@ -17,7 +17,7 @@ type State = {
 }
 
 const initialState: State = {
-  nationalNo: "",
+  nationalNo: 0,
   name: "",
   imageURL: "",
   species: "",
@@ -40,26 +40,7 @@ const initialState: State = {
   }
 }
 
-const formatNationalNo = (nationalNo: number) => {
-  const formated = ("000" + nationalNo.toString()).slice(-3)
-
-  return `No.${formated}`
-}
-
-const evaluateAbility = (ability: Ability): Ability => {
-  const evaluation = 15
-
-  return {
-    heart: scaleAbility(ability.heart, abilityMaxStatus.heart, evaluation),
-    attack: scaleAbility(ability.attack, abilityMaxStatus.attack, evaluation),
-    defense: scaleAbility(ability.defense, abilityMaxStatus.defense, evaluation),
-    specialAttack: scaleAbility(ability.specialAttack, abilityMaxStatus.specialAttack, evaluation),
-    specialDefense: scaleAbility(ability.specialDefense, abilityMaxStatus.specialDefense, evaluation),
-    speed: scaleAbility(ability.speed, abilityMaxStatus.speed, evaluation),
-  }
-}
-
-const abilityMaxStatus = readonly({
+export const abilityMaxStatus = readonly({
   heart: 250,
   attack: 250,
   defense: 250,
@@ -67,10 +48,6 @@ const abilityMaxStatus = readonly({
   specialDefense: 250,
   speed: 250
 })
-
-const scaleAbility = (value: number, maxValue: number, evaluation: number): number => {
-  return Math.round(evaluation * (value / maxValue))
-}
 
 const fetch = (state: State) => async (pokemonId: number) => {
   const variables: PokemonQueryVariables = {
@@ -85,6 +62,7 @@ const fetch = (state: State) => async (pokemonId: number) => {
         return
       }
 
+      state.nationalNo = result.data.pokemon.nationalNo
       state.name = result.data.pokemon.name
       state.species = result.data.pokemon.species
       state.height = result.data.pokemon.height
@@ -94,9 +72,7 @@ const fetch = (state: State) => async (pokemonId: number) => {
       state.types = result.data.pokemon.types
       state.characteristics = result.data.pokemon.characteristics
       state.description = result.data.pokemon.description
-
-      state.nationalNo = formatNationalNo(result.data.pokemon.nationalNo)
-      state.ability = evaluateAbility(result.data.pokemon.ability)
+      state.ability = result.data.pokemon.ability
 
       resolve()
     })
