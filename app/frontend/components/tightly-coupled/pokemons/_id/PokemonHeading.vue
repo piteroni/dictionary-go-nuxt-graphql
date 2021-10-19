@@ -8,7 +8,7 @@
 
     <div class="pokemon-heading flex flex-wrap content-center">
       <div class="fixed-aria">
-        <img v-if="imageURL !== ''" height="338px" width="338px" :src="imageURL" alt="image-of-pokemon">
+        <img v-show="imageURL !== ''" height="338px" width="338px" :src="imageURL" alt="image-of-pokemon">
       </div>
 
       <div class="flex flex-wrap content-center">
@@ -43,34 +43,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@nuxtjs/composition-api"
-import { PokemonGender } from "./types"
+import { defineComponent, inject } from "@nuxtjs/composition-api"
+import { pokemonDetailsKey } from "@/composables/pokemonDetails"
 
-type Props = {
-  nationalNo: string
-  name: string
-  imageURL: string
-  genders: PokemonGender[]
-}
+export default defineComponent({
+  setup() {
+    const { pokemon } = inject(pokemonDetailsKey)!!
 
-export default defineComponent<Props, Props>({
-  props: {
-    nationalNo: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    imageURL: {
-      type: String,
-      required: true
-    },
-    genders: {
-      type: Array,
-      required: true
-    }, 
+    return {
+      nationalNo: pokemon.nationalNo,
+      name: pokemon.name,
+      imageURL: pokemon.imageURL,
+      genders: pokemon.genders,
+    }
   }
 })
 </script>

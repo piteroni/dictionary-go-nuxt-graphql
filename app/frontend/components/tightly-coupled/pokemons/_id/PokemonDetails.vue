@@ -70,44 +70,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@nuxtjs/composition-api"
-import { Characteristic, Description } from "@/graphql/generated/client"
-import { PokemonType } from "./types"
+import { defineComponent, inject } from "@nuxtjs/composition-api"
+import { pokemonDetailsKey } from "@/composables/pokemonDetails"
 
-type Props = {
-  species: string,
-  weight: string,
-  height: string,
-  types: PokemonType[],
-  characteristics: Characteristic[],
-  description: Description
-}
+export default defineComponent({
+  setup() {
+    const { pokemon } = inject(pokemonDetailsKey)!!
 
-export default defineComponent<Props, Props>({
-  props: {
-    species: {
-      type: String,
-      required: true
-    },
-    height: {
-      type: String,
-      required: true
-    },
-    weight: {
-      type: String,
-      required: true
-    },
-    types: {
-      type: Array,
-      required: true,
-    },
-    characteristics: {
-      type: Array,
-      required: true,
-    },
-    description: {
-      type: Object,
-      required: true
+    return {
+      species: pokemon.species,
+      weight: pokemon.weight,
+      height: pokemon.height,
+      types: pokemon.types,
+      characteristics: pokemon.characteristics,
+      description: pokemon.description
     }
   }
 })
