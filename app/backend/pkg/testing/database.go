@@ -1,4 +1,4 @@
-package drivers
+package testing
 
 import (
 	"gorm.io/driver/sqlite"

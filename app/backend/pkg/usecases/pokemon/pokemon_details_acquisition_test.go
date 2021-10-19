@@ -2,8 +2,8 @@ package pokemon
 
 import (
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database/migration"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
+	itesting "piteroni/dictionary-go-nuxt-graphql/pkg/testing"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/testing/factories"
 	"testing"
 
@@ -12,7 +12,7 @@ import (
 )
 
 func TestPokemonDetailsAcquisition(t *testing.T) {
-	db, err := drivers.ConnnectToInMemoryDatabase()
+	db, err := itesting.ConnnectToInMemoryDatabase()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,7 +28,7 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 	detailsAcquisition := NewPokemonDetailsAcquisition(db)
 
 	t.Cleanup(func() {
-		if err := drivers.RefreshInMemoryDatabase(db); err != nil {
+		if err := itesting.RefreshInMemoryDatabase(db); err != nil {
 			t.Fatal(err)
 		}
 
