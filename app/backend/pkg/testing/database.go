@@ -1,14 +1,25 @@
 package testing
 
 import (
+	"os"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
 func ConnnectToInMemoryDatabase() (*gorm.DB, error) {
+	level := logger.Silent
+
+	_, ok := os.LookupEnv("ENABLE_ORM_LOGGING")
+	if ok {
+		level = logger.Info
+	} else {
+		level = logger.Silent
+	}
+
 	return gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger: logger.Default.LogMode(level),
 	})
 }
 

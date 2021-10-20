@@ -7,7 +7,7 @@ import (
 	"context"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/usecases/pokemon"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/interactor/pokemon"
 )
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Pokemon, error) {
@@ -15,7 +15,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 
 	p, err := u.GetPokemonDetails(pokemonID)
 	if err != nil {
-		if _, ok := err.(*pokemon.PokemonNotFoundException); ok {
+		if _, ok := err.(*pokemon.PokemonNotFound); ok {
 			r.Logger.Warn(err.Error())
 
 			return nil, err

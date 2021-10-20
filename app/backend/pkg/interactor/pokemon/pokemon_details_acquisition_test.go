@@ -3,6 +3,7 @@ package pokemon
 import (
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/persistence"
 	itesting "piteroni/dictionary-go-nuxt-graphql/pkg/testing"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/testing/factories"
 	"testing"
@@ -38,7 +39,7 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 	})
 
 	t.Run("指定したIDに一致するポケモンの詳細を取得できる", func(t *testing.T) {
-		details, err := detailsAcquisition.GetPokemonDetails(1)
+		details, err := detailsAcquisition.GetPokemonDetails(2)
 
 		assert.NotNil(t, details)
 		assert.Nil(t, err)
@@ -93,22 +94,28 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 			Name:        "characteristics-2",
 			Description: "characteristics-2-description",
 		})
+
+		assert.Equal(t, details.TransitionInfo, &TransitionInfo{
+			HasPrev: true,
+			HasNext: true,
+		})
 	})
 
 	t.Run("指定したIDに一致するポケモンが存在しない場合、エラーが送出される", func(t *testing.T) {
-		details, err := detailsAcquisition.GetPokemonDetails(2)
+		details, err := detailsAcquisition.GetPokemonDetails(4)
 
 		assert.Nil(t, details)
 		assert.NotNil(t, err)
-		assert.IsType(t, err, &PokemonNotFoundException{})
+		assert.IsType(t, err, &PokemonNotFound{})
 	})
 }
 
 func seed(db *gorm.DB) error {
 	factory := factories.NewPokemonFactory(db)
 
+	// first pokemon.
 	pokemon, err := factory.CreatePokemon(&models.Pokemon{
-		Model:               gorm.Model{ID: 1},
+		Model:               gorm.Model{ID: 2},
 		NationalNo:          30,
 		Name:                "pokemon-30",
 		ImageURL:            "pokemon-30.jpg",
@@ -126,7 +133,7 @@ func seed(db *gorm.DB) error {
 		return err
 	}
 
-	dao := models.NewPokemonDAO(db)
+	dao := persistence.NewPokemonDAO(db)
 
 	genders := []*models.Gender{}
 	genders = append(genders, &models.Gender{
@@ -197,6 +204,26 @@ func seed(db *gorm.DB) error {
 	}
 
 	if err := dao.AddDescripton(pokemon, description); err != nil {
+		return err
+	}
+
+	// prev pokemon.
+	_, err = factory.CreatePokemon(&models.Pokemon{
+		Model:      gorm.Model{ID: 1},
+		NationalNo: 1,
+		Name:       "pokemon-1",
+	})
+	if err != nil {
+		return err
+	}
+
+	// next pokemon.
+	_, err = factory.CreatePokemon(&models.Pokemon{
+		Model:      gorm.Model{ID: 3},
+		NationalNo: 3,
+		Name:       "pokemon-3",
+	})
+	if err != nil {
 		return err
 	}
 

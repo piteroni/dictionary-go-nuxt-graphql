@@ -3,6 +3,7 @@ package migration
 import (
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/persistence"
 
 	"gorm.io/gorm"
 )
@@ -136,7 +137,7 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 		return nil, err
 	}
 
-	dao := models.NewPokemonDAO(db)
+	dao := persistence.NewPokemonDAO(db)
 
 	for _, name := range []string{"くさタイプ", "どくタイプ"} {
 		t := &models.Type{}
@@ -213,7 +214,7 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 		return nil, err
 	}
 
-	dao := models.NewPokemonDAO(db)
+	dao := persistence.NewPokemonDAO(db)
 
 	for _, name := range []string{"くさタイプ", "どくタイプ"} {
 		t := &models.Type{}

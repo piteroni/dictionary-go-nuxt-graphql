@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
+	"piteroni/dictionary-go-nuxt-graphql/pkg/persistence"
 
 	"gorm.io/gorm"
 )
@@ -23,7 +24,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 
 	if err := u.db.Model(&models.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &PokemonNotFoundException{
+			return nil, &PokemonNotFound{
 				message: fmt.Sprintf("specified pokemon does not exists, pokemonId = %d", pokemonId),
 			}
 		}
@@ -31,7 +32,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		return nil, err
 	}
 
-	dao := models.NewPokemonDAO(u.db)
+	dao := persistence.NewPokemonDAO(u.db)
 
 	if err := dao.ScanGenders(pokemon); err != nil {
 		return nil, err
@@ -90,6 +91,27 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		Speed:          pokemon.SpeedPoint,
 	}
 
+	transition := &TransitionInfo{}
+	r := &gorm.DB{}
+
+	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", pokemon.NationalNo-1).First(&models.Pokemon{})
+	if r.Error != nil {
+		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
+			return nil, r.Error
+		}
+	}
+
+	transition.HasPrev = r.RowsAffected > 0
+
+	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", pokemon.NationalNo+1).First(&models.Pokemon{})
+	if r.Error != nil {
+		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
+			return nil, r.Error
+		}
+	}
+
+	transition.HasNext = r.RowsAffected > 0
+
 	return &PokemonDetails{
 		NationalNo:      pokemon.NationalNo,
 		Name:            pokemon.Name,
@@ -102,6 +124,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		Characteristics: characteristics,
 		Description:     description,
 		Ability:         ability,
+		TransitionInfo:  transition,
 	}, nil
 }
 
@@ -117,6 +140,12 @@ type PokemonDetails struct {
 	Characteristics []*Characteristic
 	Description     *Description
 	Ability         *Ability
+	TransitionInfo  *TransitionInfo
+}
+
+type TransitionInfo struct {
+	HasPrev bool
+	HasNext bool
 }
 
 type Ability struct {
@@ -148,12 +177,12 @@ type Description struct {
 	Series string
 }
 
-var _ error = (*PokemonNotFoundException)(nil)
+var _ error = (*PokemonNotFound)(nil)
 
-type PokemonNotFoundException struct {
+type PokemonNotFound struct {
 	message string
 }
 
-func (e PokemonNotFoundException) Error() string {
+func (e PokemonNotFound) Error() string {
 	return e.message
 }
