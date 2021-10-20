@@ -52,6 +52,8 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 
 	ability := (*model.Ability)(p.Ability)
 
+	transition := (*model.TransitionInfo)(p.TransitionInfo)
+
 	return &model.Pokemon{
 		NationalNo:      p.NationalNo,
 		Name:            p.Name,
@@ -64,6 +66,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		Characteristics: characteristics,
 		Description:     description,
 		Ability:         ability,
+		TransitionInfo:  transition,
 	}, nil
 }
 

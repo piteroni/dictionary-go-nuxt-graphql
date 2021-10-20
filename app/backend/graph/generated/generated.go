@@ -76,12 +76,20 @@ type ComplexityRoot struct {
 		Name            func(childComplexity int) int
 		NationalNo      func(childComplexity int) int
 		Species         func(childComplexity int) int
+		TransitionInfo  func(childComplexity int) int
 		Types           func(childComplexity int) int
 		Weight          func(childComplexity int) int
 	}
 
 	Query struct {
 		Pokemon func(childComplexity int, pokemonID int) int
+	}
+
+	TransitionInfo struct {
+		HasNext        func(childComplexity int) int
+		HasPrev        func(childComplexity int) int
+		NextNationalNo func(childComplexity int) int
+		PrevNationalNo func(childComplexity int) int
 	}
 
 	Type struct {
@@ -256,6 +264,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pokemon.Species(childComplexity), true
 
+	case "Pokemon.transitionInfo":
+		if e.complexity.Pokemon.TransitionInfo == nil {
+			break
+		}
+
+		return e.complexity.Pokemon.TransitionInfo(childComplexity), true
+
 	case "Pokemon.types":
 		if e.complexity.Pokemon.Types == nil {
 			break
@@ -281,6 +296,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Pokemon(childComplexity, args["pokemonId"].(int)), true
+
+	case "TransitionInfo.hasNext":
+		if e.complexity.TransitionInfo.HasNext == nil {
+			break
+		}
+
+		return e.complexity.TransitionInfo.HasNext(childComplexity), true
+
+	case "TransitionInfo.hasPrev":
+		if e.complexity.TransitionInfo.HasPrev == nil {
+			break
+		}
+
+		return e.complexity.TransitionInfo.HasPrev(childComplexity), true
+
+	case "TransitionInfo.nextNationalNo":
+		if e.complexity.TransitionInfo.NextNationalNo == nil {
+			break
+		}
+
+		return e.complexity.TransitionInfo.NextNationalNo(childComplexity), true
+
+	case "TransitionInfo.prevNationalNo":
+		if e.complexity.TransitionInfo.PrevNationalNo == nil {
+			break
+		}
+
+		return e.complexity.TransitionInfo.PrevNationalNo(childComplexity), true
 
 	case "Type.iconURL":
 		if e.complexity.Type.IconURL == nil {
@@ -358,6 +401,7 @@ var sources = []*ast.Source{
   characteristics: [Characteristic!]!
   description: Description!
   ability: Ability!
+  transitionInfo: TransitionInfo!
 }
 
 type Gender {
@@ -387,6 +431,13 @@ type Ability {
   specialAttack: Int!
   specialDefense: Int!
   speed: Int!
+}
+
+type TransitionInfo {
+  prevNationalNo: Int!
+  nextNationalNo: Int!
+  hasPrev: Boolean!
+  hasNext: Boolean!
 }
 
 type Query {
@@ -1273,6 +1324,41 @@ func (ec *executionContext) _Pokemon_ability(ctx context.Context, field graphql.
 	return ec.marshalNAbility2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐAbility(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Pokemon_transitionInfo(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pokemon",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TransitionInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.TransitionInfo)
+	fc.Result = res
+	return ec.marshalNTransitionInfo2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐTransitionInfo(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_pokemon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1384,6 +1470,146 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TransitionInfo_prevNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TransitionInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PrevNationalNo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TransitionInfo_nextNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TransitionInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NextNationalNo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TransitionInfo_hasPrev(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TransitionInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasPrev, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TransitionInfo_hasNext(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TransitionInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasNext, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Type_name(ctx context.Context, field graphql.CollectedField, obj *model.Type) (ret graphql.Marshaler) {
@@ -2800,6 +3026,11 @@ func (ec *executionContext) _Pokemon(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "transitionInfo":
+			out.Values[i] = ec._Pokemon_transitionInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2844,6 +3075,48 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var transitionInfoImplementors = []string{"TransitionInfo"}
+
+func (ec *executionContext) _TransitionInfo(ctx context.Context, sel ast.SelectionSet, obj *model.TransitionInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, transitionInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TransitionInfo")
+		case "prevNationalNo":
+			out.Values[i] = ec._TransitionInfo_prevNationalNo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "nextNationalNo":
+			out.Values[i] = ec._TransitionInfo_nextNationalNo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasPrev":
+			out.Values[i] = ec._TransitionInfo_hasPrev(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasNext":
+			out.Values[i] = ec._TransitionInfo_hasNext(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3322,6 +3595,16 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNTransitionInfo2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐTransitionInfo(ctx context.Context, sel ast.SelectionSet, v *model.TransitionInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._TransitionInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNType2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Type) graphql.Marshaler {

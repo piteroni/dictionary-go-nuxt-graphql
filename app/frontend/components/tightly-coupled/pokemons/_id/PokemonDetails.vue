@@ -135,13 +135,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, readonly } from "@nuxtjs/composition-api"
+import { computed, defineComponent, inject, readonly } from "@nuxtjs/composition-api"
 import { pokemonDetailsKey, abilityMaxStatus } from "@/composables/pokemonDetails"
 import { Ability } from "@/graphql/generated/client"
 
 export default defineComponent({
   setup() {
-    const { pokemon } = inject(pokemonDetailsKey)!!
+    const pokemon = inject(pokemonDetailsKey)!!
 
     const evaluation = 15
 
@@ -184,14 +184,14 @@ export default defineComponent({
       return gauge
     }
 
-    const ability = evaluateAbility(pokemon.ability)
+    const ability = computed(() => evaluateAbility(pokemon.ability.value))
 
-    const heartGauge = generateAbilityValue(ability.heart, evaluation)
-    const attackGauge = generateAbilityValue(ability.attack, evaluation)
-    const defenseGauge = generateAbilityValue(ability.defense, evaluation)
-    const specialAttackGauge = generateAbilityValue(ability.specialAttack, evaluation)
-    const specialDefenseGauge = generateAbilityValue(ability.specialDefense, evaluation)
-    const speedGauge = generateAbilityValue(ability.speed, evaluation)
+    const heartGauge = computed(() => generateAbilityValue(ability.value.heart, evaluation))
+    const attackGauge = computed(() => generateAbilityValue(ability.value.attack, evaluation))
+    const defenseGauge = computed(() => generateAbilityValue(ability.value.defense, evaluation))
+    const specialAttackGauge = computed(() => generateAbilityValue(ability.value.specialAttack, evaluation))
+    const specialDefenseGauge = computed(() => generateAbilityValue(ability.value.specialDefense, evaluation))
+    const speedGauge = computed(() => generateAbilityValue(ability.value.speed, evaluation))
 
     return {
       species: pokemon.species,

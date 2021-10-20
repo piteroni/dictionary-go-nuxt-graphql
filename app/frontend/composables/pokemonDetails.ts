@@ -1,5 +1,5 @@
-import { readonly, reactive, InjectionKey } from "@vue/composition-api"
-import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability } from "@/graphql/generated/client"
+import { readonly, reactive, computed, InjectionKey } from "@vue/composition-api"
+import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability, TransitionInfo } from "@/graphql/generated/client"
 import { useQuery } from "@vue/apollo-composable"
 
 type State = {
@@ -13,7 +13,8 @@ type State = {
   characteristics: Characteristic[],
   genders: Gender[],
   description: Description,
-  ability: Ability
+  ability: Ability,
+  transitionInfo: TransitionInfo
 }
 
 const initialState: State = {
@@ -37,6 +38,12 @@ const initialState: State = {
     specialAttack: 0,
     specialDefense: 0,
     speed: 0
+  },
+  transitionInfo: {
+    prevNationalNo: 0,
+    nextNationalNo: 0,
+    hasPrev: false,
+    hasNext: false
   }
 }
 
@@ -73,6 +80,7 @@ const fetch = (state: State) => async (pokemonId: number) => {
       state.characteristics = result.data.pokemon.characteristics
       state.description = result.data.pokemon.description
       state.ability = result.data.pokemon.ability
+      state.transitionInfo = result.data.pokemon.transitionInfo
 
       resolve()
     })
@@ -85,7 +93,19 @@ export function usePokemonDetails(initial = initialState) {
   const state: State = reactive(initial)
 
   return {
-    pokemon: readonly(state),
+    pokemon: computed(() => state),
+    nationalNo: computed(() => state.nationalNo),
+    name: computed(() => state.name),
+    species: computed(() => state.species),
+    height: computed(() => state.height),
+    weight: computed(() => state.weight),
+    genders: computed(() => state.genders),
+    types: computed(() => state.types),
+    characteristics: computed(() => state.characteristics),
+    description: computed(() => state.description),
+    ability: computed(() => state.ability),
+    transitionInfo: computed(() => state.transitionInfo),
+    imageURL: computed(() => state.imageURL),
     fetch: fetch(state),
   }
 }

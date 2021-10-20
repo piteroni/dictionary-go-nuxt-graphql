@@ -22,31 +22,32 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := seed(db); err != nil {
-		t.Fatal(err)
+	factory := factories.NewPokemonFactory(db)
+	dao := persistence.NewPokemonDAO(db)
+
+	cleanup := func() {
+		if err := itesting.RefreshInMemoryDatabase(db); err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	detailsAcquisition := NewPokemonDetailsAcquisition(db)
 
-	t.Cleanup(func() {
-		if err := itesting.RefreshInMemoryDatabase(db); err != nil {
-			t.Fatal(err)
-		}
-
-		if err := seed(db); err != nil {
-			t.Fatal(err)
-		}
-	})
-
 	t.Run("指定したIDに一致するポケモンの詳細を取得できる", func(t *testing.T) {
+		if err := seed(db, factory, dao); err != nil {
+			t.Fatal(err)
+		}
+
+		defer cleanup()
+
 		details, err := detailsAcquisition.GetPokemonDetails(2)
 
 		assert.NotNil(t, details)
 		assert.Nil(t, err)
 
-		assert.Equal(t, details.NationalNo, 30)
-		assert.Equal(t, details.Name, "pokemon-30")
-		assert.Equal(t, details.ImageURL, "pokemon-30.jpg")
+		assert.Equal(t, details.NationalNo, 2)
+		assert.Equal(t, details.Name, "pokemon-2")
+		assert.Equal(t, details.ImageURL, "pokemon-2.jpg")
 		assert.Equal(t, details.HeightText, "2m")
 		assert.Equal(t, details.WeightText, "84kg")
 		assert.Equal(t, details.Species, "normal")
@@ -94,15 +95,64 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 			Name:        "characteristics-2",
 			Description: "characteristics-2-description",
 		})
+	})
 
-		assert.Equal(t, details.TransitionInfo, &TransitionInfo{
-			HasPrev: true,
-			HasNext: true,
+	t.Run("データベース上で前後にポケモンが登録されているか取得できる", func(t *testing.T) {
+		pokemon := &models.Pokemon{
+			Model:      gorm.Model{ID: 1},
+			NationalNo: 1,
+			Name:       "pokemon-1",
+		}
+
+		_, err = factory.CreatePokemon(pokemon)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		next := &models.Pokemon{
+			Model:      gorm.Model{ID: 2},
+			NationalNo: 2,
+			Name:       "pokemon-2",
+		}
+
+		_, err = factory.CreatePokemon(next)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer cleanup()
+
+		t.Run("IDが1の場合", func(t *testing.T) {
+			details, err := detailsAcquisition.GetPokemonDetails(1)
+
+			assert.NotNil(t, details)
+			assert.Nil(t, err)
+
+			assert.Equal(t, details.TransitionInfo, &TransitionInfo{
+				PrevNationalNo: 0,
+				NextNationalNo: 2,
+				HasPrev:        false,
+				HasNext:        true,
+			})
+		})
+
+		t.Run("IDが2の場合", func(t *testing.T) {
+			details, err := detailsAcquisition.GetPokemonDetails(2)
+
+			assert.NotNil(t, details)
+			assert.Nil(t, err)
+
+			assert.Equal(t, details.TransitionInfo, &TransitionInfo{
+				PrevNationalNo: 1,
+				NextNationalNo: 3,
+				HasPrev:        true,
+				HasNext:        false,
+			})
 		})
 	})
 
 	t.Run("指定したIDに一致するポケモンが存在しない場合、エラーが送出される", func(t *testing.T) {
-		details, err := detailsAcquisition.GetPokemonDetails(4)
+		details, err := detailsAcquisition.GetPokemonDetails(1)
 
 		assert.Nil(t, details)
 		assert.NotNil(t, err)
@@ -110,15 +160,13 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 	})
 }
 
-func seed(db *gorm.DB) error {
-	factory := factories.NewPokemonFactory(db)
-
+func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.PokemonDAO) error {
 	// first pokemon.
 	pokemon, err := factory.CreatePokemon(&models.Pokemon{
 		Model:               gorm.Model{ID: 2},
-		NationalNo:          30,
-		Name:                "pokemon-30",
-		ImageURL:            "pokemon-30.jpg",
+		NationalNo:          2,
+		Name:                "pokemon-2",
+		ImageURL:            "pokemon-2.jpg",
 		Height:              "2m",
 		Weight:              "84kg",
 		Species:             "normal",
@@ -132,8 +180,6 @@ func seed(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-
-	dao := persistence.NewPokemonDAO(db)
 
 	genders := []*models.Gender{}
 	genders = append(genders, &models.Gender{
@@ -204,26 +250,6 @@ func seed(db *gorm.DB) error {
 	}
 
 	if err := dao.AddDescripton(pokemon, description); err != nil {
-		return err
-	}
-
-	// prev pokemon.
-	_, err = factory.CreatePokemon(&models.Pokemon{
-		Model:      gorm.Model{ID: 1},
-		NationalNo: 1,
-		Name:       "pokemon-1",
-	})
-	if err != nil {
-		return err
-	}
-
-	// next pokemon.
-	_, err = factory.CreatePokemon(&models.Pokemon{
-		Model:      gorm.Model{ID: 3},
-		NationalNo: 3,
-		Name:       "pokemon-3",
-	})
-	if err != nil {
 		return err
 	}
 

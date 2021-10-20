@@ -30,5 +30,11 @@ query pokemon($pokemonId: Int!) {
       specialDefense
       speed
 		}
+    transitionInfo {
+      prevNationalNo
+      nextNationalNo
+      hasPrev
+      hasNext
+    }
   }
 }

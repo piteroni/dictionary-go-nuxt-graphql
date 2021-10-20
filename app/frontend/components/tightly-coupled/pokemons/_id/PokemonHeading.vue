@@ -1,7 +1,7 @@
 <template>
   <div class="heading-container px-12 w-full flex flex-wrap content-center justify-between">
     <div class="nav flex flex-wrap content-center">
-      <div class="nav-button flex flex-wrap justify-center content-center">
+      <div v-if="hasPrev" @click="moveToPrev" class="nav-button flex flex-wrap justify-center content-center">
         <img width="12px" src="~/assets/image/prev.png" alt="prev">
       </div>
     </div>
@@ -35,7 +35,7 @@
     </div>
 
     <div class="nav flex flex-wrap content-center">
-      <div class="nav-button flex flex-wrap justify-center content-center">
+      <div v-if="hasNext" @click="moveToNext" class="nav-button flex flex-wrap justify-center content-center">
         <img width="12px" src="~/assets/image/next.png" alt="next">
       </div>
     </div>
@@ -43,12 +43,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from "@nuxtjs/composition-api"
+import { computed, defineComponent, inject, useRouter } from "@nuxtjs/composition-api"
 import { pokemonDetailsKey } from "@/composables/pokemonDetails"
 
 export default defineComponent({
   setup() {
-    const { pokemon } = inject(pokemonDetailsKey)!!
+    const pokemon = inject(pokemonDetailsKey)!!
+
+    const router = useRouter()
 
     const formatNationalNo = (nationalNo: number) => {
       const formated = ("000" + nationalNo.toString()).slice(-3)
@@ -56,13 +58,36 @@ export default defineComponent({
       return `No.${formated}`
     }
 
-    const nationalNo = formatNationalNo(pokemon.nationalNo)
+    const nationalNo = computed(() => formatNationalNo(pokemon.nationalNo.value))
+
+    function moveToPrev() {
+      if (!pokemon.transitionInfo.value.hasPrev) {
+        return
+      }
+
+      router.push(`/pokemons/${pokemon.transitionInfo.value.prevNationalNo}`)
+    }
+
+    function moveToNext() {
+      if (!pokemon.transitionInfo.value.hasNext) {
+        return
+      }
+
+      router.push(`/pokemons/${pokemon.transitionInfo.value.nextNationalNo}`)
+    }
+
+    const hasPrev = computed(() => pokemon.transitionInfo.value.hasPrev)
+    const hasNext = computed(() => pokemon.transitionInfo.value.hasNext)
 
     return {
       nationalNo: nationalNo,
       name: pokemon.name,
       imageURL: pokemon.imageURL,
       genders: pokemon.genders,
+      hasPrev,
+      hasNext,
+      moveToPrev,
+      moveToNext,
     }
   }
 })

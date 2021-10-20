@@ -91,10 +91,14 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		Speed:          pokemon.SpeedPoint,
 	}
 
-	transition := &TransitionInfo{}
-	r := &gorm.DB{}
+	transition := &TransitionInfo{
+		PrevNationalNo: pokemon.NationalNo - 1,
+		NextNationalNo: pokemon.NationalNo + 1,
+	}
 
-	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", pokemon.NationalNo-1).First(&models.Pokemon{})
+	var r *gorm.DB
+
+	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", transition.PrevNationalNo).First(&models.Pokemon{})
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, r.Error
@@ -103,7 +107,7 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 
 	transition.HasPrev = r.RowsAffected > 0
 
-	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", pokemon.NationalNo+1).First(&models.Pokemon{})
+	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", transition.NextNationalNo).First(&models.Pokemon{})
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, r.Error
@@ -143,20 +147,6 @@ type PokemonDetails struct {
 	TransitionInfo  *TransitionInfo
 }
 
-type TransitionInfo struct {
-	HasPrev bool
-	HasNext bool
-}
-
-type Ability struct {
-	Heart          int
-	Attack         int
-	Defense        int
-	SpecialAttack  int
-	SpecialDefense int
-	Speed          int
-}
-
 type Type struct {
 	Name    string
 	IconURL string
@@ -175,6 +165,22 @@ type Characteristic struct {
 type Description struct {
 	Text   string
 	Series string
+}
+
+type Ability struct {
+	Heart          int
+	Attack         int
+	Defense        int
+	SpecialAttack  int
+	SpecialDefense int
+	Speed          int
+}
+
+type TransitionInfo struct {
+	PrevNationalNo int
+	NextNationalNo int
+	HasPrev        bool
+	HasNext        bool
 }
 
 var _ error = (*PokemonNotFound)(nil)

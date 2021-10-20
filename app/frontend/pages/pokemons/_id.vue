@@ -37,7 +37,6 @@ export default defineComponent({
     if (isNaN(pokemonId)) {
       error({ statusCode: 404 })
 
-      // expose to template and children.
       return { pokemon }
     }
 
@@ -50,7 +49,6 @@ export default defineComponent({
       }
     })
 
-    // expose to template and children.
     return { pokemon }
   }
 })

@@ -10,6 +10,7 @@ type Pokemon {
   characteristics: [Characteristic!]!
   description: Description!
   ability: Ability!
+  transitionInfo: TransitionInfo!
 }
 
 type Gender {
@@ -39,6 +40,13 @@ type Ability {
   specialAttack: Int!
   specialDefense: Int!
   speed: Int!
+}
+
+type TransitionInfo {
+  prevNationalNo: Int!
+  nextNationalNo: Int!
+  hasPrev: Boolean!
+  hasNext: Boolean!
 }
 
 type Query {

@@ -8,17 +8,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type pokemonFactory struct {
+type PokemonFactory struct {
 	db *gorm.DB
 }
 
-func NewPokemonFactory(db *gorm.DB) *pokemonFactory {
-	return &pokemonFactory{
+func NewPokemonFactory(db *gorm.DB) *PokemonFactory {
+	return &PokemonFactory{
 		db: db,
 	}
 }
 
-func (f *pokemonFactory) CreateGender(gender *models.Gender) (*models.Gender, error) {
+func (f *PokemonFactory) CreateGender(gender *models.Gender) (*models.Gender, error) {
 	defaults := &models.Gender{
 		Name:    gofakeit.Name(),
 		IconURL: gofakeit.UUID(),
@@ -35,7 +35,7 @@ func (f *pokemonFactory) CreateGender(gender *models.Gender) (*models.Gender, er
 	return gender, nil
 }
 
-func (f *pokemonFactory) CreateType(t *models.Type) (*models.Type, error) {
+func (f *PokemonFactory) CreateType(t *models.Type) (*models.Type, error) {
 	defaults := &models.Type{
 		Name:    gofakeit.Name(),
 		IconURL: gofakeit.UUID(),
@@ -52,7 +52,7 @@ func (f *pokemonFactory) CreateType(t *models.Type) (*models.Type, error) {
 	return t, nil
 }
 
-func (f *pokemonFactory) CreateCharacteristic(c *models.Characteristic) (*models.Characteristic, error) {
+func (f *PokemonFactory) CreateCharacteristic(c *models.Characteristic) (*models.Characteristic, error) {
 	defaults := &models.Characteristic{
 		Name:        gofakeit.Name(),
 		Description: gofakeit.Name(),
@@ -69,7 +69,7 @@ func (f *pokemonFactory) CreateCharacteristic(c *models.Characteristic) (*models
 	return c, nil
 }
 
-func (f *pokemonFactory) CreatePokemon(pokemon *models.Pokemon) (*models.Pokemon, error) {
+func (f *PokemonFactory) CreatePokemon(pokemon *models.Pokemon) (*models.Pokemon, error) {
 	defaults := &models.Pokemon{
 		NationalNo:          gofakeit.Number(1, 2048),
 		Name:                gofakeit.Name(),

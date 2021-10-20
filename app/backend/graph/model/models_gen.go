@@ -38,6 +38,14 @@ type Pokemon struct {
 	Characteristics []*Characteristic `json:"characteristics"`
 	Description     *Description      `json:"description"`
 	Ability         *Ability          `json:"ability"`
+	TransitionInfo  *TransitionInfo   `json:"transitionInfo"`
+}
+
+type TransitionInfo struct {
+	PrevNationalNo int  `json:"prevNationalNo"`
+	NextNationalNo int  `json:"nextNationalNo"`
+	HasPrev        bool `json:"hasPrev"`
+	HasNext        bool `json:"hasNext"`
 }
 
 type Type struct {
