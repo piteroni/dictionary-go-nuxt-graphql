@@ -19,12 +19,12 @@
 
           <div class="details-value">
             <div class="flex">
-              <div class="mr-6" v-for="(type, key) in types" :key="key">
-                <img class="mx-auto" height="40px" width="40px" :src="type.iconURL" :alt="type.name">
-                <div class="type-icon">
-                  {{ type.name }}
-                </div>
-              </div>
+              <type
+                v-for="(type, key) in types"
+                :key="key"
+                :iconURL="type.iconURL"
+                :name="type.name"
+              />
             </div>
           </div>
         </div>
@@ -138,8 +138,12 @@
 import { computed, defineComponent, inject, readonly } from "@nuxtjs/composition-api"
 import { pokemonDetailsKey, abilityMaxStatus } from "@/composables/pokemonDetails"
 import { Ability } from "@/graphql/generated/client"
+import Type from "@/components/basic/Type.vue"
 
 export default defineComponent({
+  components: {
+    "type": Type
+  },
   setup() {
     const pokemon = inject(pokemonDetailsKey)!!
 

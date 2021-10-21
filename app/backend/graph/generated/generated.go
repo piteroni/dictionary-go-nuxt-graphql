@@ -409,7 +409,7 @@ var sources = []*ast.Source{
   characteristics: [Characteristic!]!
   description: Description!
   ability: Ability!
-  evolutions: [Pokemon]!
+  evolutions: [Pokemon!]!
   linkInfo: LinkInfo!
 }
 
@@ -1505,7 +1505,7 @@ func (ec *executionContext) _Pokemon_evolutions(ctx context.Context, field graph
 	}
 	res := resTmp.([]*model.Pokemon)
 	fc.Result = res
-	return ec.marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx, field.Selections, res)
+	return ec.marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemonᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pokemon_linkInfo(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
@@ -3631,7 +3631,7 @@ func (ec *executionContext) marshalNPokemon2piteroniᚋdictionaryᚑgoᚑnuxtᚑ
 	return ec._Pokemon(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx context.Context, sel ast.SelectionSet, v []*model.Pokemon) graphql.Marshaler {
+func (ec *executionContext) marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemonᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Pokemon) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3655,7 +3655,7 @@ func (ec *executionContext) marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑn
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOPokemon2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx, sel, v[i])
+			ret[i] = ec.marshalNPokemon2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3665,6 +3665,12 @@ func (ec *executionContext) marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑn
 
 	}
 	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
 
 	return ret
 }
@@ -4027,13 +4033,6 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
-}
-
-func (ec *executionContext) marshalOPokemon2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx context.Context, sel ast.SelectionSet, v *model.Pokemon) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Pokemon(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

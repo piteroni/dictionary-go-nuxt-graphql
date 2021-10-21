@@ -36,5 +36,14 @@ query pokemon($pokemonId: Int!) {
       hasPrev
       hasNext
     }
+    evolutions {
+      nationalNo
+      name
+      imageURL
+      types {
+        name
+        iconURL
+      }
+    }
   }
 }

@@ -51,7 +51,7 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 	datasets := []*PokemonDataset{}
 	before := &models.Pokemon{}
 
-	// backword
+	// backward
 	r := u.db.Model(&models.Pokemon{}).Where("evolution_id = ?", pokemon.ID).First(before)
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
@@ -62,8 +62,9 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 	if r.RowsAffected != 0 {
 		for {
 			beforeId := before.ID
+			row := &models.Pokemon{}
 
-			err := u.db.Model(&models.Pokemon{}).Where("evolution_id = ?", beforeId).First(before).Error
+			err := u.db.Model(&models.Pokemon{}).Where("evolution_id = ?", beforeId).First(row).Error
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					break
@@ -71,6 +72,8 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 					return nil, err
 				}
 			}
+
+			*before = *row
 		}
 	} else {
 		*before = *pokemon
@@ -78,7 +81,6 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 
 	dao := persistence.NewPokemonDAO(u.db)
 
-	// when not evolution
 	err := dao.ScanEvolution(before)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -86,6 +88,7 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 		}
 	}
 
+	// when not evolution
 	if before.Evolution == nil {
 		return datasets, nil
 	}
@@ -125,6 +128,10 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 
 func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *models.Pokemon) (*PokemonDataset, error) {
 	dao := persistence.NewPokemonDAO(u.db)
+
+	if err := dao.ScanEvolution(pokemon); err != nil {
+		return nil, err
+	}
 
 	if err := dao.ScanGenders(pokemon); err != nil {
 		return nil, err
@@ -208,6 +215,8 @@ func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *models.Poke
 
 	link.HasNext = r.RowsAffected > 0
 
+	canEvolution := pokemon.Evolution != nil
+
 	return &PokemonDataset{
 		NationalNo:      pokemon.NationalNo,
 		Name:            pokemon.Name,
@@ -221,6 +230,7 @@ func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *models.Poke
 		Description:     description,
 		Ability:         ability,
 		LinkInfo:        link,
+		CanEvolution:    canEvolution,
 	}, nil
 }
 
@@ -237,6 +247,7 @@ type PokemonDataset struct {
 	Description     *Description
 	Ability         *Ability
 	LinkInfo        *LinkInfo
+	CanEvolution    bool
 	Evolutions      []*PokemonDataset
 }
 

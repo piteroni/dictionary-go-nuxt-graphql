@@ -1,6 +1,7 @@
 package pokemon
 
 import (
+	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
 	"piteroni/dictionary-go-nuxt-graphql/pkg/persistence"
@@ -151,14 +152,6 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 		})
 	})
 
-	t.Run("指定したIDに一致するポケモンが存在しない場合、エラーが送出される", func(t *testing.T) {
-		dataset, err := datasetAcquisition.GetPokemonDataset(2)
-
-		assert.Nil(t, dataset)
-		assert.NotNil(t, err)
-		assert.IsType(t, err, &PokemonNotFound{})
-	})
-
 	t.Run("指定したポケモンの進化表を取得できる", func(t *testing.T) {
 		pokemon := &models.Pokemon{
 			Model:      gorm.Model{ID: 1},
@@ -211,6 +204,10 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 
 		evolutions, err := datasetAcquisition.getEvolutionTable(evolution1)
 
+		fmt.Printf("evolutions[0].CanEvolution: %v\n", evolutions[0].CanEvolution)
+		fmt.Printf("evolutions[1].CanEvolution: %v\n", evolutions[1].CanEvolution)
+		fmt.Printf("evolutions[2].CanEvolution: %v\n", evolutions[2].CanEvolution)
+
 		assert.NotNil(t, evolutions)
 		assert.Nil(t, err)
 		assert.Len(t, evolutions, 3)
@@ -236,6 +233,14 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 		assert.NotNil(t, evolutions)
 		assert.Nil(t, err)
 		assert.Len(t, evolutions, 0)
+	})
+
+	t.Run("指定したIDに一致するポケモンが存在しない場合、エラーが送出される", func(t *testing.T) {
+		dataset, err := datasetAcquisition.GetPokemonDataset(2)
+
+		assert.Nil(t, dataset)
+		assert.NotNil(t, err)
+		assert.IsType(t, err, &PokemonNotFound{})
 	})
 }
 

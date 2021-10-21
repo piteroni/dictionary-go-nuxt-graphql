@@ -10,7 +10,8 @@ type Pokemon {
   characteristics: [Characteristic!]!
   description: Description!
   ability: Ability!
-  evolutions: [Pokemon]!
+  canEvolution: Boolean!
+  evolutions: [Pokemon!]!
   linkInfo: LinkInfo!
 }
 

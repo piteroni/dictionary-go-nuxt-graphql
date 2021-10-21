@@ -1,5 +1,5 @@
 import { readonly, reactive, computed, InjectionKey } from "@vue/composition-api"
-import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability, LinkInfo } from "@/graphql/generated/client"
+import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability, LinkInfo, Maybe, Pokemon } from "@/graphql/generated/client"
 import { useQuery } from "@vue/apollo-composable"
 
 type State = {
@@ -14,7 +14,8 @@ type State = {
   genders: Gender[],
   description: Description,
   ability: Ability,
-  linkInfo: LinkInfo
+  linkInfo: LinkInfo,
+  evolutions: PokemonQuery["pokemon"]["evolutions"]
 }
 
 const initialState: State = {
@@ -44,7 +45,8 @@ const initialState: State = {
     nextNationalNo: 0,
     hasPrev: false,
     hasNext: false
-  }
+  },
+  evolutions: []
 }
 
 export const abilityMaxStatus = readonly({
@@ -81,6 +83,7 @@ const fetch = (state: State) => async (pokemonId: number) => {
       state.description = result.data.pokemon.description
       state.ability = result.data.pokemon.ability
       state.linkInfo = result.data.pokemon.linkInfo
+      state.evolutions = result.data.pokemon.evolutions
 
       resolve()
     })
@@ -106,6 +109,7 @@ export function usePokemonDetails(initial = initialState) {
     description: computed(() => state.description),
     ability: computed(() => state.ability),
     linkInfo: computed(() => state.linkInfo),
+    evolutions: computed(() => state.evolutions),
     fetch: fetch(state),
   }
 }

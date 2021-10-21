@@ -63,6 +63,7 @@ export default defineComponent({
   background-color: rgb(242, 242, 242);
   background-image: url('~/assets/image/pattern.svg');
   background-repeat: repeat;
+  padding-bottom: 50px;
 }
 
 .site-logo {
