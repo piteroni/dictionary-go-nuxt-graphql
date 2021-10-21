@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestPokemonDetailsAcquisition(t *testing.T) {
+func TestPokemonDatasetAcquisition(t *testing.T) {
 	db, err := itesting.ConnnectToInMemoryDatabase()
 	if err != nil {
 		t.Fatal(err)
@@ -31,7 +31,7 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		}
 	}
 
-	detailsAcquisition := NewPokemonDetailsAcquisition(db)
+	datasetAcquisition := NewPokemonDatasetAcquisition(db)
 
 	t.Run("指定したIDに一致するポケモンの詳細を取得できる", func(t *testing.T) {
 		if err := seed(db, factory, dao); err != nil {
@@ -40,24 +40,24 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 
 		defer cleanup()
 
-		details, err := detailsAcquisition.GetPokemonDetails(2)
+		dataset, err := datasetAcquisition.GetPokemonDataset(2)
 
-		assert.NotNil(t, details)
+		assert.NotNil(t, dataset)
 		assert.Nil(t, err)
 
-		assert.Equal(t, details.NationalNo, 2)
-		assert.Equal(t, details.Name, "pokemon-2")
-		assert.Equal(t, details.ImageURL, "pokemon-2.jpg")
-		assert.Equal(t, details.HeightText, "2m")
-		assert.Equal(t, details.WeightText, "84kg")
-		assert.Equal(t, details.Species, "normal")
+		assert.Equal(t, dataset.NationalNo, 2)
+		assert.Equal(t, dataset.Name, "pokemon-2")
+		assert.Equal(t, dataset.ImageURL, "pokemon-2.jpg")
+		assert.Equal(t, dataset.HeightText, "2m")
+		assert.Equal(t, dataset.WeightText, "84kg")
+		assert.Equal(t, dataset.Species, "normal")
 
-		assert.Equal(t, details.Description, &Description{
+		assert.Equal(t, dataset.Description, &Description{
 			Text:   "description",
 			Series: "series-1",
 		})
 
-		assert.Equal(t, details.Ability, &Ability{
+		assert.Equal(t, dataset.Ability, &Ability{
 			Heart:          30,
 			Attack:         31,
 			Defense:        32,
@@ -66,32 +66,32 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 			Speed:          35,
 		})
 
-		assert.Len(t, details.Genders, 2)
-		assert.Contains(t, details.Genders, &Gender{
+		assert.Len(t, dataset.Genders, 2)
+		assert.Contains(t, dataset.Genders, &Gender{
 			Name:    "gender-1",
 			IconURL: "gender-1.jpg",
 		})
-		assert.Contains(t, details.Genders, &Gender{
+		assert.Contains(t, dataset.Genders, &Gender{
 			Name:    "gender-2",
 			IconURL: "gender-2.jpg",
 		})
 
-		assert.Len(t, details.Types, 2)
-		assert.Contains(t, details.Types, &Type{
+		assert.Len(t, dataset.Types, 2)
+		assert.Contains(t, dataset.Types, &Type{
 			Name:    "type-1",
 			IconURL: "type-1.jpg",
 		})
-		assert.Contains(t, details.Types, &Type{
+		assert.Contains(t, dataset.Types, &Type{
 			Name:    "type-2",
 			IconURL: "type-2.jpg",
 		})
 
-		assert.Len(t, details.Characteristics, 2)
-		assert.Contains(t, details.Characteristics, &Characteristic{
+		assert.Len(t, dataset.Characteristics, 2)
+		assert.Contains(t, dataset.Characteristics, &Characteristic{
 			Name:        "characteristics-1",
 			Description: "characteristics-1-description",
 		})
-		assert.Contains(t, details.Characteristics, &Characteristic{
+		assert.Contains(t, dataset.Characteristics, &Characteristic{
 			Name:        "characteristics-2",
 			Description: "characteristics-2-description",
 		})
@@ -123,12 +123,12 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		defer cleanup()
 
 		t.Run("IDが1の場合", func(t *testing.T) {
-			details, err := detailsAcquisition.GetPokemonDetails(1)
+			dataset, err := datasetAcquisition.GetPokemonDataset(1)
 
-			assert.NotNil(t, details)
+			assert.NotNil(t, dataset)
 			assert.Nil(t, err)
 
-			assert.Equal(t, details.TransitionInfo, &TransitionInfo{
+			assert.Equal(t, dataset.LinkInfo, &LinkInfo{
 				PrevNationalNo: 0,
 				NextNationalNo: 2,
 				HasPrev:        false,
@@ -137,12 +137,12 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 		})
 
 		t.Run("IDが2の場合", func(t *testing.T) {
-			details, err := detailsAcquisition.GetPokemonDetails(2)
+			dataset, err := datasetAcquisition.GetPokemonDataset(2)
 
-			assert.NotNil(t, details)
+			assert.NotNil(t, dataset)
 			assert.Nil(t, err)
 
-			assert.Equal(t, details.TransitionInfo, &TransitionInfo{
+			assert.Equal(t, dataset.LinkInfo, &LinkInfo{
 				PrevNationalNo: 1,
 				NextNationalNo: 3,
 				HasPrev:        true,
@@ -152,11 +152,90 @@ func TestPokemonDetailsAcquisition(t *testing.T) {
 	})
 
 	t.Run("指定したIDに一致するポケモンが存在しない場合、エラーが送出される", func(t *testing.T) {
-		details, err := detailsAcquisition.GetPokemonDetails(1)
+		dataset, err := datasetAcquisition.GetPokemonDataset(2)
 
-		assert.Nil(t, details)
+		assert.Nil(t, dataset)
 		assert.NotNil(t, err)
 		assert.IsType(t, err, &PokemonNotFound{})
+	})
+
+	t.Run("指定したポケモンの進化表を取得できる", func(t *testing.T) {
+		pokemon := &models.Pokemon{
+			Model:      gorm.Model{ID: 1},
+			NationalNo: 1,
+			Name:       "pokemon-1",
+		}
+
+		_, err = factory.CreatePokemon(pokemon)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		evolution1 := &models.Pokemon{
+			Model:      gorm.Model{ID: 2},
+			NationalNo: 2,
+			Name:       "pokemon-2",
+		}
+
+		_, err = factory.CreatePokemon(evolution1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		pokemon.EvolutionID = &evolution1.ID
+
+		evolution2 := &models.Pokemon{
+			Model:      gorm.Model{ID: 3},
+			NationalNo: 3,
+			Name:       "pokemon-3",
+		}
+
+		_, err = factory.CreatePokemon(evolution2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		evolution1.EvolutionID = &evolution2.ID
+
+		err := db.Save(pokemon).Error
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = db.Save(evolution1).Error
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer cleanup()
+
+		evolutions, err := datasetAcquisition.getEvolutionTable(evolution1)
+
+		assert.NotNil(t, evolutions)
+		assert.Nil(t, err)
+		assert.Len(t, evolutions, 3)
+		// @TODO: 構造体チェック、一部属性のみチェックってどうやるかわからないけど
+	})
+
+	t.Run("進化しないポケモンが指定された場合、空の進化表が戻る", func(t *testing.T) {
+		pokemon := &models.Pokemon{
+			Model:      gorm.Model{ID: 1},
+			NationalNo: 1,
+			Name:       "pokemon-1",
+		}
+
+		_, err = factory.CreatePokemon(pokemon)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer cleanup()
+
+		evolutions, err := datasetAcquisition.getEvolutionTable(pokemon)
+
+		assert.NotNil(t, evolutions)
+		assert.Nil(t, err)
+		assert.Len(t, evolutions, 0)
 	})
 }
 

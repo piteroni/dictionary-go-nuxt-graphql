@@ -226,7 +226,6 @@ export default defineComponent({
 
 .details-value {
   font-size: 20px;
-  font-weight: 200;
 }
 
 .pokemon-description {

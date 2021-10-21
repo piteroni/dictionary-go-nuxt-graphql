@@ -9,17 +9,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type PokemonDetailsAcquisition struct {
+type PokemonDatasetAcquisition struct {
 	db *gorm.DB
 }
 
-func NewPokemonDetailsAcquisition(db *gorm.DB) *PokemonDetailsAcquisition {
-	return &PokemonDetailsAcquisition{
+func NewPokemonDatasetAcquisition(db *gorm.DB) *PokemonDatasetAcquisition {
+	return &PokemonDatasetAcquisition{
 		db: db,
 	}
 }
 
-func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDetails, error) {
+func (u *PokemonDatasetAcquisition) GetPokemonDataset(pokemonId int) (*PokemonDataset, error) {
 	pokemon := &models.Pokemon{}
 
 	if err := u.db.Model(&models.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {
@@ -32,6 +32,98 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		return nil, err
 	}
 
+	dataset, err := u.constructPokemonDataset(pokemon)
+	if err != nil {
+		return nil, err
+	}
+
+	evolutions, err := u.getEvolutionTable(pokemon)
+	if err != nil {
+		return nil, err
+	}
+
+	dataset.Evolutions = evolutions
+
+	return dataset, nil
+}
+
+func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) ([]*PokemonDataset, error) {
+	datasets := []*PokemonDataset{}
+	before := &models.Pokemon{}
+
+	// backword
+	r := u.db.Model(&models.Pokemon{}).Where("evolution_id = ?", pokemon.ID).First(before)
+	if r.Error != nil {
+		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
+			return nil, r.Error
+		}
+	}
+
+	if r.RowsAffected != 0 {
+		for {
+			beforeId := before.ID
+
+			err := u.db.Model(&models.Pokemon{}).Where("evolution_id = ?", beforeId).First(before).Error
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					break
+				} else {
+					return nil, err
+				}
+			}
+		}
+	} else {
+		*before = *pokemon
+	}
+
+	dao := persistence.NewPokemonDAO(u.db)
+
+	// when not evolution
+	err := dao.ScanEvolution(before)
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+	}
+
+	if before.Evolution == nil {
+		return datasets, nil
+	}
+
+	// forward
+	dataset, err := u.constructPokemonDataset(before)
+	if err != nil {
+		return nil, err
+	}
+
+	datasets = append(datasets, dataset)
+
+	for {
+		err := dao.ScanEvolution(before)
+		if err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, err
+			}
+		}
+
+		if before.Evolution == nil {
+			break
+		}
+
+		dataset, err := u.constructPokemonDataset(before.Evolution)
+		if err != nil {
+			return nil, err
+		}
+
+		datasets = append(datasets, dataset)
+
+		before = before.Evolution
+	}
+
+	return datasets, nil
+}
+
+func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *models.Pokemon) (*PokemonDataset, error) {
 	dao := persistence.NewPokemonDAO(u.db)
 
 	if err := dao.ScanGenders(pokemon); err != nil {
@@ -91,32 +183,32 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		Speed:          pokemon.SpeedPoint,
 	}
 
-	transition := &TransitionInfo{
+	link := &LinkInfo{
 		PrevNationalNo: pokemon.NationalNo - 1,
 		NextNationalNo: pokemon.NationalNo + 1,
 	}
 
 	var r *gorm.DB
 
-	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", transition.PrevNationalNo).First(&models.Pokemon{})
+	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", link.PrevNationalNo).First(&models.Pokemon{})
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, r.Error
 		}
 	}
 
-	transition.HasPrev = r.RowsAffected > 0
+	link.HasPrev = r.RowsAffected > 0
 
-	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", transition.NextNationalNo).First(&models.Pokemon{})
+	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", link.NextNationalNo).First(&models.Pokemon{})
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, r.Error
 		}
 	}
 
-	transition.HasNext = r.RowsAffected > 0
+	link.HasNext = r.RowsAffected > 0
 
-	return &PokemonDetails{
+	return &PokemonDataset{
 		NationalNo:      pokemon.NationalNo,
 		Name:            pokemon.Name,
 		ImageURL:        pokemon.ImageURL,
@@ -128,11 +220,11 @@ func (u *PokemonDetailsAcquisition) GetPokemonDetails(pokemonId int) (*PokemonDe
 		Characteristics: characteristics,
 		Description:     description,
 		Ability:         ability,
-		TransitionInfo:  transition,
+		LinkInfo:        link,
 	}, nil
 }
 
-type PokemonDetails struct {
+type PokemonDataset struct {
 	NationalNo      int
 	Name            string
 	ImageURL        string
@@ -144,7 +236,8 @@ type PokemonDetails struct {
 	Characteristics []*Characteristic
 	Description     *Description
 	Ability         *Ability
-	TransitionInfo  *TransitionInfo
+	LinkInfo        *LinkInfo
+	Evolutions      []*PokemonDataset
 }
 
 type Type struct {
@@ -176,7 +269,7 @@ type Ability struct {
 	Speed          int
 }
 
-type TransitionInfo struct {
+type LinkInfo struct {
 	PrevNationalNo int
 	NextNationalNo int
 	HasPrev        bool

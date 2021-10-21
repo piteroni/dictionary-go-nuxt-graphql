@@ -11,9 +11,9 @@ import (
 )
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Pokemon, error) {
-	u := pokemon.NewPokemonDetailsAcquisition(r.DB)
+	u := pokemon.NewPokemonDatasetAcquisition(r.DB)
 
-	p, err := u.GetPokemonDetails(pokemonID)
+	p, err := u.GetPokemonDataset(pokemonID)
 	if err != nil {
 		if _, ok := err.(*pokemon.PokemonNotFound); ok {
 			r.Logger.Warn(err.Error())
@@ -26,25 +26,55 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 
 	genders := []*model.Gender{}
 	for _, gender := range p.Genders {
-		genders = append(genders, &model.Gender{
-			Name:    gender.Name,
-			IconURL: gender.IconURL,
-		})
+		genders = append(genders, (*model.Gender)(gender))
 	}
 
 	types := []*model.Type{}
 	for _, t := range p.Types {
-		types = append(types, &model.Type{
-			Name:    t.Name,
-			IconURL: t.IconURL,
-		})
+		types = append(types, (*model.Type)(t))
 	}
 
 	characteristics := []*model.Characteristic{}
 	for _, characteristic := range p.Characteristics {
-		characteristics = append(characteristics, &model.Characteristic{
-			Name:        characteristic.Name,
-			Description: characteristic.Description,
+		characteristics = append(characteristics, (*model.Characteristic)(characteristic))
+	}
+
+	evolutions := []*model.Pokemon{}
+	for _, evolution := range p.Evolutions {
+		genders := []*model.Gender{}
+		for _, gender := range evolution.Genders {
+			genders = append(genders, (*model.Gender)(gender))
+		}
+
+		types := []*model.Type{}
+		for _, t := range evolution.Types {
+			types = append(types, (*model.Type)(t))
+		}
+
+		characteristics := []*model.Characteristic{}
+		for _, characteristic := range evolution.Characteristics {
+			characteristics = append(characteristics, (*model.Characteristic)(characteristic))
+		}
+
+		description := (*model.Description)(evolution.Description)
+		ability := (*model.Ability)(evolution.Ability)
+		link := (*model.LinkInfo)(evolution.LinkInfo)
+
+		evolutions = append(evolutions, &model.Pokemon{
+			NationalNo:      evolution.NationalNo,
+			Name:            evolution.Name,
+			ImageURL:        evolution.ImageURL,
+			Species:         evolution.Species,
+			Height:          evolution.HeightText,
+			Weight:          evolution.WeightText,
+			Genders:         genders,
+			Types:           types,
+			Characteristics: characteristics,
+			Description:     description,
+			Ability:         ability,
+			LinkInfo:        link,
+			// 多分いらない
+			// Evolutions: evolution.Evolutions,
 		})
 	}
 
@@ -52,7 +82,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 
 	ability := (*model.Ability)(p.Ability)
 
-	transition := (*model.TransitionInfo)(p.TransitionInfo)
+	link := (*model.LinkInfo)(p.LinkInfo)
 
 	return &model.Pokemon{
 		NationalNo:      p.NationalNo,
@@ -66,7 +96,8 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		Characteristics: characteristics,
 		Description:     description,
 		Ability:         ability,
-		TransitionInfo:  transition,
+		LinkInfo:        link,
+		Evolutions:      evolutions,
 	}, nil
 }
 

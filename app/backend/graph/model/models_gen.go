@@ -26,6 +26,13 @@ type Gender struct {
 	IconURL string `json:"iconURL"`
 }
 
+type LinkInfo struct {
+	PrevNationalNo int  `json:"prevNationalNo"`
+	NextNationalNo int  `json:"nextNationalNo"`
+	HasPrev        bool `json:"hasPrev"`
+	HasNext        bool `json:"hasNext"`
+}
+
 type Pokemon struct {
 	NationalNo      int               `json:"nationalNo"`
 	Name            string            `json:"name"`
@@ -38,14 +45,8 @@ type Pokemon struct {
 	Characteristics []*Characteristic `json:"characteristics"`
 	Description     *Description      `json:"description"`
 	Ability         *Ability          `json:"ability"`
-	TransitionInfo  *TransitionInfo   `json:"transitionInfo"`
-}
-
-type TransitionInfo struct {
-	PrevNationalNo int  `json:"prevNationalNo"`
-	NextNationalNo int  `json:"nextNationalNo"`
-	HasPrev        bool `json:"hasPrev"`
-	HasNext        bool `json:"hasNext"`
+	Evolutions      []*Pokemon        `json:"evolutions"`
+	LinkInfo        *LinkInfo         `json:"linkInfo"`
 }
 
 type Type struct {

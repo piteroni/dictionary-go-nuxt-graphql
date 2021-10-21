@@ -1,5 +1,5 @@
 import { readonly, reactive, computed, InjectionKey } from "@vue/composition-api"
-import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability, TransitionInfo } from "@/graphql/generated/client"
+import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability, LinkInfo } from "@/graphql/generated/client"
 import { useQuery } from "@vue/apollo-composable"
 
 type State = {
@@ -14,7 +14,7 @@ type State = {
   genders: Gender[],
   description: Description,
   ability: Ability,
-  transitionInfo: TransitionInfo
+  linkInfo: LinkInfo
 }
 
 const initialState: State = {
@@ -39,7 +39,7 @@ const initialState: State = {
     specialDefense: 0,
     speed: 0
   },
-  transitionInfo: {
+  linkInfo: {
     prevNationalNo: 0,
     nextNationalNo: 0,
     hasPrev: false,
@@ -80,7 +80,7 @@ const fetch = (state: State) => async (pokemonId: number) => {
       state.characteristics = result.data.pokemon.characteristics
       state.description = result.data.pokemon.description
       state.ability = result.data.pokemon.ability
-      state.transitionInfo = result.data.pokemon.transitionInfo
+      state.linkInfo = result.data.pokemon.linkInfo
 
       resolve()
     })
@@ -96,6 +96,7 @@ export function usePokemonDetails(initial = initialState) {
     pokemon: computed(() => state),
     nationalNo: computed(() => state.nationalNo),
     name: computed(() => state.name),
+    imageURL: computed(() => state.imageURL),
     species: computed(() => state.species),
     height: computed(() => state.height),
     weight: computed(() => state.weight),
@@ -104,8 +105,7 @@ export function usePokemonDetails(initial = initialState) {
     characteristics: computed(() => state.characteristics),
     description: computed(() => state.description),
     ability: computed(() => state.ability),
-    transitionInfo: computed(() => state.transitionInfo),
-    imageURL: computed(() => state.imageURL),
+    linkInfo: computed(() => state.linkInfo),
     fetch: fetch(state),
   }
 }

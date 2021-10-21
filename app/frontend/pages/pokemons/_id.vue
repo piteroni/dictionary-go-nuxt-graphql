@@ -9,6 +9,8 @@
     <pokemon-heading />
 
     <pokemon-details />
+
+    <evolution-table />
   </div>
 </template>
 
@@ -18,12 +20,14 @@ import { pokemonDetailsKey, usePokemonDetails } from "@/composables/pokemonDetai
 import Header from "@/components/singletons/Header.vue"
 import PokemonHeading from "@/components/tightly-coupled/pokemons/_id/PokemonHeading.vue"
 import PokemonDetails from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
+import EvolutionTable from "@/components/tightly-coupled/pokemons/_id/EvolutionTable.vue"
 
 export default defineComponent({
   components: {
     "app-header": Header,
     "pokemon-heading": PokemonHeading,
-    "pokemon-details": PokemonDetails
+    "pokemon-details": PokemonDetails,
+    "evolution-table": EvolutionTable,
   },
   setup() {
     provide(pokemonDetailsKey, usePokemonDetails())

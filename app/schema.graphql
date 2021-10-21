@@ -10,7 +10,8 @@ type Pokemon {
   characteristics: [Characteristic!]!
   description: Description!
   ability: Ability!
-  transitionInfo: TransitionInfo!
+  evolutions: [Pokemon]!
+  linkInfo: LinkInfo!
 }
 
 type Gender {
@@ -42,7 +43,7 @@ type Ability {
   speed: Int!
 }
 
-type TransitionInfo {
+type LinkInfo {
   prevNationalNo: Int!
   nextNationalNo: Int!
   hasPrev: Boolean!

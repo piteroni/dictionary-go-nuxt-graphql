@@ -49,3 +49,20 @@ func (dao *PokemonDAO) ScanCharacteristics(p *models.Pokemon) error {
 func (dao *PokemonDAO) AddCharacteristics(p *models.Pokemon, c *models.Characteristic) error {
 	return dao.db.Model(p).Association("Characteristics").Append(c)
 }
+
+func (dao *PokemonDAO) ScanEvolution(p *models.Pokemon) error {
+	if p.Evolution != nil {
+		return nil
+	}
+
+	if p.EvolutionID == nil {
+		return nil
+	}
+
+	err := dao.db.Model(&models.Pokemon{}).First(&p.Evolution, *p.EvolutionID).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

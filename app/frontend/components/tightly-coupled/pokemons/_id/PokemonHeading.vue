@@ -1,6 +1,6 @@
 <template>
   <div class="heading-container px-12 w-full flex flex-wrap content-center justify-between">
-    <div class="nav flex flex-wrap content-center">
+    <div style="width: 30px" class="nav flex flex-wrap content-center">
       <div v-if="hasPrev" @click="moveToPrev" class="nav-button flex flex-wrap justify-center content-center">
         <img width="12px" src="~/assets/image/prev.png" alt="prev">
       </div>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <div class="nav flex flex-wrap content-center">
+    <div style="width: 30px" class="nav flex flex-wrap content-center">
       <div v-if="hasNext" @click="moveToNext" class="nav-button flex flex-wrap justify-center content-center">
         <img width="12px" src="~/assets/image/next.png" alt="next">
       </div>
@@ -61,23 +61,23 @@ export default defineComponent({
     const nationalNo = computed(() => formatNationalNo(pokemon.nationalNo.value))
 
     function moveToPrev() {
-      if (!pokemon.transitionInfo.value.hasPrev) {
+      if (!pokemon.linkInfo.value.hasPrev) {
         return
       }
 
-      router.push(`/pokemons/${pokemon.transitionInfo.value.prevNationalNo}`)
+      router.push(`/pokemons/${pokemon.linkInfo.value.prevNationalNo}`)
     }
 
     function moveToNext() {
-      if (!pokemon.transitionInfo.value.hasNext) {
+      if (!pokemon.linkInfo.value.hasNext) {
         return
       }
 
-      router.push(`/pokemons/${pokemon.transitionInfo.value.nextNationalNo}`)
+      router.push(`/pokemons/${pokemon.linkInfo.value.nextNationalNo}`)
     }
 
-    const hasPrev = computed(() => pokemon.transitionInfo.value.hasPrev)
-    const hasNext = computed(() => pokemon.transitionInfo.value.hasNext)
+    const hasPrev = computed(() => pokemon.linkInfo.value.hasPrev)
+    const hasNext = computed(() => pokemon.linkInfo.value.hasNext)
 
     return {
       nationalNo: nationalNo,

@@ -66,30 +66,31 @@ type ComplexityRoot struct {
 		Name    func(childComplexity int) int
 	}
 
+	LinkInfo struct {
+		HasNext        func(childComplexity int) int
+		HasPrev        func(childComplexity int) int
+		NextNationalNo func(childComplexity int) int
+		PrevNationalNo func(childComplexity int) int
+	}
+
 	Pokemon struct {
 		Ability         func(childComplexity int) int
 		Characteristics func(childComplexity int) int
 		Description     func(childComplexity int) int
+		Evolutions      func(childComplexity int) int
 		Genders         func(childComplexity int) int
 		Height          func(childComplexity int) int
 		ImageURL        func(childComplexity int) int
+		LinkInfo        func(childComplexity int) int
 		Name            func(childComplexity int) int
 		NationalNo      func(childComplexity int) int
 		Species         func(childComplexity int) int
-		TransitionInfo  func(childComplexity int) int
 		Types           func(childComplexity int) int
 		Weight          func(childComplexity int) int
 	}
 
 	Query struct {
 		Pokemon func(childComplexity int, pokemonID int) int
-	}
-
-	TransitionInfo struct {
-		HasNext        func(childComplexity int) int
-		HasPrev        func(childComplexity int) int
-		NextNationalNo func(childComplexity int) int
-		PrevNationalNo func(childComplexity int) int
 	}
 
 	Type struct {
@@ -201,6 +202,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Gender.Name(childComplexity), true
 
+	case "LinkInfo.hasNext":
+		if e.complexity.LinkInfo.HasNext == nil {
+			break
+		}
+
+		return e.complexity.LinkInfo.HasNext(childComplexity), true
+
+	case "LinkInfo.hasPrev":
+		if e.complexity.LinkInfo.HasPrev == nil {
+			break
+		}
+
+		return e.complexity.LinkInfo.HasPrev(childComplexity), true
+
+	case "LinkInfo.nextNationalNo":
+		if e.complexity.LinkInfo.NextNationalNo == nil {
+			break
+		}
+
+		return e.complexity.LinkInfo.NextNationalNo(childComplexity), true
+
+	case "LinkInfo.prevNationalNo":
+		if e.complexity.LinkInfo.PrevNationalNo == nil {
+			break
+		}
+
+		return e.complexity.LinkInfo.PrevNationalNo(childComplexity), true
+
 	case "Pokemon.ability":
 		if e.complexity.Pokemon.Ability == nil {
 			break
@@ -221,6 +250,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Pokemon.Description(childComplexity), true
+
+	case "Pokemon.evolutions":
+		if e.complexity.Pokemon.Evolutions == nil {
+			break
+		}
+
+		return e.complexity.Pokemon.Evolutions(childComplexity), true
 
 	case "Pokemon.genders":
 		if e.complexity.Pokemon.Genders == nil {
@@ -243,6 +279,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pokemon.ImageURL(childComplexity), true
 
+	case "Pokemon.linkInfo":
+		if e.complexity.Pokemon.LinkInfo == nil {
+			break
+		}
+
+		return e.complexity.Pokemon.LinkInfo(childComplexity), true
+
 	case "Pokemon.name":
 		if e.complexity.Pokemon.Name == nil {
 			break
@@ -263,13 +306,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Pokemon.Species(childComplexity), true
-
-	case "Pokemon.transitionInfo":
-		if e.complexity.Pokemon.TransitionInfo == nil {
-			break
-		}
-
-		return e.complexity.Pokemon.TransitionInfo(childComplexity), true
 
 	case "Pokemon.types":
 		if e.complexity.Pokemon.Types == nil {
@@ -296,34 +332,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Pokemon(childComplexity, args["pokemonId"].(int)), true
-
-	case "TransitionInfo.hasNext":
-		if e.complexity.TransitionInfo.HasNext == nil {
-			break
-		}
-
-		return e.complexity.TransitionInfo.HasNext(childComplexity), true
-
-	case "TransitionInfo.hasPrev":
-		if e.complexity.TransitionInfo.HasPrev == nil {
-			break
-		}
-
-		return e.complexity.TransitionInfo.HasPrev(childComplexity), true
-
-	case "TransitionInfo.nextNationalNo":
-		if e.complexity.TransitionInfo.NextNationalNo == nil {
-			break
-		}
-
-		return e.complexity.TransitionInfo.NextNationalNo(childComplexity), true
-
-	case "TransitionInfo.prevNationalNo":
-		if e.complexity.TransitionInfo.PrevNationalNo == nil {
-			break
-		}
-
-		return e.complexity.TransitionInfo.PrevNationalNo(childComplexity), true
 
 	case "Type.iconURL":
 		if e.complexity.Type.IconURL == nil {
@@ -401,7 +409,8 @@ var sources = []*ast.Source{
   characteristics: [Characteristic!]!
   description: Description!
   ability: Ability!
-  transitionInfo: TransitionInfo!
+  evolutions: [Pokemon]!
+  linkInfo: LinkInfo!
 }
 
 type Gender {
@@ -433,7 +442,7 @@ type Ability {
   speed: Int!
 }
 
-type TransitionInfo {
+type LinkInfo {
   prevNationalNo: Int!
   nextNationalNo: Int!
   hasPrev: Boolean!
@@ -939,6 +948,146 @@ func (ec *executionContext) _Gender_iconURL(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _LinkInfo_prevNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "LinkInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PrevNationalNo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _LinkInfo_nextNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "LinkInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NextNationalNo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _LinkInfo_hasPrev(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "LinkInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasPrev, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _LinkInfo_hasNext(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "LinkInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasNext, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Pokemon_nationalNo(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1324,7 +1473,7 @@ func (ec *executionContext) _Pokemon_ability(ctx context.Context, field graphql.
 	return ec.marshalNAbility2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐAbility(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Pokemon_transitionInfo(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
+func (ec *executionContext) _Pokemon_evolutions(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1342,7 +1491,7 @@ func (ec *executionContext) _Pokemon_transitionInfo(ctx context.Context, field g
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.TransitionInfo, nil
+		return obj.Evolutions, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1354,9 +1503,44 @@ func (ec *executionContext) _Pokemon_transitionInfo(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.TransitionInfo)
+	res := resTmp.([]*model.Pokemon)
 	fc.Result = res
-	return ec.marshalNTransitionInfo2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐTransitionInfo(ctx, field.Selections, res)
+	return ec.marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pokemon_linkInfo(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pokemon",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LinkInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.LinkInfo)
+	fc.Result = res
+	return ec.marshalNLinkInfo2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐLinkInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_pokemon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1470,146 +1654,6 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TransitionInfo_prevNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TransitionInfo",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PrevNationalNo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TransitionInfo_nextNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TransitionInfo",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.NextNationalNo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TransitionInfo_hasPrev(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TransitionInfo",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasPrev, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TransitionInfo_hasNext(ctx context.Context, field graphql.CollectedField, obj *model.TransitionInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TransitionInfo",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasNext, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Type_name(ctx context.Context, field graphql.CollectedField, obj *model.Type) (ret graphql.Marshaler) {
@@ -2960,6 +3004,48 @@ func (ec *executionContext) _Gender(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
+var linkInfoImplementors = []string{"LinkInfo"}
+
+func (ec *executionContext) _LinkInfo(ctx context.Context, sel ast.SelectionSet, obj *model.LinkInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, linkInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LinkInfo")
+		case "prevNationalNo":
+			out.Values[i] = ec._LinkInfo_prevNationalNo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "nextNationalNo":
+			out.Values[i] = ec._LinkInfo_nextNationalNo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasPrev":
+			out.Values[i] = ec._LinkInfo_hasPrev(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasNext":
+			out.Values[i] = ec._LinkInfo_hasNext(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var pokemonImplementors = []string{"Pokemon"}
 
 func (ec *executionContext) _Pokemon(ctx context.Context, sel ast.SelectionSet, obj *model.Pokemon) graphql.Marshaler {
@@ -3026,8 +3112,13 @@ func (ec *executionContext) _Pokemon(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "transitionInfo":
-			out.Values[i] = ec._Pokemon_transitionInfo(ctx, field, obj)
+		case "evolutions":
+			out.Values[i] = ec._Pokemon_evolutions(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "linkInfo":
+			out.Values[i] = ec._Pokemon_linkInfo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3075,48 +3166,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var transitionInfoImplementors = []string{"TransitionInfo"}
-
-func (ec *executionContext) _TransitionInfo(ctx context.Context, sel ast.SelectionSet, obj *model.TransitionInfo) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, transitionInfoImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("TransitionInfo")
-		case "prevNationalNo":
-			out.Values[i] = ec._TransitionInfo_prevNationalNo(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "nextNationalNo":
-			out.Values[i] = ec._TransitionInfo_nextNationalNo(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "hasPrev":
-			out.Values[i] = ec._TransitionInfo_hasPrev(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "hasNext":
-			out.Values[i] = ec._TransitionInfo_hasNext(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3568,8 +3617,56 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) marshalNLinkInfo2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐLinkInfo(ctx context.Context, sel ast.SelectionSet, v *model.LinkInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._LinkInfo(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNPokemon2piteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx context.Context, sel ast.SelectionSet, v model.Pokemon) graphql.Marshaler {
 	return ec._Pokemon(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPokemon2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx context.Context, sel ast.SelectionSet, v []*model.Pokemon) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOPokemon2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) marshalNPokemon2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx context.Context, sel ast.SelectionSet, v *model.Pokemon) graphql.Marshaler {
@@ -3595,16 +3692,6 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNTransitionInfo2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐTransitionInfo(ctx context.Context, sel ast.SelectionSet, v *model.TransitionInfo) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._TransitionInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNType2ᚕᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Type) graphql.Marshaler {
@@ -3940,6 +4027,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
+}
+
+func (ec *executionContext) marshalOPokemon2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐPokemon(ctx context.Context, sel ast.SelectionSet, v *model.Pokemon) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Pokemon(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
