@@ -1,12 +1,12 @@
 package graph
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
+	"piteroni/dictionary-go-nuxt-graphql/driver"
 
 	"gorm.io/gorm"
 )
 
 type Resolver struct {
 	DB     *gorm.DB
-	Logger drivers.AppLogger
+	Logger driver.AppLogger
 }

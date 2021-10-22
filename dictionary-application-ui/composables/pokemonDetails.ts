@@ -58,11 +58,7 @@ export const abilityMaxStatus = readonly({
   speed: 250
 })
 
-const fetch = (state: State) => async (pokemonId: number) => {
-  const variables: PokemonQueryVariables = {
-    pokemonId
-  }
-
+const fetch = (state: State) => async (variables: PokemonQueryVariables) => {
   const { onError, onResult } = useQuery<PokemonQuery>(PokemonDocument, variables)
 
   return new Promise<void>((resolve, reject) => {

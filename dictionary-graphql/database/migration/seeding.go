@@ -2,8 +2,8 @@ package migration
 
 import (
 	"fmt"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/persistence"
+	"piteroni/dictionary-go-nuxt-graphql/model"
+	"piteroni/dictionary-go-nuxt-graphql/persistence"
 
 	"gorm.io/gorm"
 )
@@ -74,7 +74,7 @@ func createTypes(db *gorm.DB) error {
 	}
 
 	for name, icon := range entries {
-		t := &models.Type{
+		t := &model.Type{
 			Name:    name,
 			IconURL: icon,
 		}
@@ -94,7 +94,7 @@ func createGenders(db *gorm.DB) error {
 	}
 
 	for name, icon := range entries {
-		g := &models.Gender{
+		g := &model.Gender{
 			Name:    name,
 			IconURL: icon,
 		}
@@ -115,7 +115,7 @@ func createCharacteristics(db *gorm.DB) error {
 	}
 
 	for name, description := range entries {
-		c := &models.Characteristic{
+		c := &model.Characteristic{
 			Name:        name,
 			Description: description,
 		}
@@ -128,8 +128,8 @@ func createCharacteristics(db *gorm.DB) error {
 	return nil
 }
 
-func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
-	pokemon := &models.Pokemon{
+func createBulbasaur(db *gorm.DB) (*model.Pokemon, error) {
+	pokemon := &model.Pokemon{
 		NationalNo:          1,
 		Name:                "フシギダネ",
 		Species:             "たねポケモン",
@@ -151,9 +151,9 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 	dao := persistence.NewPokemonDAO(db)
 
 	for _, name := range []string{"くさ", "どく"} {
-		t := &models.Type{}
+		t := &model.Type{}
 
-		if err := db.Model(&models.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
+		if err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
 			return nil, err
 		}
 
@@ -163,9 +163,9 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for _, name := range []string{"female", "male"} {
-		g := &models.Gender{}
+		g := &model.Gender{}
 
-		if err := db.Model(&models.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
+		if err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
 			return nil, err
 		}
 
@@ -180,7 +180,7 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for description, series := range descriptions {
-		d := &models.Description{
+		d := &model.Description{
 			Text:   description,
 			Series: series,
 		}
@@ -191,9 +191,9 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for _, name := range []string{"しんりょく"} {
-		c := &models.Characteristic{}
+		c := &model.Characteristic{}
 
-		if err := db.Model(&models.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
+		if err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
 			return nil, err
 		}
 
@@ -205,8 +205,8 @@ func createBulbasaur(db *gorm.DB) (*models.Pokemon, error) {
 	return pokemon, nil
 }
 
-func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
-	pokemon := &models.Pokemon{
+func createIvysaur(db *gorm.DB) (*model.Pokemon, error) {
+	pokemon := &model.Pokemon{
 		NationalNo:          2,
 		Name:                "フシギソウ",
 		Species:             "たねポケモン",
@@ -228,9 +228,9 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 	dao := persistence.NewPokemonDAO(db)
 
 	for _, name := range []string{"くさ", "どく"} {
-		t := &models.Type{}
+		t := &model.Type{}
 
-		if err := db.Model(&models.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
+		if err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
 			return nil, err
 		}
 
@@ -240,9 +240,9 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for _, name := range []string{"female", "male"} {
-		g := &models.Gender{}
+		g := &model.Gender{}
 
-		if err := db.Model(&models.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
+		if err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
 			return nil, err
 		}
 
@@ -257,7 +257,7 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for description, series := range descriptions {
-		d := &models.Description{
+		d := &model.Description{
 			Text:   description,
 			Series: series,
 		}
@@ -268,9 +268,9 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for _, name := range []string{"しんりょく"} {
-		c := &models.Characteristic{}
+		c := &model.Characteristic{}
 
-		if err := db.Model(&models.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
+		if err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
 			return nil, err
 		}
 
@@ -282,8 +282,8 @@ func createIvysaur(db *gorm.DB) (*models.Pokemon, error) {
 	return pokemon, nil
 }
 
-func createVenusaur(db *gorm.DB) (*models.Pokemon, error) {
-	pokemon := &models.Pokemon{
+func createVenusaur(db *gorm.DB) (*model.Pokemon, error) {
+	pokemon := &model.Pokemon{
 		NationalNo:          3,
 		Name:                "フシギバナ",
 		Species:             "たねポケモン",
@@ -306,9 +306,9 @@ func createVenusaur(db *gorm.DB) (*models.Pokemon, error) {
 	dao := persistence.NewPokemonDAO(db)
 
 	for _, name := range []string{"くさ", "どく"} {
-		t := &models.Type{}
+		t := &model.Type{}
 
-		if err := db.Model(&models.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
+		if err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
 			return nil, err
 		}
 
@@ -318,9 +318,9 @@ func createVenusaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for _, name := range []string{"female", "male"} {
-		g := &models.Gender{}
+		g := &model.Gender{}
 
-		if err := db.Model(&models.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
+		if err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
 			return nil, err
 		}
 
@@ -335,7 +335,7 @@ func createVenusaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for description, series := range descriptions {
-		d := &models.Description{
+		d := &model.Description{
 			Text:   description,
 			Series: series,
 		}
@@ -346,9 +346,9 @@ func createVenusaur(db *gorm.DB) (*models.Pokemon, error) {
 	}
 
 	for _, name := range []string{"しんりょく"} {
-		c := &models.Characteristic{}
+		c := &model.Characteristic{}
 
-		if err := db.Model(&models.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
+		if err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
 			return nil, err
 		}
 

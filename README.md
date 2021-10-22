@@ -59,7 +59,7 @@ mysql|https://localhost:3306
 ### generarte graphql server code
 
 ```
-./scripts/attach-application-graphql scripts/gqlgen
+./scripts/attach-graphql scripts/gqlgen
 ```
 
 ### generarte graphql client code
@@ -71,3 +71,5 @@ mysql|https://localhost:3306
 ## todo
 
 - GraphQLでエラー種別をスキーマで定義すること、[参考リンク](https://www.youtube.com/watch?v=RDNTP66oY2o)
+- resolverのテスト
+- resolverの複雑度の計算

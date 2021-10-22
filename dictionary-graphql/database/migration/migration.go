@@ -1,18 +1,18 @@
 package migration
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
+	"piteroni/dictionary-go-nuxt-graphql/model"
 
 	"gorm.io/gorm"
 )
 
 func Migrate(db *gorm.DB) error {
 	m := []interface{}{
-		&models.Type{},
-		&models.Gender{},
-		&models.Characteristic{},
-		&models.Description{},
-		&models.Pokemon{},
+		&model.Type{},
+		&model.Gender{},
+		&model.Characteristic{},
+		&model.Description{},
+		&model.Pokemon{},
 	}
 
 	for _, model := range m {
@@ -26,11 +26,11 @@ func Migrate(db *gorm.DB) error {
 
 func DropTables(db *gorm.DB) error {
 	return db.Migrator().DropTable(
-		&models.Type{},
-		&models.Gender{},
-		&models.Characteristic{},
-		&models.Description{},
-		&models.Pokemon{},
+		&model.Type{},
+		&model.Gender{},
+		&model.Characteristic{},
+		&model.Description{},
+		&model.Pokemon{},
 		"type_possessed",
 		"characteristic_possessed",
 		"gender_possessed",

@@ -7,7 +7,7 @@ import (
 	"context"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/interactor/pokemon"
+	"piteroni/dictionary-go-nuxt-graphql/interactor/pokemon"
 )
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Pokemon, error) {
@@ -73,8 +73,6 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 			Description:     description,
 			Ability:         ability,
 			LinkInfo:        link,
-			// 多分いらない
-			// Evolutions: evolution.Evolutions,
 		})
 	}
 

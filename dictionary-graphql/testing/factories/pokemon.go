@@ -1,7 +1,7 @@
 package factories
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
+	"piteroni/dictionary-go-nuxt-graphql/model"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/imdario/mergo"
@@ -18,8 +18,8 @@ func NewPokemonFactory(db *gorm.DB) *PokemonFactory {
 	}
 }
 
-func (f *PokemonFactory) CreateGender(gender *models.Gender) (*models.Gender, error) {
-	defaults := &models.Gender{
+func (f *PokemonFactory) CreateGender(gender *model.Gender) (*model.Gender, error) {
+	defaults := &model.Gender{
 		Name:    gofakeit.Name(),
 		IconURL: gofakeit.UUID(),
 	}
@@ -35,8 +35,8 @@ func (f *PokemonFactory) CreateGender(gender *models.Gender) (*models.Gender, er
 	return gender, nil
 }
 
-func (f *PokemonFactory) CreateType(t *models.Type) (*models.Type, error) {
-	defaults := &models.Type{
+func (f *PokemonFactory) CreateType(t *model.Type) (*model.Type, error) {
+	defaults := &model.Type{
 		Name:    gofakeit.Name(),
 		IconURL: gofakeit.UUID(),
 	}
@@ -52,8 +52,8 @@ func (f *PokemonFactory) CreateType(t *models.Type) (*models.Type, error) {
 	return t, nil
 }
 
-func (f *PokemonFactory) CreateCharacteristic(c *models.Characteristic) (*models.Characteristic, error) {
-	defaults := &models.Characteristic{
+func (f *PokemonFactory) CreateCharacteristic(c *model.Characteristic) (*model.Characteristic, error) {
+	defaults := &model.Characteristic{
 		Name:        gofakeit.Name(),
 		Description: gofakeit.Name(),
 	}
@@ -69,8 +69,8 @@ func (f *PokemonFactory) CreateCharacteristic(c *models.Characteristic) (*models
 	return c, nil
 }
 
-func (f *PokemonFactory) CreatePokemon(pokemon *models.Pokemon) (*models.Pokemon, error) {
-	defaults := &models.Pokemon{
+func (f *PokemonFactory) CreatePokemon(pokemon *model.Pokemon) (*model.Pokemon, error) {
+	defaults := &model.Pokemon{
 		NationalNo:          gofakeit.Number(1, 2048),
 		Name:                gofakeit.Name(),
 		Species:             gofakeit.Name(),

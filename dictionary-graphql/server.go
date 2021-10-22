@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"os"
 
+	"piteroni/dictionary-go-nuxt-graphql/database"
+	"piteroni/dictionary-go-nuxt-graphql/driver"
 	"piteroni/dictionary-go-nuxt-graphql/graph"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/database"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/drivers"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	logger := drivers.NewLogger(os.Stdout)
+	logger := driver.NewLogger(os.Stdout)
 
 	if err := godotenv.Load(); err != nil {
 		logger.Errorf("unexpected error occurred during loading .env: %v", err)

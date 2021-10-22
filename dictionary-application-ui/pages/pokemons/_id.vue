@@ -46,7 +46,7 @@ export default defineComponent({
 
     useFetch(async () => {
       try {
-        await fetch(pokemonId)
+        await fetch({ pokemonId })
       } catch (e) {
         console.error(e)
         error({ statusCode: 404 })

@@ -2,11 +2,11 @@ package pokemon
 
 import (
 	"fmt"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/database/migration"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/persistence"
-	itesting "piteroni/dictionary-go-nuxt-graphql/pkg/testing"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/testing/factories"
+	"piteroni/dictionary-go-nuxt-graphql/database/migration"
+	"piteroni/dictionary-go-nuxt-graphql/model"
+	"piteroni/dictionary-go-nuxt-graphql/persistence"
+	itesting "piteroni/dictionary-go-nuxt-graphql/testing"
+	"piteroni/dictionary-go-nuxt-graphql/testing/factories"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -99,7 +99,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 	})
 
 	t.Run("データベース上で前後にポケモンが登録されているか取得できる", func(t *testing.T) {
-		pokemon := &models.Pokemon{
+		pokemon := &model.Pokemon{
 			Model:      gorm.Model{ID: 1},
 			NationalNo: 1,
 			Name:       "pokemon-1",
@@ -110,7 +110,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		next := &models.Pokemon{
+		next := &model.Pokemon{
 			Model:      gorm.Model{ID: 2},
 			NationalNo: 2,
 			Name:       "pokemon-2",
@@ -153,7 +153,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 	})
 
 	t.Run("指定したポケモンの進化表を取得できる", func(t *testing.T) {
-		pokemon := &models.Pokemon{
+		pokemon := &model.Pokemon{
 			Model:      gorm.Model{ID: 1},
 			NationalNo: 1,
 			Name:       "pokemon-1",
@@ -164,7 +164,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		evolution1 := &models.Pokemon{
+		evolution1 := &model.Pokemon{
 			Model:      gorm.Model{ID: 2},
 			NationalNo: 2,
 			Name:       "pokemon-2",
@@ -177,7 +177,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 
 		pokemon.EvolutionID = &evolution1.ID
 
-		evolution2 := &models.Pokemon{
+		evolution2 := &model.Pokemon{
 			Model:      gorm.Model{ID: 3},
 			NationalNo: 3,
 			Name:       "pokemon-3",
@@ -215,7 +215,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 	})
 
 	t.Run("進化しないポケモンが指定された場合、空の進化表が戻る", func(t *testing.T) {
-		pokemon := &models.Pokemon{
+		pokemon := &model.Pokemon{
 			Model:      gorm.Model{ID: 1},
 			NationalNo: 1,
 			Name:       "pokemon-1",
@@ -246,7 +246,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 
 func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.PokemonDAO) error {
 	// first pokemon.
-	pokemon, err := factory.CreatePokemon(&models.Pokemon{
+	pokemon, err := factory.CreatePokemon(&model.Pokemon{
 		Model:               gorm.Model{ID: 2},
 		NationalNo:          2,
 		Name:                "pokemon-2",
@@ -265,12 +265,12 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 		return err
 	}
 
-	genders := []*models.Gender{}
-	genders = append(genders, &models.Gender{
+	genders := []*model.Gender{}
+	genders = append(genders, &model.Gender{
 		Name:    "gender-1",
 		IconURL: "gender-1.jpg",
 	})
-	genders = append(genders, &models.Gender{
+	genders = append(genders, &model.Gender{
 		Name:    "gender-2",
 		IconURL: "gender-2.jpg",
 	})
@@ -286,12 +286,12 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 		}
 	}
 
-	types := []*models.Type{}
-	types = append(types, &models.Type{
+	types := []*model.Type{}
+	types = append(types, &model.Type{
 		Name:    "type-1",
 		IconURL: "type-1.jpg",
 	})
-	types = append(types, &models.Type{
+	types = append(types, &model.Type{
 		Name:    "type-2",
 		IconURL: "type-2.jpg",
 	})
@@ -307,12 +307,12 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 		}
 	}
 
-	characteristics := []*models.Characteristic{}
-	characteristics = append(characteristics, &models.Characteristic{
+	characteristics := []*model.Characteristic{}
+	characteristics = append(characteristics, &model.Characteristic{
 		Name:        "characteristics-1",
 		Description: "characteristics-1-description",
 	})
-	characteristics = append(characteristics, &models.Characteristic{
+	characteristics = append(characteristics, &model.Characteristic{
 		Name:        "characteristics-2",
 		Description: "characteristics-2-description",
 	})
@@ -328,7 +328,7 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 		}
 	}
 
-	description := &models.Description{
+	description := &model.Description{
 		Text:   "description",
 		Series: "series-1",
 	}

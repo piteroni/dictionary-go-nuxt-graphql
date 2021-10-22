@@ -3,8 +3,8 @@ package pokemon
 import (
 	"errors"
 	"fmt"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/models"
-	"piteroni/dictionary-go-nuxt-graphql/pkg/persistence"
+	"piteroni/dictionary-go-nuxt-graphql/model"
+	"piteroni/dictionary-go-nuxt-graphql/persistence"
 
 	"gorm.io/gorm"
 )
@@ -20,9 +20,9 @@ func NewPokemonDatasetAcquisition(db *gorm.DB) *PokemonDatasetAcquisition {
 }
 
 func (u *PokemonDatasetAcquisition) GetPokemonDataset(pokemonId int) (*PokemonDataset, error) {
-	pokemon := &models.Pokemon{}
+	pokemon := &model.Pokemon{}
 
-	if err := u.db.Model(&models.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {
+	if err := u.db.Model(&model.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &PokemonNotFound{
 				message: fmt.Sprintf("specified pokemon does not exists, pokemonId = %d", pokemonId),
@@ -47,12 +47,12 @@ func (u *PokemonDatasetAcquisition) GetPokemonDataset(pokemonId int) (*PokemonDa
 	return dataset, nil
 }
 
-func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) ([]*PokemonDataset, error) {
+func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([]*PokemonDataset, error) {
 	datasets := []*PokemonDataset{}
-	before := &models.Pokemon{}
+	before := &model.Pokemon{}
 
 	// backward
-	r := u.db.Model(&models.Pokemon{}).Where("evolution_id = ?", pokemon.ID).First(before)
+	r := u.db.Model(&model.Pokemon{}).Where("evolution_id = ?", pokemon.ID).First(before)
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, r.Error
@@ -62,9 +62,9 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 	if r.RowsAffected != 0 {
 		for {
 			beforeId := before.ID
-			row := &models.Pokemon{}
+			row := &model.Pokemon{}
 
-			err := u.db.Model(&models.Pokemon{}).Where("evolution_id = ?", beforeId).First(row).Error
+			err := u.db.Model(&model.Pokemon{}).Where("evolution_id = ?", beforeId).First(row).Error
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					break
@@ -126,7 +126,7 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *models.Pokemon) (
 	return datasets, nil
 }
 
-func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *models.Pokemon) (*PokemonDataset, error) {
+func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *model.Pokemon) (*PokemonDataset, error) {
 	dao := persistence.NewPokemonDAO(u.db)
 
 	if err := dao.ScanEvolution(pokemon); err != nil {
@@ -197,7 +197,7 @@ func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *models.Poke
 
 	var r *gorm.DB
 
-	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", link.PrevNationalNo).First(&models.Pokemon{})
+	r = u.db.Model(&model.Pokemon{}).Where("national_no = ?", link.PrevNationalNo).First(&model.Pokemon{})
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, r.Error
@@ -206,7 +206,7 @@ func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *models.Poke
 
 	link.HasPrev = r.RowsAffected > 0
 
-	r = u.db.Model(&models.Pokemon{}).Where("national_no = ?", link.NextNationalNo).First(&models.Pokemon{})
+	r = u.db.Model(&model.Pokemon{}).Where("national_no = ?", link.NextNationalNo).First(&model.Pokemon{})
 	if r.Error != nil {
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
 			return nil, r.Error
