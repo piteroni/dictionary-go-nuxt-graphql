@@ -1,13 +1,13 @@
 version: "3"
 
 services:
-  api:
+  graphql:
     build:
       context: ./dictionary-graphql
       dockerfile: Dockerfile
     depends_on:
       - db
-    hostname: api
+    hostname: graphql
     volumes:
       - ./dictionary-graphql:/app
       - ./schema.graphql:/schema.graphql
@@ -28,13 +28,13 @@ services:
     environment:
       MYSQL_DATABASE: dictionary_go_nuxt_graphql
       MYSQL_ROOT_PASSWORD: password
-  ui:
+  application-ui:
     build: 
       context: ./dictionary-application-ui
       dockerfile: Dockerfile
     depends_on:
-      - api
-    hostname: ui
+      - graphql
+    hostname: application-ui
     volumes:
       - ./dictionary-application-ui:/app
       - /app/node_modules
