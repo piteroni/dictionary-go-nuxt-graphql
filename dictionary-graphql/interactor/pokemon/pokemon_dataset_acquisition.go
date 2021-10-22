@@ -74,10 +74,10 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 				}
 			}
 
-			*before = *row
+			before = row
 		}
 	} else {
-		*before = *pokemon
+		before = pokemon
 	}
 
 	dao := persistence.NewPokemonDAO(u.db)
