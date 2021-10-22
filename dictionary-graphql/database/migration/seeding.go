@@ -9,15 +9,18 @@ import (
 )
 
 func Seed(db *gorm.DB) error {
-	if err := createTypes(db); err != nil {
+	err := createTypes(db)
+	if err != nil {
 		return err
 	}
 
-	if err := createGenders(db); err != nil {
+	err = createGenders(db)
+	if err != nil {
 		return err
 	}
 
-	if err := createCharacteristics(db); err != nil {
+	err = createCharacteristics(db)
+	if err != nil {
 		return err
 	}
 
@@ -38,13 +41,15 @@ func Seed(db *gorm.DB) error {
 
 	bulbasaur.EvolutionID = &ivysaur.ID
 
-	if err := db.Save(bulbasaur).Error; err != nil {
+	err = db.Save(bulbasaur).Error
+	if err != nil {
 		return err
 	}
 
 	ivysaur.EvolutionID = &venusaur.ID
 
-	if err := db.Save(ivysaur).Error; err != nil {
+	err = db.Save(ivysaur).Error
+	if err != nil {
 		return err
 	}
 
@@ -79,7 +84,8 @@ func createTypes(db *gorm.DB) error {
 			IconURL: icon,
 		}
 
-		if err := db.Create(t).Error; err != nil {
+		err := db.Create(t).Error
+		if err != nil {
 			return err
 		}
 	}
@@ -99,7 +105,8 @@ func createGenders(db *gorm.DB) error {
 			IconURL: icon,
 		}
 
-		if err := db.Create(g).Error; err != nil {
+		err := db.Create(g).Error
+		if err != nil {
 			return err
 		}
 	}
@@ -120,7 +127,8 @@ func createCharacteristics(db *gorm.DB) error {
 			Description: description,
 		}
 
-		if err := db.Create(c).Error; err != nil {
+		err := db.Create(c).Error
+		if err != nil {
 			return err
 		}
 	}
@@ -144,7 +152,8 @@ func createBulbasaur(db *gorm.DB) (*model.Pokemon, error) {
 		SpeedPoint:          45,
 	}
 
-	if err := db.Create(pokemon).Error; err != nil {
+	err := db.Create(pokemon).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -153,11 +162,13 @@ func createBulbasaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"くさ", "どく"} {
 		t := &model.Type{}
 
-		if err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
+		err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddType(pokemon, t); err != nil {
+		err = dao.AddType(pokemon, t)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -165,11 +176,13 @@ func createBulbasaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"female", "male"} {
 		g := &model.Gender{}
 
-		if err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
+		err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddGender(pokemon, g); err != nil {
+		err = dao.AddGender(pokemon, g)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -185,7 +198,8 @@ func createBulbasaur(db *gorm.DB) (*model.Pokemon, error) {
 			Series: series,
 		}
 
-		if err := dao.AddDescripton(pokemon, d); err != nil {
+		err := dao.AddDescripton(pokemon, d)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -193,11 +207,13 @@ func createBulbasaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"しんりょく"} {
 		c := &model.Characteristic{}
 
-		if err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
+		err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddCharacteristics(pokemon, c); err != nil {
+		err = dao.AddCharacteristics(pokemon, c)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -221,7 +237,8 @@ func createIvysaur(db *gorm.DB) (*model.Pokemon, error) {
 		SpeedPoint:          60,
 	}
 
-	if err := db.Create(pokemon).Error; err != nil {
+	err := db.Create(pokemon).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -230,11 +247,13 @@ func createIvysaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"くさ", "どく"} {
 		t := &model.Type{}
 
-		if err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
+		err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddType(pokemon, t); err != nil {
+		err = dao.AddType(pokemon, t)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -242,11 +261,13 @@ func createIvysaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"female", "male"} {
 		g := &model.Gender{}
 
-		if err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
+		err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddGender(pokemon, g); err != nil {
+		err = dao.AddGender(pokemon, g)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -262,7 +283,8 @@ func createIvysaur(db *gorm.DB) (*model.Pokemon, error) {
 			Series: series,
 		}
 
-		if err := dao.AddDescripton(pokemon, d); err != nil {
+		err := dao.AddDescripton(pokemon, d)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -270,11 +292,13 @@ func createIvysaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"しんりょく"} {
 		c := &model.Characteristic{}
 
-		if err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
+		err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddCharacteristics(pokemon, c); err != nil {
+		err = dao.AddCharacteristics(pokemon, c)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -308,11 +332,13 @@ func createVenusaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"くさ", "どく"} {
 		t := &model.Type{}
 
-		if err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error; err != nil {
+		err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddType(pokemon, t); err != nil {
+		err = dao.AddType(pokemon, t)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -320,11 +346,13 @@ func createVenusaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"female", "male"} {
 		g := &model.Gender{}
 
-		if err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error; err != nil {
+		err := db.Model(&model.Gender{}).Where(fmt.Sprintf("name = '%s'", name)).First(g).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddGender(pokemon, g); err != nil {
+		err = dao.AddGender(pokemon, g)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -340,7 +368,8 @@ func createVenusaur(db *gorm.DB) (*model.Pokemon, error) {
 			Series: series,
 		}
 
-		if err := dao.AddDescripton(pokemon, d); err != nil {
+		err := dao.AddDescripton(pokemon, d)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -348,11 +377,13 @@ func createVenusaur(db *gorm.DB) (*model.Pokemon, error) {
 	for _, name := range []string{"しんりょく"} {
 		c := &model.Characteristic{}
 
-		if err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error; err != nil {
+		err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error
+		if err != nil {
 			return nil, err
 		}
 
-		if err := dao.AddCharacteristics(pokemon, c); err != nil {
+		err = dao.AddCharacteristics(pokemon, c)
+		if err != nil {
 			return nil, err
 		}
 	}

@@ -16,7 +16,8 @@ func Migrate(db *gorm.DB) error {
 	}
 
 	for _, model := range m {
-		if err := db.AutoMigrate(model); err != nil {
+		err := db.AutoMigrate(model)
+		if err != nil {
 			return err
 		}
 	}

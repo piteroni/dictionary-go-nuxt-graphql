@@ -19,7 +19,8 @@ import (
 func main() {
 	logger := driver.NewLogger(os.Stdout)
 
-	if err := godotenv.Load(); err != nil {
+	err := godotenv.Load()
+	if err != nil {
 		logger.Errorf("unexpected error occurred during loading .env: %v", err)
 		os.Exit(1)
 	}

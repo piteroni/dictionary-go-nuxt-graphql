@@ -34,11 +34,13 @@ func RefreshInMemoryDatabase(db *gorm.DB) error {
 	for rows.Next() {
 		var t string
 
-		if err := rows.Scan(&t); err != nil {
+		err := rows.Scan(&t)
+		if err != nil {
 			return err
 		}
 
-		if err := db.Exec("DELETE FROM " + t).Error; err != nil {
+		err = db.Exec("DELETE FROM " + t).Error
+		if err != nil {
 			return err
 		}
 	}

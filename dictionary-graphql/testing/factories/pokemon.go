@@ -24,11 +24,13 @@ func (f *PokemonFactory) CreateGender(gender *model.Gender) (*model.Gender, erro
 		IconURL: gofakeit.UUID(),
 	}
 
-	if err := mergo.Merge(gender, *defaults); err != nil {
+	err := mergo.Merge(gender, *defaults)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := f.db.Create(gender).Error; err != nil {
+	err = f.db.Create(gender).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -41,11 +43,13 @@ func (f *PokemonFactory) CreateType(t *model.Type) (*model.Type, error) {
 		IconURL: gofakeit.UUID(),
 	}
 
-	if err := mergo.Merge(t, *defaults); err != nil {
+	err := mergo.Merge(t, *defaults)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := f.db.Create(t).Error; err != nil {
+	err = f.db.Create(t).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -58,11 +62,13 @@ func (f *PokemonFactory) CreateCharacteristic(c *model.Characteristic) (*model.C
 		Description: gofakeit.Name(),
 	}
 
-	if err := mergo.Merge(c, *defaults); err != nil {
+	err := mergo.Merge(c, *defaults)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := f.db.Create(c).Error; err != nil {
+	err = f.db.Create(c).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -85,11 +91,13 @@ func (f *PokemonFactory) CreatePokemon(pokemon *model.Pokemon) (*model.Pokemon, 
 		SpeedPoint:          gofakeit.Number(1, 100),
 	}
 
-	if err := mergo.Merge(pokemon, *defaults); err != nil {
+	err := mergo.Merge(pokemon, *defaults)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := f.db.Create(pokemon).Error; err != nil {
+	err = f.db.Create(pokemon).Error
+	if err != nil {
 		return nil, err
 	}
 

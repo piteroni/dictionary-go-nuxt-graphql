@@ -22,7 +22,8 @@ func NewPokemonDatasetAcquisition(db *gorm.DB) *PokemonDatasetAcquisition {
 func (u *PokemonDatasetAcquisition) GetPokemonDataset(pokemonId int) (*PokemonDataset, error) {
 	pokemon := &model.Pokemon{}
 
-	if err := u.db.Model(&model.Pokemon{}).First(pokemon, pokemonId).Error; err != nil {
+	err := u.db.Model(&model.Pokemon{}).First(pokemon, pokemonId).Error
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &PokemonNotFound{
 				message: fmt.Sprintf("specified pokemon does not exists, pokemonId = %d", pokemonId),
@@ -129,23 +130,28 @@ func (u *PokemonDatasetAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 func (u *PokemonDatasetAcquisition) constructPokemonDataset(pokemon *model.Pokemon) (*PokemonDataset, error) {
 	dao := persistence.NewPokemonDAO(u.db)
 
-	if err := dao.ScanEvolution(pokemon); err != nil {
+	err := dao.ScanEvolution(pokemon)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := dao.ScanGenders(pokemon); err != nil {
+	err = dao.ScanGenders(pokemon)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := dao.ScanTypes(pokemon); err != nil {
+	err = dao.ScanTypes(pokemon)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := dao.ScanCharacteristics(pokemon); err != nil {
+	err = dao.ScanCharacteristics(pokemon)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := dao.ScanDescriptions(pokemon); err != nil {
+	err = dao.ScanDescriptions(pokemon)
+	if err != nil {
 		return nil, err
 	}
 

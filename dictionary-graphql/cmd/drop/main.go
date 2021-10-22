@@ -17,7 +17,8 @@ const (
 func main() {
 	logger := driver.NewLogger(os.Stdout)
 
-	if err := godotenv.Load(); err != nil {
+	err := godotenv.Load()
+	if err != nil {
 		logger.Errorf("unexpected error occurred during loading .env: %v", err)
 		os.Exit(statusFatal)
 	}
@@ -28,7 +29,8 @@ func main() {
 		os.Exit(statusFatal)
 	}
 
-	if err := migration.DropTables(db); err != nil {
+	err = migration.DropTables(db)
+	if err != nil {
 		logger.Error(err)
 		os.Exit(statusError)
 	}

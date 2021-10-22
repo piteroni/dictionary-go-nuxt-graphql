@@ -19,7 +19,8 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := migration.Migrate(db); err != nil {
+	err = migration.Migrate(db)
+	if err != nil {
 		t.Fatal(err)
 	}
 
@@ -27,7 +28,8 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 	dao := persistence.NewPokemonDAO(db)
 
 	cleanup := func() {
-		if err := itesting.RefreshInMemoryDatabase(db); err != nil {
+		err := itesting.RefreshInMemoryDatabase(db)
+		if err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -35,7 +37,8 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 	datasetAcquisition := NewPokemonDatasetAcquisition(db)
 
 	t.Run("指定したIDに一致するポケモンの詳細を取得できる", func(t *testing.T) {
-		if err := seed(db, factory, dao); err != nil {
+		err := seed(db, factory, dao)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -281,7 +284,8 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 			return err
 		}
 
-		if err := dao.AddGender(pokemon, g); err != nil {
+		err = dao.AddGender(pokemon, g)
+		if err != nil {
 			return err
 		}
 	}
@@ -302,7 +306,8 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 			return err
 		}
 
-		if err := dao.AddType(pokemon, t); err != nil {
+		err = dao.AddType(pokemon, t)
+		if err != nil {
 			return err
 		}
 	}
@@ -323,7 +328,8 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 			return err
 		}
 
-		if err := dao.AddCharacteristics(pokemon, c); err != nil {
+		err = dao.AddCharacteristics(pokemon, c)
+		if err != nil {
 			return err
 		}
 	}
@@ -333,7 +339,8 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 		Series: "series-1",
 	}
 
-	if err := dao.AddDescripton(pokemon, description); err != nil {
+	err = dao.AddDescripton(pokemon, description)
+	if err != nil {
 		return err
 	}
 
