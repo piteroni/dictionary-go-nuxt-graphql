@@ -4,6 +4,6 @@ module.exports = {
     "vetur.experimental.templateInterpolationService": true
   },
   projects: [
-    { root: "./app/frontend" }
+    { root: "./dictionary-application-ui" }
   ]
 }

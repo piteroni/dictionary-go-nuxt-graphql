@@ -8,33 +8,66 @@
 
 ```
 git clone https://github.com/piteroni/dictionary-go-nuxt-graphql.git
-cd dictionary-go-nuxt-graphql/app
+cd dictionary-go-nuxt-graphql
 docker-compose build
 ./scripts/construct-node-modules
-./scripts/up-db -d && sleep 5
-./scripts/attach-api go run cmd/migrate/main.go
+docker-compose up -d db
+./scripts/attach-graphql go run cmd/migrate/main.go
 ```
 
 ## runs application
 
 ```sh
-./app/scripts/up # go to http://localhost:3000/
+docker-compose up
 ```
 
+**port binding**
+
+container|url
+--|--
+application-ui|https://localhost:3000
+graphql|https://localhost:8080
+mysql|https://localhost:3306
+
 ## sub commands
+
+### execute test on graphql container
+
+```
+./scripts/attach-graphql scripts/test
+```
+
+### view coverage graphql container
+
+```
+./scripts/view-coverage-graphql-container
+```
+
+### connect to mysql cli
+
+```
+./scripts/connect-db
+```
+
+### refresh database records
+
+```
+./scripts/attach-graphql go run cmd/drop/main.go
+./scripts/attach-graphql go run cmd/migrate/main.go
+```
 
 ### generarte graphql server code
 
 ```
-./app/scripts/attach-api scripts/gqlgen
+./scripts/attach-application-graphql scripts/gqlgen
 ```
 
 ### generarte graphql client code
 
 ```
-./app/scripts/attach-ui npm run codegen
+./scripts/attach-application-ui npm run codegen
 ```
 
-## やりのこしたこと
+## todo
 
 - GraphQLでエラー種別をスキーマで定義すること、[参考リンク](https://www.youtube.com/watch?v=RDNTP66oY2o)

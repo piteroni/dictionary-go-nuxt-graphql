@@ -45,6 +45,7 @@ type Pokemon struct {
 	Characteristics []*Characteristic `json:"characteristics"`
 	Description     *Description      `json:"description"`
 	Ability         *Ability          `json:"ability"`
+	CanEvolution    bool              `json:"canEvolution"`
 	Evolutions      []*Pokemon        `json:"evolutions"`
 	LinkInfo        *LinkInfo         `json:"linkInfo"`
 }

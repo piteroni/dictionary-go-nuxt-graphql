@@ -75,6 +75,7 @@ type ComplexityRoot struct {
 
 	Pokemon struct {
 		Ability         func(childComplexity int) int
+		CanEvolution    func(childComplexity int) int
 		Characteristics func(childComplexity int) int
 		Description     func(childComplexity int) int
 		Evolutions      func(childComplexity int) int
@@ -236,6 +237,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Pokemon.Ability(childComplexity), true
+
+	case "Pokemon.canEvolution":
+		if e.complexity.Pokemon.CanEvolution == nil {
+			break
+		}
+
+		return e.complexity.Pokemon.CanEvolution(childComplexity), true
 
 	case "Pokemon.characteristics":
 		if e.complexity.Pokemon.Characteristics == nil {
@@ -409,6 +417,7 @@ var sources = []*ast.Source{
   characteristics: [Characteristic!]!
   description: Description!
   ability: Ability!
+  canEvolution: Boolean!
   evolutions: [Pokemon!]!
   linkInfo: LinkInfo!
 }
@@ -1471,6 +1480,41 @@ func (ec *executionContext) _Pokemon_ability(ctx context.Context, field graphql.
 	res := resTmp.(*model.Ability)
 	fc.Result = res
 	return ec.marshalNAbility2ᚖpiteroniᚋdictionaryᚑgoᚑnuxtᚑgraphqlᚋgraphᚋmodelᚐAbility(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pokemon_canEvolution(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pokemon",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CanEvolution, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pokemon_evolutions(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
@@ -3109,6 +3153,11 @@ func (ec *executionContext) _Pokemon(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "ability":
 			out.Values[i] = ec._Pokemon_ability(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "canEvolution":
+			out.Values[i] = ec._Pokemon_canEvolution(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
