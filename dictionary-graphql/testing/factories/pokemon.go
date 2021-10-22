@@ -18,7 +18,7 @@ func NewPokemonFactory(db *gorm.DB) *PokemonFactory {
 	}
 }
 
-func (f *PokemonFactory) CreateGender(gender *model.Gender) (*model.Gender, error) {
+func (f *PokemonFactory) CreateGender(gender *model.Gender) error {
 	defaults := &model.Gender{
 		Name:    gofakeit.Name(),
 		IconURL: gofakeit.UUID(),
@@ -26,18 +26,18 @@ func (f *PokemonFactory) CreateGender(gender *model.Gender) (*model.Gender, erro
 
 	err := mergo.Merge(gender, *defaults)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	err = f.db.Create(gender).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return gender, nil
+	return nil
 }
 
-func (f *PokemonFactory) CreateType(t *model.Type) (*model.Type, error) {
+func (f *PokemonFactory) CreateType(t *model.Type) error {
 	defaults := &model.Type{
 		Name:    gofakeit.Name(),
 		IconURL: gofakeit.UUID(),
@@ -45,18 +45,18 @@ func (f *PokemonFactory) CreateType(t *model.Type) (*model.Type, error) {
 
 	err := mergo.Merge(t, *defaults)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	err = f.db.Create(t).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return t, nil
+	return nil
 }
 
-func (f *PokemonFactory) CreateCharacteristic(c *model.Characteristic) (*model.Characteristic, error) {
+func (f *PokemonFactory) CreateCharacteristic(c *model.Characteristic) error {
 	defaults := &model.Characteristic{
 		Name:        gofakeit.Name(),
 		Description: gofakeit.Name(),
@@ -64,18 +64,18 @@ func (f *PokemonFactory) CreateCharacteristic(c *model.Characteristic) (*model.C
 
 	err := mergo.Merge(c, *defaults)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	err = f.db.Create(c).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return c, nil
+	return nil
 }
 
-func (f *PokemonFactory) CreatePokemon(pokemon *model.Pokemon) (*model.Pokemon, error) {
+func (f *PokemonFactory) CreatePokemon(pokemon *model.Pokemon) error {
 	defaults := &model.Pokemon{
 		NationalNo:          gofakeit.Number(1, 2048),
 		Name:                gofakeit.Name(),
@@ -93,13 +93,13 @@ func (f *PokemonFactory) CreatePokemon(pokemon *model.Pokemon) (*model.Pokemon, 
 
 	err := mergo.Merge(pokemon, *defaults)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	err = f.db.Create(pokemon).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return pokemon, nil
+	return nil
 }

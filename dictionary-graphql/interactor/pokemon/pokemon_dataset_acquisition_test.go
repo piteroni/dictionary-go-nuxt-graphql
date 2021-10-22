@@ -108,7 +108,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			Name:       "pokemon-1",
 		}
 
-		_, err = factory.CreatePokemon(pokemon)
+		err = factory.CreatePokemon(pokemon)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -119,7 +119,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			Name:       "pokemon-2",
 		}
 
-		_, err = factory.CreatePokemon(next)
+		err = factory.CreatePokemon(next)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -162,7 +162,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			Name:       "pokemon-1",
 		}
 
-		_, err = factory.CreatePokemon(pokemon)
+		err = factory.CreatePokemon(pokemon)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -173,7 +173,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			Name:       "pokemon-2",
 		}
 
-		_, err = factory.CreatePokemon(evolution1)
+		err = factory.CreatePokemon(evolution1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -186,7 +186,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			Name:       "pokemon-3",
 		}
 
-		_, err = factory.CreatePokemon(evolution2)
+		err = factory.CreatePokemon(evolution2)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -224,7 +224,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 			Name:       "pokemon-1",
 		}
 
-		_, err = factory.CreatePokemon(pokemon)
+		err = factory.CreatePokemon(pokemon)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -248,8 +248,7 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 }
 
 func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.PokemonDAO) error {
-	// first pokemon.
-	pokemon, err := factory.CreatePokemon(&model.Pokemon{
+	pokemon := &model.Pokemon{
 		Model:               gorm.Model{ID: 2},
 		NationalNo:          2,
 		Name:                "pokemon-2",
@@ -263,7 +262,10 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 		SpecialAttachPoint:  33,
 		SpecialDefensePoint: 34,
 		SpeedPoint:          35,
-	})
+	}
+
+	// first pokemon.
+	err := factory.CreatePokemon(pokemon)
 	if err != nil {
 		return err
 	}
@@ -279,12 +281,12 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 	})
 
 	for _, gender := range genders {
-		g, err := factory.CreateGender(gender)
+		err := factory.CreateGender(gender)
 		if err != nil {
 			return err
 		}
 
-		err = dao.AddGender(pokemon, g)
+		err = dao.AddGender(pokemon, gender)
 		if err != nil {
 			return err
 		}
@@ -301,7 +303,7 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 	})
 
 	for _, t := range types {
-		t, err := factory.CreateType(t)
+		err := factory.CreateType(t)
 		if err != nil {
 			return err
 		}
@@ -323,7 +325,7 @@ func seed(db *gorm.DB, factory *factories.PokemonFactory, dao *persistence.Pokem
 	})
 
 	for _, c := range characteristics {
-		c, err := factory.CreateCharacteristic(c)
+		err := factory.CreateCharacteristic(c)
 		if err != nil {
 			return err
 		}
