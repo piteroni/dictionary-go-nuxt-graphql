@@ -17,6 +17,10 @@ func NewPokemonDAO(db *gorm.DB) *PokemonDAO {
 }
 
 func (dao *PokemonDAO) ScanTypes(p *model.Pokemon) error {
+	if len(p.Types) > 0 {
+		return nil
+	}
+
 	return dao.db.Model(p).Association("Types").Find(&p.Types)
 }
 
@@ -25,6 +29,10 @@ func (dao *PokemonDAO) AddType(p *model.Pokemon, t *model.Type) error {
 }
 
 func (dao *PokemonDAO) ScanGenders(p *model.Pokemon) error {
+	if len(p.Genders) > 0 {
+		return nil
+	}
+
 	return dao.db.Model(p).Association("Genders").Find(&p.Genders)
 }
 
@@ -33,6 +41,10 @@ func (dao *PokemonDAO) AddGender(p *model.Pokemon, g *model.Gender) error {
 }
 
 func (dao *PokemonDAO) ScanDescriptions(p *model.Pokemon) error {
+	if len(p.Descriptions) > 0 {
+		return nil
+	}
+
 	return dao.db.Model(p).Association("Descriptions").Find(&p.Descriptions)
 }
 
@@ -43,6 +55,10 @@ func (dao *PokemonDAO) AddDescripton(p *model.Pokemon, d *model.Description) err
 }
 
 func (dao *PokemonDAO) ScanCharacteristics(p *model.Pokemon) error {
+	if len(p.Characteristics) > 0 {
+		return nil
+	}
+
 	return dao.db.Model(p).Association("Characteristics").Find(&p.Characteristics)
 }
 
