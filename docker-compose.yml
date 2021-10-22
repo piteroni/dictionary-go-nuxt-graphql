@@ -3,13 +3,13 @@ version: "3"
 services:
   api:
     build:
-      context: ./backend
+      context: ./dictionary-graphql
       dockerfile: Dockerfile
     depends_on:
       - db
     hostname: api
     volumes:
-      - ./backend:/app
+      - ./dictionary-graphql:/app
       - ./schema.graphql:/schema.graphql
     ports:
       - 8080:8080
@@ -30,13 +30,13 @@ services:
       MYSQL_ROOT_PASSWORD: password
   ui:
     build: 
-      context: ./frontend
+      context: ./dictionary-application-ui
       dockerfile: Dockerfile
     depends_on:
       - api
     hostname: ui
     volumes:
-      - ./frontend:/app
+      - ./dictionary-application-ui:/app
       - /app/node_modules
       - ./schema.graphql:/schema.graphql
     ports:

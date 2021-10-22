@@ -4,13 +4,13 @@ set -eu
 
 cd "$(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")"
 
-(cd frontend && rm -rf node_modules node_modules_tmp)
+(cd dictionary-application-ui && rm -rf node_modules node_modules_tmp)
 
 docker-compose build ui
 
 ./scripts/attach-ui tar zcvf node_modules_tmp node_modules > /dev/null
 
-cd frontend
+cd dictionary-application-ui
 
 tar zxvf node_modules_tmp > /dev/null
 rm -rf node_modules_tmp

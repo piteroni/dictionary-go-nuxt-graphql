@@ -8,20 +8,38 @@
 
 ```
 git clone https://github.com/piteroni/dictionary-go-nuxt-graphql.git
-cd dictionary-go-nuxt-graphql/app
+cd dictionary-go-nuxt-graphql
 docker-compose build
 ./scripts/construct-node-modules
-./scripts/up-db -d && sleep 5
+docker-compose up -d db && sleep 5
 ./scripts/attach-api go run cmd/migrate/main.go
 ```
 
 ## runs application
 
 ```sh
-./app/scripts/up # go to http://localhost:3000/
+docker-compose up # go to http://localhost:3000/
 ```
 
 ## sub commands
+
+### execute test on graphql container
+
+```
+./app/scripts/attach-api scripts/gqlgen
+```
+
+### view coverage graphql container
+
+```
+./scripts/view-coverage-graphql-container
+```
+
+### connect to mysql cli
+
+```
+./scripts/connect-db
+```
 
 ### generarte graphql server code
 
