@@ -6,9 +6,15 @@
       </div>
 
       <div class="evolution-table">
-        <div class="flex" v-if="isPresent">
-          <div class="mr-8" v-for="(pokemon, key) in evolutions" :key="key">
-            <img class="pokemon mb-2" width="290px" height="290px" :src="pokemon.imageURL" :alt="pokemon.name">
+        <div class="flex justify-center" v-if="isPresent">
+          <div class="mr-2" v-for="(pokemon, key) in evolutions" :key="key">
+            <div class="flex items-center">
+              <img class="pokemon mb-2" width="290px" height="290px" :src="pokemon.imageURL" :alt="pokemon.name">
+
+              <div class="ml-2" style="height: 40px;">
+                <div v-if="pokemon.canEvolution" class="evolution-allow"></div>
+              </div>
+            </div>
 
             <p class="national-no">
               {{ formatNationalNo(pokemon.nationalNo) }}
@@ -69,7 +75,7 @@ export default defineComponent({
 <style scoped>
 .table-container {
   position: relative;
-  width: 1000px;
+  width: 1100px;
   height: 520px;
   margin: 90px auto;
   background-color: #fff;
@@ -85,7 +91,7 @@ export default defineComponent({
 }
 
 .evolution-table {
-  padding: 80px 50px 30px;
+  padding: 80px 20px 30px;
 }
 
 .pokemon {
@@ -101,5 +107,13 @@ export default defineComponent({
 .pokemon-name {
   font-size: 22px;
   font-weight: 700;
+}
+
+.evolution-allow {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 20px 0 20px 20px;
+  border-color: transparent transparent transparent #d8dfe6;
 }
 </style>

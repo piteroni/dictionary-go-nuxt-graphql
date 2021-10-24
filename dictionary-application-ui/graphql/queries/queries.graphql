@@ -44,6 +44,7 @@ query pokemon($pokemonId: Int!) {
         name
         iconURL
       }
+      canEvolution
     }
   }
 }

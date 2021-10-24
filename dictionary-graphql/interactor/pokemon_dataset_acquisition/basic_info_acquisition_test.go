@@ -99,6 +99,7 @@ func TestBasicInfoAcquisition(t *testing.T) {
 			Description: "characteristics-2-description",
 		})
 
+		// Out of jurisdiction.
 		assert.Nil(t, dataset.LinkInfo)
 		assert.Len(t, dataset.Evolutions, 0)
 	})

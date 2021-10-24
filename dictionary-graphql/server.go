@@ -57,5 +57,8 @@ func main() {
 		},
 	})
 
-	logger.Error(http.ListenAndServe(":8080", c.Handler(router)))
+	err = http.ListenAndServe(":8080", c.Handler(router))
+	if err != nil {
+		logger.Error(err)
+	}
 }

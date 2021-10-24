@@ -7,7 +7,7 @@ import (
 	"context"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
-	"piteroni/dictionary-go-nuxt-graphql/interactor/pokemon/pokemon_dataset_acquisition"
+	"piteroni/dictionary-go-nuxt-graphql/interactor/pokemon_dataset_acquisition"
 )
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Pokemon, error) {
@@ -78,6 +78,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 			Description:     description,
 			Ability:         ability,
 			LinkInfo:        link,
+			CanEvolution:    evolution.CanEvolution,
 		})
 	}
 
@@ -95,6 +96,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		Ability:         ability,
 		LinkInfo:        link,
 		Evolutions:      evolutions,
+		CanEvolution:    p.CanEvolution,
 	}, nil
 }
 
