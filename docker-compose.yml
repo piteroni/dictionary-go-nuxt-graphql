@@ -13,6 +13,7 @@ services:
       - ./schema.graphql:/schema.graphql
     ports:
       - 8080:8080
+    restart: always
   db:
     build:
       context: ./
