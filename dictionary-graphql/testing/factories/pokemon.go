@@ -86,7 +86,7 @@ func (f *PokemonFactory) CreatePokemon(pokemon *model.Pokemon) error {
 		HeartPoint:          gofakeit.Number(1, 100),
 		AttackPoint:         gofakeit.Number(1, 100),
 		DefensePoint:        gofakeit.Number(1, 100),
-		SpecialAttachPoint:  gofakeit.Number(1, 100),
+		SpecialAttackPoint:  gofakeit.Number(1, 100),
 		SpecialDefensePoint: gofakeit.Number(1, 100),
 		SpeedPoint:          gofakeit.Number(1, 100),
 	}

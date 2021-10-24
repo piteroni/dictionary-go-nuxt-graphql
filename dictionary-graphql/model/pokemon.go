@@ -7,24 +7,19 @@ import (
 type Pokemon struct {
 	gorm.Model
 
-	Types []Type `gorm:"many2many:type_possessed"`
-
-	Characteristics []Characteristic `gorm:"many2many:characteristic_possessed"`
-
-	// @TODO: `gorm:"unique"`
-	EvolutionID *uint
-	Evolution   *Pokemon
-
 	// identify
 	NationalNo int `gorm:"unique"`
-
-	// category
-	Species string
 
 	// profile
 	Name         string `gorm:"unique"`
 	ImageURL     string
 	Descriptions []Description
+
+	// attribute
+	Species     string
+	Types       []Type `gorm:"many2many:type_possessed"`
+	EvolutionID *uint  `gorm:"unique"`
+	Evolution   *Pokemon
 
 	// physical
 	Height  string
@@ -35,7 +30,8 @@ type Pokemon struct {
 	HeartPoint          int
 	AttackPoint         int
 	DefensePoint        int
-	SpecialAttachPoint  int
+	SpecialAttackPoint  int
 	SpecialDefensePoint int
 	SpeedPoint          int
+	Characteristics     []Characteristic `gorm:"many2many:characteristic_possessed"`
 }

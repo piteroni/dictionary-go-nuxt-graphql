@@ -37,6 +37,12 @@ mysql|https://localhost:3306
 ./scripts/attach-graphql scripts/test
 ```
 
+ORM logging is disabled by default, but if you want to enable it, define an environment variable.
+
+```
+ENABLE_ORM_LOGGING= ./scripts/attach-graphql scripts/test
+```
+
 ### view coverage graphql container
 
 ```

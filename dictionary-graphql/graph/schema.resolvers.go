@@ -7,15 +7,15 @@ import (
 	"context"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
-	"piteroni/dictionary-go-nuxt-graphql/interactor/pokemon"
+	"piteroni/dictionary-go-nuxt-graphql/interactor/pokemon/pokemon_dataset_acquisition"
 )
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Pokemon, error) {
-	u := pokemon.NewPokemonDatasetAcquisition(r.DB)
+	u := pokemon_dataset_acquisition.New(r.DB)
 
 	p, err := u.GetPokemonDataset(pokemonID)
 	if err != nil {
-		if _, ok := err.(*pokemon.PokemonNotFound); ok {
+		if _, ok := err.(*pokemon_dataset_acquisition.PokemonNotFound); ok {
 			r.Logger.Warn(err.Error())
 
 			return nil, err
@@ -39,7 +39,12 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		characteristics = append(characteristics, (*model.Characteristic)(characteristic))
 	}
 
+	description := (*model.Description)(p.Description)
+	ability := (*model.Ability)(p.Ability)
+	link := (*model.LinkInfo)(p.LinkInfo)
+
 	evolutions := []*model.Pokemon{}
+
 	for _, evolution := range p.Evolutions {
 		genders := []*model.Gender{}
 		for _, gender := range evolution.Genders {
@@ -65,8 +70,8 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 			Name:            evolution.Name,
 			ImageURL:        evolution.ImageURL,
 			Species:         evolution.Species,
-			Height:          evolution.HeightText,
-			Weight:          evolution.WeightText,
+			Height:          evolution.Height,
+			Weight:          evolution.Weight,
 			Genders:         genders,
 			Types:           types,
 			Characteristics: characteristics,
@@ -76,19 +81,13 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Poke
 		})
 	}
 
-	description := (*model.Description)(p.Description)
-
-	ability := (*model.Ability)(p.Ability)
-
-	link := (*model.LinkInfo)(p.LinkInfo)
-
 	return &model.Pokemon{
 		NationalNo:      p.NationalNo,
 		Name:            p.Name,
 		ImageURL:        p.ImageURL,
 		Species:         p.Species,
-		Height:          p.HeightText,
-		Weight:          p.WeightText,
+		Height:          p.Height,
+		Weight:          p.Weight,
 		Genders:         genders,
 		Types:           types,
 		Characteristics: characteristics,

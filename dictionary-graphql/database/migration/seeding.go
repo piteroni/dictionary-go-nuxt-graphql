@@ -147,7 +147,7 @@ func createBulbasaur(db *gorm.DB) (*model.Pokemon, error) {
 		HeartPoint:          45,
 		AttackPoint:         49,
 		DefensePoint:        49,
-		SpecialAttachPoint:  65,
+		SpecialAttackPoint:  65,
 		SpecialDefensePoint: 65,
 		SpeedPoint:          45,
 	}
@@ -232,7 +232,7 @@ func createIvysaur(db *gorm.DB) (*model.Pokemon, error) {
 		HeartPoint:          60,
 		AttackPoint:         62,
 		DefensePoint:        63,
-		SpecialAttachPoint:  80,
+		SpecialAttackPoint:  80,
 		SpecialDefensePoint: 80,
 		SpeedPoint:          60,
 	}
@@ -317,7 +317,7 @@ func createVenusaur(db *gorm.DB) (*model.Pokemon, error) {
 		HeartPoint:          80,
 		AttackPoint:         82,
 		DefensePoint:        83,
-		SpecialAttachPoint:  100,
+		SpecialAttackPoint:  100,
 		SpecialDefensePoint: 100,
 		SpeedPoint:          80,
 	}
