@@ -1,7 +1,7 @@
 <template>
   <div class="heading-container px-12 w-full flex flex-wrap content-center justify-between">
     <div style="width: 30px" class="nav flex flex-wrap content-center">
-      <div v-if="hasPrev" @click="moveToPrev" class="nav-button flex flex-wrap justify-center content-center">
+      <div v-if="hasPrev" class="nav-button flex flex-wrap justify-center content-center" @click="moveToPrev">
         <img width="12px" src="~/assets/image/prev.png" alt="prev">
       </div>
     </div>
@@ -23,9 +23,9 @@
 
           <div class="flex mt-6">
             <img
-              class="mr-2"
               v-for="(gender, key) in genders"
               :key="key"
+              class="mr-2"
               :src="gender.iconURL"
               :alt="gender.name"
             >
@@ -35,7 +35,7 @@
     </div>
 
     <div style="width: 30px" class="nav flex flex-wrap content-center">
-      <div v-if="hasNext" @click="moveToNext" class="nav-button flex flex-wrap justify-center content-center">
+      <div v-if="hasNext" class="nav-button flex flex-wrap justify-center content-center" @click="moveToNext">
         <img width="12px" src="~/assets/image/next.png" alt="next">
       </div>
     </div>
@@ -80,7 +80,7 @@ export default defineComponent({
     const hasNext = computed(() => pokemon.linkInfo.value.hasNext)
 
     return {
-      nationalNo: nationalNo,
+      nationalNo,
       name: pokemon.name,
       imageURL: pokemon.imageURL,
       genders: pokemon.genders,

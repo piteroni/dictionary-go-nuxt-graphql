@@ -7,5 +7,5 @@ const ApolloPlugin: Plugin = ({ app }) => {
     provide(DefaultApolloClient, app.apolloProvider.defaultClient)
   })
 }
-  
+
 export default ApolloPlugin

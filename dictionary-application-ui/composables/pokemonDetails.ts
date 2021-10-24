@@ -1,6 +1,6 @@
-import { readonly, reactive, computed, InjectionKey } from "@vue/composition-api"
-import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability, LinkInfo, Maybe, Pokemon } from "@/graphql/generated/client"
+import { readonly, reactive, computed, InjectionKey } from "@nuxtjs/composition-api"
 import { useQuery } from "@vue/apollo-composable"
+import { Characteristic, Description, Gender, Type, PokemonQuery, PokemonDocument, PokemonQueryVariables, Ability, LinkInfo } from "@/graphql/generated/client"
 
 type State = {
   nationalNo: number,
@@ -58,7 +58,7 @@ export const abilityMaxStatus = readonly({
   speed: 250
 })
 
-const fetch = (state: State) => async (variables: PokemonQueryVariables) => {
+const fetch = (state: State) => (variables: PokemonQueryVariables) => {
   const { onError, onResult } = useQuery<PokemonQuery>(PokemonDocument, variables)
 
   return new Promise<void>((resolve, reject) => {

@@ -6,13 +6,13 @@
       </div>
 
       <div class="evolution-table">
-        <div class="flex justify-center" v-if="isPresent">
-          <div class="mr-2" v-for="(pokemon, key) in evolutions" :key="key">
+        <div v-if="isPresent" class="flex justify-center">
+          <div v-for="(pokemon, key) in evolutions" :key="key" class="mr-2">
             <div class="flex items-center">
               <img class="pokemon mb-2" width="290px" height="290px" :src="pokemon.imageURL" :alt="pokemon.name">
 
               <div class="ml-2" style="height: 40px;">
-                <div v-if="pokemon.canEvolution" class="evolution-allow"></div>
+                <div v-if="pokemon.canEvolution" class="evolution-allow" />
               </div>
             </div>
 
@@ -26,9 +26,9 @@
 
             <div class="flex">
               <type
-                v-for="(type, key) in pokemon.types"
-                :key="key"
-                :iconURL="type.iconURL"
+                v-for="(type, typeKey) in pokemon.types"
+                :key="typeKey"
+                :icon-u-r-l="type.iconURL"
                 :name="type.name"
               />
             </div>

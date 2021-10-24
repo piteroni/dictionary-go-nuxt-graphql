@@ -22,7 +22,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     "~/plugins/axios",
-    '~/plugins/apollo'
+    "~/plugins/apollo"
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -58,7 +58,7 @@ export default {
     clientConfigs: {
       default: {
         httpEndpoint: "http://graphql:8080/api/i/query",
-        browserHttpEndpoint: 'http://localhost:8080/api/i/query',
+        browserHttpEndpoint: "http://localhost:8080/api/i/query",
       }
     }
   }

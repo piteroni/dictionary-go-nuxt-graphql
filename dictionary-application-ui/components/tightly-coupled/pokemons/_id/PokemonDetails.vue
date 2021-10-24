@@ -22,7 +22,7 @@
               <type
                 v-for="(type, key) in types"
                 :key="key"
-                :iconURL="type.iconURL"
+                :icon-u-r-l="type.iconURL"
                 :name="type.name"
               />
             </div>
@@ -53,7 +53,7 @@
           </div>
 
           <div class="details-value">
-            <div class="mr-4" v-for="(characteristic, key) in characteristics" :key="key">
+            <div v-for="(characteristic, key) in characteristics" :key="key" class="mr-4">
               {{ characteristic.name }}
             </div>
           </div>
@@ -66,8 +66,7 @@
           </div>
 
           <div class="details-value flex ml-8">
-            <div class="ability-value" :class="value" v-for="(value, key) in heartGauge" :key="key">
-            </div>
+            <div v-for="(value, key) in heartGauge" :key="key" class="ability-value" :class="value" />
           </div>
         </div>
 
@@ -77,8 +76,7 @@
           </div>
 
           <div class="details-value flex ml-8">
-            <div class="ability-value" :class="value" v-for="(value, key) in attackGauge" :key="key">
-            </div>
+            <div v-for="(value, key) in attackGauge" :key="key" class="ability-value" :class="value" />
           </div>
         </div>
 
@@ -88,8 +86,7 @@
           </div>
 
           <div class="details-value flex ml-8">
-            <div class="ability-value" :class="value" v-for="(value, key) in defenseGauge" :key="key">
-            </div>
+            <div v-for="(value, key) in defenseGauge" :key="key" class="ability-value" :class="value" />
           </div>
         </div>
 
@@ -99,8 +96,7 @@
           </div>
 
           <div class="details-value flex ml-8">
-            <div class="ability-value" :class="value" v-for="(value, key) in specialAttackGauge" :key="key">
-            </div>
+            <div v-for="(value, key) in specialAttackGauge" :key="key" class="ability-value" :class="value" />
           </div>
         </div>
 
@@ -110,8 +106,7 @@
           </div>
 
           <div class="details-value flex ml-8">
-            <div class="ability-value" :class="value" v-for="(value, key) in specialDefenseGauge" :key="key">
-            </div>
+            <div v-for="(value, key) in specialDefenseGauge" :key="key" class="ability-value" :class="value" />
           </div>
         </div>
 
@@ -121,8 +116,7 @@
           </div>
 
           <div class="details-value flex ml-8">
-            <div class="ability-value" :class="value" v-for="(value, key) in speedGauge" :key="key">
-            </div>
+            <div v-for="(value, key) in speedGauge" :key="key" class="ability-value" :class="value" />
           </div>
         </div>
       </div>
@@ -173,14 +167,14 @@ export default defineComponent({
       const gauge = []
 
       if (value < 0 || value > evaluation) {
-        throw Error(`incorrect ability value, value = ${value}`)
+        throw new Error(`incorrect ability value, value = ${value}`)
       }
 
       for (let i = 0; i < evaluation; i++) {
         if (value !== 0) {
           gauge.push(valueState.on)
           value--
-        } else  {
+        } else {
           gauge.push(valueState.off)
         }
       }

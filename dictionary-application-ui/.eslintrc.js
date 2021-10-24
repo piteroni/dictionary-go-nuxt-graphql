@@ -18,4 +18,5 @@ module.exports = {
     "object-curly-newline": "off",
     "space-before-function-paren": "off"
   },
+  "ignorePatterns": ["graphql/**/*.ts"]
 }
