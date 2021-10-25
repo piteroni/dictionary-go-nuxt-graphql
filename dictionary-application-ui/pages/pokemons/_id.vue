@@ -11,6 +11,8 @@
     <pokemon-details />
 
     <evolution-table />
+
+    <app-footer />
   </div>
 </template>
 
@@ -18,6 +20,7 @@
 import { defineComponent, useContext, useFetch, provide, inject } from "@nuxtjs/composition-api"
 import { pokemonDetailsKey, usePokemonDetails } from "@/composables/pokemonDetails"
 import Header from "@/components/singletons/Header.vue"
+import Footer from "@/components/singletons/Footer.vue"
 import PokemonHeading from "@/components/tightly-coupled/pokemons/_id/PokemonHeading.vue"
 import PokemonDetails from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
 import EvolutionTable from "@/components/tightly-coupled/pokemons/_id/EvolutionTable.vue"
@@ -25,6 +28,7 @@ import EvolutionTable from "@/components/tightly-coupled/pokemons/_id/EvolutionT
 export default defineComponent({
   components: {
     "app-header": Header,
+    "app-footer": Footer,
     "pokemon-heading": PokemonHeading,
     "pokemon-details": PokemonDetails,
     "evolution-table": EvolutionTable,
@@ -63,7 +67,6 @@ export default defineComponent({
   background-color: rgb(242, 242, 242);
   background-image: url('~/assets/image/pattern.svg');
   background-repeat: repeat;
-  padding-bottom: 50px;
 }
 
 .site-logo {

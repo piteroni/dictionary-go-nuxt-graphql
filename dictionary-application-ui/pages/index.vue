@@ -1,3 +1,7 @@
+<template>
+  <div></div>
+</template>
+
 <script lang="ts">
 import { defineComponent, useRouter } from "@nuxtjs/composition-api"
 
