@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eu
+
+cd "$(dirname "$0")/../../dictionary-graphql" || exit
+
+GOOS=linux go build -o tmp/pokemon lambda/pokemon/*
+zip tmp/function.zip -j tmp/pokemon 
+
+aws lambda update-function-code \
+    --region ap-northeast-1 \
+    --function-name pokemon \
+    --zip-file fileb://tmp/function.zip
