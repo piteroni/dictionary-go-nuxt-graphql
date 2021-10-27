@@ -2,30 +2,36 @@ package main
 
 import (
 	"context"
-	"os"
+	"errors"
+	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/database"
-	"piteroni/dictionary-go-nuxt-graphql/driver"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
 	"piteroni/dictionary-go-nuxt-graphql/interactor/pokemon_dataset_acquisition"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func Handler(ctx context.Context, pokemonID int) (*model.Pokemon, error) {
-	logger := driver.NewLogger(os.Stdout)
+type Arguments struct {
+	PokemonId int `json:"pokemonId"`
+}
+
+func Handler(ctx context.Context, arguments Arguments) (*model.Pokemon, error) {
+	if arguments.PokemonId == 0 {
+		message := fmt.Sprintf("Illegal arguments arguments.PokemonId = %d", arguments.PokemonId)
+		return nil, errors.New(message)
+	}
 
 	db, err := database.ConnectToDatabase()
 	if err != nil {
-		logger.Errorf("unexpected error occurred during connect database: %v", err)
-		os.Exit(1)
+		return nil, err
 	}
 
 	u := pokemon_dataset_acquisition.New(db)
 
-	p, err := u.GetPokemonDataset(pokemonID)
+	p, err := u.GetPokemonDataset(arguments.PokemonId)
 	if err != nil {
 		if _, ok := err.(*pokemon_dataset_acquisition.PokemonNotFound); ok {
-			logger.Warn(err.Error())
+			fmt.Println(err.Error())
 
 			return nil, err
 		}
