@@ -1,7 +1,7 @@
 package persistence
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/model"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/model"
 
 	"gorm.io/gorm"
 )

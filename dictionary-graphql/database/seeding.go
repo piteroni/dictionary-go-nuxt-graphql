@@ -1,9 +1,9 @@
-package migration
+package database
 
 import (
 	"fmt"
-	"piteroni/dictionary-go-nuxt-graphql/model"
-	"piteroni/dictionary-go-nuxt-graphql/persistence"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/model"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/persistence"
 
 	"gorm.io/gorm"
 )

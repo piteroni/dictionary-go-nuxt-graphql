@@ -2,8 +2,8 @@ package pokemon_dataset_acquisition
 
 import (
 	"errors"
-	"piteroni/dictionary-go-nuxt-graphql/model"
-	"piteroni/dictionary-go-nuxt-graphql/persistence"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/model"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/persistence"
 
 	"gorm.io/gorm"
 )

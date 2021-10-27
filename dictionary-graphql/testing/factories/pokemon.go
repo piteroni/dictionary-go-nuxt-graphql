@@ -1,7 +1,7 @@
 package factories
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/model"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/model"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/imdario/mergo"

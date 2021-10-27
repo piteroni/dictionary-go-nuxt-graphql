@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/database"
-	"piteroni/dictionary-go-nuxt-graphql/database/migration"
 
 	"github.com/joho/godotenv"
 )
@@ -27,7 +26,7 @@ func main() {
 		logger.Fatalf("unexpected error occurred during connect database: %v", err)
 	}
 
-	err = migration.DropTables(db)
+	err = database.DropTables(db)
 	if err != nil {
 		logger.Fatal(err)
 	}

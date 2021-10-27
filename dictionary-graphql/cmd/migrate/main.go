@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/database"
-	"piteroni/dictionary-go-nuxt-graphql/database/migration"
 
 	"github.com/joho/godotenv"
 )
@@ -28,12 +27,12 @@ func main() {
 		os.Exit(statusFatal)
 	}
 
-	err = migration.Migrate(db)
+	err = database.Migrate(db)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	err = migration.Seed(db)
+	err = database.Seed(db)
 	if err != nil {
 		logger.Fatal(err)
 	}

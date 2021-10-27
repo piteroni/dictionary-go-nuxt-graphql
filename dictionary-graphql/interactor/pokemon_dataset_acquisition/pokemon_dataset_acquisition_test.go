@@ -1,7 +1,7 @@
 package pokemon_dataset_acquisition
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/model"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/model"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -3,7 +3,7 @@ package pokemon_dataset_acquisition
 import (
 	"errors"
 	"fmt"
-	"piteroni/dictionary-go-nuxt-graphql/model"
+	"piteroni/dictionary-go-nuxt-graphql/datasource/model"
 
 	"gorm.io/gorm"
 )
