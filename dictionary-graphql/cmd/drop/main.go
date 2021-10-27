@@ -1,10 +1,10 @@
 package main
 
 import (
+	"log"
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/database"
 	"piteroni/dictionary-go-nuxt-graphql/database/migration"
-	"piteroni/dictionary-go-nuxt-graphql/driver"
 
 	"github.com/joho/godotenv"
 )
@@ -15,23 +15,20 @@ const (
 )
 
 func main() {
-	logger := driver.NewLogger(os.Stdout)
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Ldate|log.Llongfile)
 
 	err := godotenv.Load()
 	if err != nil {
-		logger.Errorf("unexpected error occurred during loading .env: %v", err)
-		os.Exit(statusFatal)
+		logger.Fatalf("unexpected error occurred during loading .env: %v", err)
 	}
 
 	db, err := database.ConnectToDatabase()
 	if err != nil {
-		logger.Errorf("unexpected error occurred during connect database: %v", err)
-		os.Exit(statusFatal)
+		logger.Fatalf("unexpected error occurred during connect database: %v", err)
 	}
 
 	err = migration.DropTables(db)
 	if err != nil {
-		logger.Error(err)
-		os.Exit(statusError)
+		logger.Fatal(err)
 	}
 }

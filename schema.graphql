@@ -51,6 +51,29 @@ type LinkInfo {
   hasNext: Boolean!
 }
 
+type PokemonConnection {
+  pageInfo: PageInfo
+  edges: [PokemonEdge]
+}
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  startCursor: Int
+  hasNextPage: Boolean!
+  endCursor: Int
+}
+
+type PokemonEdge {
+  cursor: String!
+  node: Pokemon
+}
+
 type Query {
   pokemon(pokemonId: Int!): Pokemon!
+  pokemons(
+    fisrt: Int
+    after: Int
+    last: Int
+    before: Int
+  ): PokemonConnection!
 }

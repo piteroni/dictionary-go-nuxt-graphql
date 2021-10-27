@@ -33,6 +33,13 @@ type LinkInfo struct {
 	HasNext        bool `json:"hasNext"`
 }
 
+type PageInfo struct {
+	HasPreviousPage bool `json:"hasPreviousPage"`
+	StartCursor     *int `json:"startCursor"`
+	HasNextPage     bool `json:"hasNextPage"`
+	EndCursor       *int `json:"endCursor"`
+}
+
 type Pokemon struct {
 	NationalNo      int               `json:"nationalNo"`
 	Name            string            `json:"name"`
@@ -48,6 +55,16 @@ type Pokemon struct {
 	CanEvolution    bool              `json:"canEvolution"`
 	Evolutions      []*Pokemon        `json:"evolutions"`
 	LinkInfo        *LinkInfo         `json:"linkInfo"`
+}
+
+type PokemonConnection struct {
+	PageInfo *PageInfo      `json:"pageInfo"`
+	Edges    []*PokemonEdge `json:"edges"`
+}
+
+type PokemonEdge struct {
+	Cursor string   `json:"cursor"`
+	Node   *Pokemon `json:"node"`
 }
 
 type Type struct {
