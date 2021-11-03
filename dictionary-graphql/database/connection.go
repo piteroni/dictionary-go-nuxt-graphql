@@ -1,9 +1,8 @@
 package database
 
 import (
-	"errors"
 	"fmt"
-	"os"
+	"piteroni/dictionary-go-nuxt-graphql/driver"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,27 +10,27 @@ import (
 )
 
 func ConnectToDatabase() (*gorm.DB, error) {
-	username, err := env("DB_USERNAME")
+	username, err := driver.Env("DB_USERNAME")
 	if err != nil {
 		return nil, err
 	}
 
-	password, err := env("DB_PASSWORD")
+	password, err := driver.Env("DB_PASSWORD")
 	if err != nil {
 		return nil, err
 	}
 
-	host, err := env("DB_HOST")
+	host, err := driver.Env("DB_HOST")
 	if err != nil {
 		return nil, err
 	}
 
-	port, err := env("DB_PORT")
+	port, err := driver.Env("DB_PORT")
 	if err != nil {
 		return nil, err
 	}
 
-	dbname, err := env("DB_NAME")
+	dbname, err := driver.Env("DB_NAME")
 	if err != nil {
 		return nil, err
 	}
@@ -48,15 +47,4 @@ func ConnectToDatabase() (*gorm.DB, error) {
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
-}
-
-func env(key string) (string, error) {
-	message := "environment variables for access aws are not set: %s"
-
-	value, ok := os.LookupEnv(key)
-	if !ok {
-		return "", errors.New(fmt.Sprintf(message, key))
-	}
-
-	return value, nil
 }

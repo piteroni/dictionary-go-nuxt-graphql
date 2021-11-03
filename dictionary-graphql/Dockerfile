@@ -19,13 +19,12 @@ WORKDIR /app
 
 COPY --from=builder /build/main ./
 
-ENTRYPOINT [ "/app/main" ]
+ENTRYPOINT ["/app/main"]
 
 FROM base AS dev
 
-ENV TZ=Asia/Tokyo
-
-ENV PS1='\h /\W\ # '
+ENV TZ=Asia/Tokyo \
+    PS1='\h /\W\ # '
 
 RUN cd /tmp && \
     go get -u github.com/cosmtrek/air && \
