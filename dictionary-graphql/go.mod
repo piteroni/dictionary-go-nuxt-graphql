@@ -9,7 +9,6 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/imdario/mergo v0.3.12
-	github.com/joho/godotenv v1.4.0
 	github.com/mitchellh/mapstructure v1.4.2 // indirect
 	github.com/rs/cors v1.8.0
 	github.com/stretchr/testify v1.7.0

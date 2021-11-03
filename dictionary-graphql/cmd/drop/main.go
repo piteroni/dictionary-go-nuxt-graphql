@@ -5,8 +5,6 @@ import (
 	"piteroni/dictionary-go-nuxt-graphql/database"
 	"piteroni/dictionary-go-nuxt-graphql/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
-
-	"github.com/joho/godotenv"
 )
 
 const (
@@ -16,12 +14,6 @@ const (
 
 func main() {
 	logger := driver.NewLogger(os.Stdout)
-
-	err := godotenv.Load()
-	if err != nil {
-		logger.Errorf("unexpected error occurred during loading .env: %v", err)
-		os.Exit(statusFatal)
-	}
 
 	db, err := database.ConnectToDatabase()
 	if err != nil {

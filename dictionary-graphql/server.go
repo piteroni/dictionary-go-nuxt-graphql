@@ -12,18 +12,11 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
 func main() {
 	logger := driver.NewLogger(os.Stdout)
-
-	err := godotenv.Load()
-	if err != nil {
-		logger.Errorf("unexpected error occurred during loading .env: %v", err)
-		os.Exit(1)
-	}
 
 	db, err := database.ConnectToDatabase()
 	if err != nil {

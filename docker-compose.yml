@@ -5,6 +5,8 @@ services:
     build:
       context: ./dictionary-graphql
       dockerfile: Dockerfile
+      target: dev
+    command: air -c .air.toml
     depends_on:
       - db
     hostname: graphql
@@ -14,6 +16,12 @@ services:
     ports:
       - 8080:8080
     restart: always
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: dictionary_go_nuxt_graphql
   db:
     build:
       context: ./

@@ -1,7 +1,27 @@
-FROM golang:1.16-alpine
+FROM golang:1.16-alpine AS base
 
 RUN apk upgrade --update && \
     apk --no-cache add git gcc libc-dev
+
+FROM base AS builder
+
+WORKDIR /build
+
+COPY . .
+
+RUN go mod download && go build -o main .
+
+FROM alpine:3.14.2 AS production
+
+ENV TZ=Asia/Tokyo
+
+WORKDIR /app
+
+COPY --from=builder /build/main ./
+
+ENTRYPOINT [ "/app/main" ]
+
+FROM base AS dev
 
 ENV TZ=Asia/Tokyo
 
@@ -22,4 +42,4 @@ RUN \
     go get -u gopkg.in/yaml.v2@v2.3.0 && \
     go mod download
 
-CMD ["air", "-c", ".air.toml"]
+CMD ["bash"]

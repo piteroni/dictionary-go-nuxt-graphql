@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function error() {
+  printf "${}\e[31m%s\e[0m\n" "$1"
+}
+
+if [ -z "${AWS_ACCESS_KEY_ID}" ] || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+  error "environment variables for access aws are not set"
+  exit 1
+fi
+
+readonly GRAPHQL_ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-graphql
+readonly GRAPHQL_IMAGE_NANE=dictionary-app-graphql
+readonly GRAPHQL_IMAGE_URI=dictionary-graphql
+
+readonly APPLICATION_UI_ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-application-ui
+readonly APPLICATION_UI_IMAGE_NANE=dictionary-app-application-ui
+readonly APPLICATION_UI_IMAGE_URI=dictionary-application-ui
+
+function push() {
+  local -r _ECR_URL=$1
+  local -r _IMAGE_NAME=$2
+
+  aws ecr get-login-password | docker login --username AWS --password-stdin "${_ECR_URL}"
+
+  docker image tag "${_IMAGE_NAME}:latest" "${_ECR_URL}:latest"
+  docker image push "${_ECR_URL}:latest"
+}
+
+docker build --target production -t "${GRAPHQL_IMAGE_NANE}:latest" ${GRAPHQL_IMAGE_URI}
+docker build --target production -t "${APPLICATION_UI_IMAGE_NANE}:latest" ${APPLICATION_UI_IMAGE_URI}
+
+push ${GRAPHQL_ECR_URI} ${GRAPHQL_IMAGE_NANE}
+push ${APPLICATION_UI_ECR_URI} ${APPLICATION_UI_IMAGE_NANE}
