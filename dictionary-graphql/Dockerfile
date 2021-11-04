@@ -11,7 +11,8 @@ WORKDIR /build
 
 COPY . .
 
-RUN go mod download && go build -o main .
+RUN go mod download && \
+    GOOS=linux go build -ldflags="-s -w" -trimpath -o main .
 
 FROM alpine:3.14.2 AS production
 
