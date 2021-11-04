@@ -34,8 +34,8 @@ func main() {
 	router := mux.NewRouter()
 
 	// FOR ECS DEBUG.
-	router.HandleFunc("/ping-v3", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong-v3"))
+	router.HandleFunc("/ping-v4", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong-v4"))
 	})
 	router.Handle("/api/i/query", srv)
 	router.Handle("/", playground.Handler("GraphQL playground", "/api/i/query"))
