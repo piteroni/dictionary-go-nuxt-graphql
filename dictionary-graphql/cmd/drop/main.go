@@ -4,7 +4,6 @@ import (
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/cmd/internal"
 	"piteroni/dictionary-go-nuxt-graphql/database"
-	"piteroni/dictionary-go-nuxt-graphql/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 )
 
@@ -17,7 +16,7 @@ func main() {
 		os.Exit(internal.StatusFatal)
 	}
 
-	err = migration.DropTables(db)
+	err = database.DropTables(db)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(internal.StatusError)

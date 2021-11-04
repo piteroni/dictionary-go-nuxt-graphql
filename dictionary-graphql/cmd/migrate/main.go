@@ -4,7 +4,6 @@ import (
 	"os"
 	"piteroni/dictionary-go-nuxt-graphql/cmd/internal"
 	"piteroni/dictionary-go-nuxt-graphql/database"
-	"piteroni/dictionary-go-nuxt-graphql/database/migration"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 )
 
@@ -17,13 +16,13 @@ func main() {
 		os.Exit(internal.StatusError)
 	}
 
-	err = migration.Migrate(db)
+	err = database.Migrate(db)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(internal.StatusError)
 	}
 
-	err = migration.Seed(db)
+	err = database.Seed(db)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(internal.StatusError)

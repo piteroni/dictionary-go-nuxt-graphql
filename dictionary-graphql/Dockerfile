@@ -1,8 +1,10 @@
+# base
 FROM golang:1.16-alpine AS base
 
 RUN apk upgrade --update && \
     apk --no-cache add git gcc libc-dev
 
+# production
 FROM base AS builder
 
 WORKDIR /build
@@ -21,6 +23,7 @@ COPY --from=builder /build/main ./
 
 ENTRYPOINT ["/app/main"]
 
+# development
 FROM base AS dev
 
 ENV TZ=Asia/Tokyo \
