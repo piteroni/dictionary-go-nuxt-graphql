@@ -1,32 +1,17 @@
 #!/usr/bin/env bash
 
-function error() {
-  printf "${}\e[31m%s\e[0m\n" "$1"
-}
-
-if [ -z "${AWS_ACCESS_KEY_ID}" ] || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
-  error "environment variables for access aws are not set"
+if [ $# != 1 ]; then
+  echo "usage: $(basename "${0}") [service-name]" 2>&1
   exit 1
 fi
 
-set -euo pipefail
+if [ -z "${AWS_ACCESS_KEY_ID}" ] || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+  echo "environment variables for access aws are not set" 2>&1
+  exit 1
+fi
 
-# general
+readonly SERVICE=$1
 readonly CLUSTER_NAME=dictionaryApp
-# shellcheck disable=SC2155
-readonly IMAGE_TAG="$(git log --oneline | head -n 1 | awk '{print $1}')"
-
-# ecs service
-readonly GRAPHQL_SEVICE_NAME=graphql-service
-# ecr
-readonly GRAPHQL_ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-graphql
-readonly GRAPHQL_IMAGE_NANE=dictionary-app-graphql
-# local
-readonly GRAPHQL_DOCKERFILE_LOCATION_DIR=dictionary-graphql
-
-# readonly APPLICATION_UI_ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-application-ui
-# readonly APPLICATION_UI_IMAGE_NANE=dictionary-app-application-ui:latest
-# readonly APPLICATION_UI_IMAGE_URI=dictionary-application-ui
 
 function push() {
   local -r _ECR_URI=$1
@@ -55,7 +40,7 @@ function revision() {
   local -r CURRENT_TASK_DEF_NAME="$(aws ecs describe-services --cluster "${_CLUSTER_NAME}" --services "${_SERVICE_ARN}" | jq -r '.services[0].taskDefinition')"
 
   aws ecs describe-task-definition --task-definition "${CURRENT_TASK_DEF_NAME}" \
-    | jq '.taskDefinition | del(.taskDefinitionArn, .status, .requiresAttributes, .compatibilities, .revision)' \
+    | jq '.taskDefinition | del(.taskDefinitionArn, .status, .requiresAttributes, .compatibilities, .revision, .registeredAt, .registeredBy)' \
     | jq '(.containerDefinitions[] | select(.name == "'"${_REGISTERED_CONTAINER_NAME}"'")).image = "'"${_IMAGE_NAME_TO_REGISTER}"'"' > /tmp/taskdef.json
 
   aws ecs register-task-definition --cli-input-json file:///tmp/taskdef.json | jq -r '.taskDefinition.taskDefinitionArn'
@@ -69,18 +54,45 @@ function apply_task_def_to_service() {
   aws ecs update-service --cluster "${_CLUSTER_NAME}" --service "${_SERVICE_ARN}" --task-definition "${_TASK_DEF}"
 }
 
-# deploy to graphql service
-docker build --target production -t "${GRAPHQL_IMAGE_NANE}:latest" ${GRAPHQL_DOCKERFILE_LOCATION_DIR}
+function deploy_graphql() {
+  set -euo pipefail
+
+  local -r _IMAGE_TAG=$1
+
+  # ecs cluster
+  local -r _CLUSTER_NAME=${CLUSTER_NAME}
+  # ecs service
+  local -r _SEVICE_NAME=graphql-service
+  # ecr
+  local -r _IMAGE_NANE=dictionary-app-graphql
+  local -r _ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-graphql
+  # local
+  local -r _LOCATION_DIR=dictionary-graphql
+
+  docker build --target production -t "${_IMAGE_NANE}:latest" ${_LOCATION_DIR}
+
+  # shellcheck disable=SC2155
+  local -r _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
+
+  push ${_ECR_URI} "${_IMAGE_NANE}:latest" "${_IMAGE_TAG}"
+
+  # shellcheck disable=SC2155
+  local -r _NEW_TASK_DEF=$(revision "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_IMAGE_NANE}" "${_ECR_URI}:${_IMAGE_TAG}")
+
+  apply_task_def_to_service "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_NEW_TASK_DEF}"
+}
+
+# main
 
 # shellcheck disable=SC2155
-readonly GRAPHQL_SERVICE_ARN="$(service_arn ${CLUSTER_NAME} ${GRAPHQL_SEVICE_NAME})"
+readonly IMAGE_TAG="$(git log --oneline | head -n 1 | awk '{print $1}')"
 
-push ${GRAPHQL_ECR_URI} "${GRAPHQL_IMAGE_NANE}:latest" "${IMAGE_TAG}"
-
-# shellcheck disable=SC2155
-readonly GRAPHQL_NEW_TASK_DEF=$(revision ${CLUSTER_NAME} "${GRAPHQL_SERVICE_ARN}" "${GRAPHQL_IMAGE_NANE}" "${GRAPHQL_ECR_URI}/${IMAGE_TAG}")
-
-apply_task_def_to_service ${CLUSTER_NAME} "${GRAPHQL_SERVICE_ARN}" "${GRAPHQL_NEW_TASK_DEF}"
-
-# deploy to applicaltion-ui service
-
+case "${SERVICE}" in
+  graphql)
+    deploy_graphql "${IMAGE_TAG}"
+    ;;
+  *)
+    echo "unknown service: ${SERVICE}" 2>&1
+    exit 1
+    ;;
+esac
