@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# != 1 ]; then
-  echo "usage: $(basename "${0}") [service-name]" 2>&1
+  echo "usage: $(basename "$0") [service-name]" 2>&1
   exit 1
 fi
 
@@ -13,7 +13,9 @@ fi
 readonly SERVICE=$1
 readonly CLUSTER_NAME=dictionaryApp
 
-function push() {
+push() (
+  set -euo pipefail
+
   local -r _ECR_URI=$1
   local -r _IMAGE_NAME=$2
   local -r _IMAGE_TAG=$3
@@ -22,39 +24,48 @@ function push() {
 
   docker image tag "${_IMAGE_NAME}" "${_ECR_URI}:${IMAGE_TAG}"
   docker image push "${_ECR_URI}:${_IMAGE_TAG}"
-}
+)
 
-function service_arn() {
+service_arn() (
+  set -euo pipefail
+
   local -r _CLUSTER_NAME=$1
   local -r _SERVICE_NAME=$2
 
   aws ecs list-services --cluster "${_CLUSTER_NAME}" | jq -r '.serviceArns[] | select(. | test("'"${_SERVICE_NAME}"'"))'
-}
+)
 
-function revision() {
+revision() (
+  set -euo pipefail
+
   local -r _CLUSTER_NAME=$1
   local -r _SERVICE_ARN=$2
   local -r _REGISTERED_CONTAINER_NAME=$3
   local -r _IMAGE_NAME_TO_REGISTER=$4
 
-  local -r CURRENT_TASK_DEF_NAME="$(aws ecs describe-services --cluster "${_CLUSTER_NAME}" --services "${_SERVICE_ARN}" | jq -r '.services[0].taskDefinition')"
+  local _CURRENT_TASK_DEF_NAME; {
+    _CURRENT_TASK_DEF_NAME="$(aws ecs describe-services --cluster "${_CLUSTER_NAME}" --services "${_SERVICE_ARN}" | jq -r '.services[0].taskDefinition')"
+    readonly _CURRENT_TASK_DEF_NAME
+  }
 
-  aws ecs describe-task-definition --task-definition "${CURRENT_TASK_DEF_NAME}" \
+  aws ecs describe-task-definition --task-definition "${_CURRENT_TASK_DEF_NAME}" \
     | jq '.taskDefinition | del(.taskDefinitionArn, .status, .requiresAttributes, .compatibilities, .revision, .registeredAt, .registeredBy)' \
     | jq '(.containerDefinitions[] | select(.name == "'"${_REGISTERED_CONTAINER_NAME}"'")).image = "'"${_IMAGE_NAME_TO_REGISTER}"'"' > /tmp/taskdef.json
 
   aws ecs register-task-definition --cli-input-json file:///tmp/taskdef.json | jq -r '.taskDefinition.taskDefinitionArn'
-}
+)
 
-function apply_task_def_to_service() {
+apply_task_def_to_service() (
+  set -euo pipefail
+
   local -r _CLUSTER_NAME=$1
   local -r _SERVICE_ARN=$2
   local -r _TASK_DEF=$3
   
   aws ecs update-service --cluster "${_CLUSTER_NAME}" --service "${_SERVICE_ARN}" --task-definition "${_TASK_DEF}"
-}
+)
 
-function deploy_graphql() {
+deploy_graphql() (
   set -euo pipefail
 
   local -r _IMAGE_TAG=$1
@@ -71,16 +82,20 @@ function deploy_graphql() {
 
   docker build --target production -t "${_IMAGE_NANE}:latest" ${_LOCATION_DIR}
 
-  # shellcheck disable=SC2155
-  local -r _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
+  local _SERVICE_ARN; {
+    _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
+    readonly _SERVICE_ARN
+  }
 
   push ${_ECR_URI} "${_IMAGE_NANE}:latest" "${_IMAGE_TAG}"
 
-  # shellcheck disable=SC2155
-  local -r _NEW_TASK_DEF=$(revision "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_IMAGE_NANE}" "${_ECR_URI}:${_IMAGE_TAG}")
+  local _NEW_TASK_DEF; {
+    _NEW_TASK_DEF=$(revision "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_IMAGE_NANE}" "${_ECR_URI}:${_IMAGE_TAG}")
+    readonly _NEW_TASK_DEF
+  }
 
   apply_task_def_to_service "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_NEW_TASK_DEF}"
-}
+)
 
 # main
 
