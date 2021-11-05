@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+function error() {
+  printf "${}\e[31m%s\e[0m\n" "$1"
+}
+
+if [ -z "${AWS_ACCESS_KEY_ID}" ] || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+  error "environment variables for access aws are not set"
+  exit 1
+fi
+
+set -euo pipefail
+
+# general
+readonly CLUSTER_NAME=dictionaryApp
+# shellcheck disable=SC2155
+readonly IMAGE_TAG="$(git log --oneline | head -n 1 | awk '{print $1}')"
+
+# ecs service
+readonly GRAPHQL_SEVICE_NAME=graphql-service
+# ecr
+readonly GRAPHQL_ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-graphql
+readonly GRAPHQL_IMAGE_NANE=dictionary-app-graphql
+# local
+readonly GRAPHQL_DOCKERFILE_LOCATION_DIR=dictionary-graphql
+
+# readonly APPLICATION_UI_ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-application-ui
+# readonly APPLICATION_UI_IMAGE_NANE=dictionary-app-application-ui:latest
+# readonly APPLICATION_UI_IMAGE_URI=dictionary-application-ui
+
+function push() {
+  local -r _ECR_URI=$1
+  local -r _IMAGE_NAME=$2
+  local -r _IMAGE_TAG=$3
+
+  aws ecr get-login-password | docker login --username AWS --password-stdin "${_ECR_URI}"
+
+  docker image tag "${_IMAGE_NAME}" "${_ECR_URI}:${IMAGE_TAG}"
+  docker image push "${_ECR_URI}:${_IMAGE_TAG}"
+}
+
+function service_arn() {
+  local -r _CLUSTER_NAME=$1
+  local -r _SERVICE_NAME=$2
+
+  aws ecs list-services --cluster "${_CLUSTER_NAME}" | jq -r '.serviceArns[] | select(. | test("'"${_SERVICE_NAME}"'"))'
+}
+
+function revision() {
+  local -r _CLUSTER_NAME=$1
+  local -r _SERVICE_ARN=$2
+  local -r _REGISTERED_CONTAINER_NAME=$3
+  local -r _IMAGE_NAME_TO_REGISTER=$4
+
+  local -r CURRENT_TASK_DEF_NAME="$(aws ecs describe-services --cluster "${_CLUSTER_NAME}" --services "${_SERVICE_ARN}" | jq -r '.services[0].taskDefinition')"
+
+  aws ecs describe-task-definition --task-definition "${CURRENT_TASK_DEF_NAME}" \
+    | jq '.taskDefinition | del(.taskDefinitionArn, .status, .requiresAttributes, .compatibilities, .revision)' \
+    | jq '(.containerDefinitions[] | select(.name == "'"${_REGISTERED_CONTAINER_NAME}"'")).image = "'"${_IMAGE_NAME_TO_REGISTER}"'"' > /tmp/taskdef.json
+
+  aws ecs register-task-definition --cli-input-json file:///tmp/taskdef.json | jq -r '.taskDefinition.taskDefinitionArn'
+}
+
+function apply_task_def_to_service() {
+  local -r _CLUSTER_NAME=$1
+  local -r _SERVICE_ARN=$2
+  local -r _TASK_DEF=$3
+  
+  aws ecs update-service --cluster "${_CLUSTER_NAME}" --service "${_SERVICE_ARN}" --task-definition "${_TASK_DEF}"
+}
+
+# deploy to graphql service
+docker build --target production -t "${GRAPHQL_IMAGE_NANE}:latest" ${GRAPHQL_DOCKERFILE_LOCATION_DIR}
+
+# shellcheck disable=SC2155
+readonly GRAPHQL_SERVICE_ARN="$(service_arn ${CLUSTER_NAME} ${GRAPHQL_SEVICE_NAME})"
+
+push ${GRAPHQL_ECR_URI} "${GRAPHQL_IMAGE_NANE}:latest" "${IMAGE_TAG}"
+
+# shellcheck disable=SC2155
+readonly GRAPHQL_NEW_TASK_DEF=$(revision ${CLUSTER_NAME} "${GRAPHQL_SERVICE_ARN}" "${GRAPHQL_IMAGE_NANE}" "${GRAPHQL_ECR_URI}/${IMAGE_TAG}")
+
+apply_task_def_to_service ${CLUSTER_NAME} "${GRAPHQL_SERVICE_ARN}" "${GRAPHQL_NEW_TASK_DEF}"
+
+# deploy to applicaltion-ui service
+
