@@ -33,8 +33,8 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/ping-v15", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong-v15"))
+	router.HandleFunc("/ping-v16", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong-v16"))
 	})
 
 	router.Handle("/api/i/query", srv)
