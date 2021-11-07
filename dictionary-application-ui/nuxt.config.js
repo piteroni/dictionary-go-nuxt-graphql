@@ -51,8 +51,8 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: process.env.HTTP_ENDPOINT,
-        browserHttpEndpoint: process.env.BROWSER_HTTP_ENDPOINT
+        httpEndpoint: process.env.HTTP_ENDPOINT ?? "",
+        browserHttpEndpoint: process.env.BROWSER_HTTP_ENDPOINT ?? ""
       }
     }
   }

@@ -82,12 +82,44 @@ deploy_graphql() (
 
   docker build --target production -t "${_IMAGE_NANE}:latest" ${_DOCKERFILE_LOCATION_DIR}
 
+  push ${_ECR_URI} "${_IMAGE_NANE}:latest" "${_IMAGE_TAG}"
+
   local _SERVICE_ARN; {
     _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
     readonly _SERVICE_ARN
   }
 
+  local _NEW_TASK_DEF; {
+    _NEW_TASK_DEF=$(revision "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_IMAGE_NANE}" "${_ECR_URI}:${_IMAGE_TAG}")
+    readonly _NEW_TASK_DEF
+  }
+
+  apply_task_def_to_service "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_NEW_TASK_DEF}"
+)
+
+deploy_application_ui() (
+  set -euo pipefail
+
+  local -r _IMAGE_TAG=$1
+
+  # ecs cluster
+  local -r _CLUSTER_NAME=${CLUSTER_NAME}
+  # ecs service
+  local -r _SEVICE_NAME=application-ui-service
+  # ecr
+  local -r _IMAGE_NANE=dictionary-app-application-ui
+  local -r _ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-application-ui
+  # local
+  local -r _DOCKERFILE_LOCATION_DIR=dictionary-application-ui
+
+  docker build --target production -t "${_IMAGE_NANE}:latest" ${_DOCKERFILE_LOCATION_DIR}
+
   push ${_ECR_URI} "${_IMAGE_NANE}:latest" "${_IMAGE_TAG}"
+
+  local _SERVICE_ARN; {
+    _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
+    readonly _SERVICE_ARN
+  }
 
   local _NEW_TASK_DEF; {
     _NEW_TASK_DEF=$(revision "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_IMAGE_NANE}" "${_ECR_URI}:${_IMAGE_TAG}")
@@ -99,7 +131,7 @@ deploy_graphql() (
 
 # main
 
-IMAGE_TAG; {
+IMAGE_TAG=; {
   IMAGE_TAG="$(git log --oneline | head -n 1 | awk '{print $1}')"
   readonly IMAGE_TAG
 }
@@ -107,6 +139,9 @@ IMAGE_TAG; {
 case "${SERVICE}" in
   graphql)
     deploy_graphql "${IMAGE_TAG}"
+    ;;
+  application-ui)
+    deploy_application_ui "${IMAGE_TAG}"
     ;;
   *)
     echo "unknown service: ${SERVICE}" 2>&1

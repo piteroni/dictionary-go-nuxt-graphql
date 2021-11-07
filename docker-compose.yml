@@ -22,6 +22,7 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       DB_NAME: dictionary_go_nuxt_graphql
+      ALLOW_ORIGINS: '["http://localhost:3000"]'
   db:
     build:
       context: ./
@@ -52,7 +53,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      HTTP_ENDPOINT: http://host.docker.internal:8080/api/i/query
+      HTTP_ENDPOINT: http://graphql:8080/api/i/query
       BROWSER_HTTP_ENDPOINT: http://localhost:8080/api/i/query
 
 volumes:
