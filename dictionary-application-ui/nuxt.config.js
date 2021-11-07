@@ -48,17 +48,11 @@ export default {
   build: {
   },
 
-  // https://axios.nuxtjs.org/options/
-  // @deprecated
-  axios: {
-    baseURL: "http://localhost:8080/api/i",
-  },
-
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: "http://graphql:8080/api/i/query",
-        browserHttpEndpoint: "http://localhost:8080/api/i/query",
+        httpEndpoint: process.env.HTTP_ENDPOINT,
+        browserHttpEndpoint: process.env.BROWSER_HTTP_ENDPOINT
       }
     }
   }
