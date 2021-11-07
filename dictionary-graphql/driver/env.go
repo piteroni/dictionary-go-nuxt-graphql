@@ -7,7 +7,7 @@ import (
 )
 
 func Env(key string) (string, error) {
-	message := "environment variables for access aws are not set: %s"
+	message := "environment variables not set, key = %s"
 
 	value, ok := os.LookupEnv(key)
 	if !ok {
