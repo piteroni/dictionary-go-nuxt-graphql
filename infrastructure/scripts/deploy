@@ -78,9 +78,9 @@ deploy_graphql() (
   local -r _IMAGE_NANE=dictionary-app-graphql
   local -r _ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-graphql
   # local
-  local -r _LOCATION_DIR=dictionary-graphql
+  local -r _DOCKERFILE_LOCATION_DIR=dictionary-graphql
 
-  docker build --target production -t "${_IMAGE_NANE}:latest" ${_LOCATION_DIR}
+  docker build --target production -t "${_IMAGE_NANE}:latest" ${_DOCKERFILE_LOCATION_DIR}
 
   local _SERVICE_ARN; {
     _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
@@ -99,8 +99,10 @@ deploy_graphql() (
 
 # main
 
-# shellcheck disable=SC2155
-readonly IMAGE_TAG="$(git log --oneline | head -n 1 | awk '{print $1}')"
+IMAGE_TAG; {
+  IMAGE_TAG="$(git log --oneline | head -n 1 | awk '{print $1}')"
+  readonly IMAGE_TAG
+}
 
 case "${SERVICE}" in
   graphql)
