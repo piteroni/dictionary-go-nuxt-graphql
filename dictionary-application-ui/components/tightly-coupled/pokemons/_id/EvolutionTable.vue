@@ -6,7 +6,7 @@
       </div>
 
       <div class="evolution-table">
-        <div v-if="isPresent" class="flex justify-center">
+        <div v-if="doneLoad" class="flex justify-center">
           <div v-for="(pokemon, key) in evolutions" :key="key" class="mr-2">
             <div class="flex items-center">
               <img class="pokemon mb-2" width="290px" height="290px" :src="pokemon.imageURL" :alt="pokemon.name">
@@ -17,7 +17,7 @@
             </div>
 
             <p class="national-no">
-              {{ formatNationalNo(pokemon.nationalNo) }}
+              {{ pokemon.nationalToText }}
             </p>
 
             <p class="pokemon-name mb-1">
@@ -44,32 +44,37 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject } from "@nuxtjs/composition-api"
-import { pokemonDetailsKey } from "@/composables/pokemonDetails"
+import { Vue, Component } from "nuxt-property-decorator"
+import { nationalNoToText } from "@/store/pokemonDataset"
 import Type from "@/components/basic/Type.vue"
 
-export default defineComponent({
+@Component({
   components: {
     "type": Type
-  },
-  setup() {
-    const pokemon = inject(pokemonDetailsKey)!!
-
-    const formatNationalNo = (nationalNo: number) => {
-      const formated = ("000" + nationalNo.toString()).slice(-3)
-
-      return `No.${formated}`
-    }
-
-    const isPresent = computed(() => pokemon.evolutions.value.length !== 0)
-
-    return {
-      evolutions: pokemon.evolutions,
-      formatNationalNo,
-      isPresent
-    }
   }
 })
+export default class EvolutionTable extends Vue {
+  public get doneLoad(): boolean {
+    return this.$accessor.pokemonDataset.nationalNo !== 0
+  }
+
+  public get name(): string {
+    return this.$accessor.pokemonDataset.name
+  }
+
+  public get nationalNo(): string {
+    return this.$accessor.pokemonDataset.nationalNoText
+  }
+
+  public get evolutions() {
+    return this.$accessor.pokemonDataset.evolutions.map(pokemon => {
+      return {
+        ...pokemon,
+        nationalToText: nationalNoToText(pokemon.nationalNo)
+      }
+    })
+  }
+}
 </script>
 
 <style scoped>
@@ -81,7 +86,6 @@ export default defineComponent({
   background-color: #fff;
   border-radius: 7px;
 }
-
 .caption {
   position: absolute;
   top: -40px;
@@ -89,26 +93,21 @@ export default defineComponent({
   right: 0;
   margin: auto;
 }
-
 .evolution-table {
   padding: 80px 20px 30px;
 }
-
 .pokemon {
   border: solid 1.5px #d9d9d9;
   border-radius: 5px;
 }
-
 .national-no {
   font-size: 16px;
   font-weight: 700;
 }
-
 .pokemon-name {
   font-size: 22px;
   font-weight: 700;
 }
-
 .evolution-allow {
   width: 0;
   height: 0;

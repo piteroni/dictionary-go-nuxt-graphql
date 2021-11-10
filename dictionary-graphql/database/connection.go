@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"os"
+	"piteroni/dictionary-go-nuxt-graphql/driver"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,13 +10,38 @@ import (
 )
 
 func ConnectToDatabase() (*gorm.DB, error) {
+	username, err := driver.Env("DB_USERNAME")
+	if err != nil {
+		return nil, err
+	}
+
+	password, err := driver.Env("DB_PASSWORD")
+	if err != nil {
+		return nil, err
+	}
+
+	host, err := driver.Env("DB_HOST")
+	if err != nil {
+		return nil, err
+	}
+
+	port, err := driver.Env("DB_PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	dbname, err := driver.Env("DB_NAME")
+	if err != nil {
+		return nil, err
+	}
+
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DB_USERNAME"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
+		username,
+		password,
+		host,
+		port,
+		dbname,
 	)
 
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{

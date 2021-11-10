@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+
+if [ $# != 1 ]; then
+  echo "usage: $(basename "$0") [service-name]" 2>&1
+  exit 1
+fi
+
+if [ -z "${AWS_ACCESS_KEY_ID}" ] || [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+  echo "environment variables for access aws are not set" 2>&1
+  exit 1
+fi
+
+readonly SERVICE=$1
+readonly CLUSTER_NAME=dictionaryApp
+
+push() (
+  set -euo pipefail
+
+  local -r _ECR_URI=$1
+  local -r _IMAGE_NAME=$2
+  local -r _IMAGE_TAG=$3
+
+  aws ecr get-login-password | docker login --username AWS --password-stdin "${_ECR_URI}"
+
+  docker image tag "${_IMAGE_NAME}" "${_ECR_URI}:${IMAGE_TAG}"
+  docker image push "${_ECR_URI}:${_IMAGE_TAG}"
+)
+
+service_arn() (
+  set -euo pipefail
+
+  local -r _CLUSTER_NAME=$1
+  local -r _SERVICE_NAME=$2
+
+  aws ecs list-services --cluster "${_CLUSTER_NAME}" | jq -r '.serviceArns[] | select(. | test("'"${_SERVICE_NAME}"'"))'
+)
+
+revision() (
+  set -euo pipefail
+
+  local -r _CLUSTER_NAME=$1
+  local -r _SERVICE_ARN=$2
+  local -r _REGISTERED_CONTAINER_NAME=$3
+  local -r _IMAGE_NAME_TO_REGISTER=$4
+
+  local _CURRENT_TASK_DEF_NAME; {
+    _CURRENT_TASK_DEF_NAME="$(aws ecs describe-services --cluster "${_CLUSTER_NAME}" --services "${_SERVICE_ARN}" | jq -r '.services[0].taskDefinition')"
+    readonly _CURRENT_TASK_DEF_NAME
+  }
+
+  aws ecs describe-task-definition --task-definition "${_CURRENT_TASK_DEF_NAME}" \
+    | jq '.taskDefinition | del(.taskDefinitionArn, .status, .requiresAttributes, .compatibilities, .revision, .registeredAt, .registeredBy)' \
+    | jq '(.containerDefinitions[] | select(.name == "'"${_REGISTERED_CONTAINER_NAME}"'")).image = "'"${_IMAGE_NAME_TO_REGISTER}"'"' > /tmp/taskdef.json
+
+  aws ecs register-task-definition --cli-input-json file:///tmp/taskdef.json | jq -r '.taskDefinition.taskDefinitionArn'
+)
+
+apply_task_def_to_service() (
+  set -euo pipefail
+
+  local -r _CLUSTER_NAME=$1
+  local -r _SERVICE_ARN=$2
+  local -r _TASK_DEF=$3
+  
+  aws ecs update-service --cluster "${_CLUSTER_NAME}" --service "${_SERVICE_ARN}" --task-definition "${_TASK_DEF}"
+)
+
+deploy_graphql() (
+  set -euo pipefail
+
+  local -r _IMAGE_TAG=$1
+
+  # ecs cluster
+  local -r _CLUSTER_NAME=${CLUSTER_NAME}
+  # ecs service
+  local -r _SEVICE_NAME=graphql-service
+  # ecr
+  local -r _IMAGE_NANE=dictionary-app-graphql
+  local -r _ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-graphql
+  # local
+  local -r _DOCKERFILE_LOCATION_DIR=dictionary-graphql
+
+  docker build --target production -t "${_IMAGE_NANE}:latest" ${_DOCKERFILE_LOCATION_DIR}
+
+  push ${_ECR_URI} "${_IMAGE_NANE}:latest" "${_IMAGE_TAG}"
+
+  local _SERVICE_ARN; {
+    _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
+    readonly _SERVICE_ARN
+  }
+
+  local _NEW_TASK_DEF; {
+    _NEW_TASK_DEF=$(revision "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_IMAGE_NANE}" "${_ECR_URI}:${_IMAGE_TAG}")
+    readonly _NEW_TASK_DEF
+  }
+
+  apply_task_def_to_service "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_NEW_TASK_DEF}"
+)
+
+deploy_application_ui() (
+  set -euo pipefail
+
+  local -r _IMAGE_TAG=$1
+
+  # ecs cluster
+  local -r _CLUSTER_NAME=${CLUSTER_NAME}
+  # ecs service
+  local -r _SEVICE_NAME=application-ui-service
+  # ecr
+  local -r _IMAGE_NANE=dictionary-app-application-ui
+  local -r _ECR_URI=907836915015.dkr.ecr.ap-northeast-1.amazonaws.com/dictionary-app-application-ui
+  # local
+  local -r _DOCKERFILE_LOCATION_DIR=dictionary-application-ui
+
+  # dependency variables
+  export HTTP_ENDPOINT=https://graphql.dictionary-go-nuxt-graphql.link/api/i/query
+  export BROWSER_HTTP_ENDPOINT=https://graphql.dictionary-go-nuxt-graphql.link/api/i/query
+
+  docker build --target production -t "${_IMAGE_NANE}:latest" --build-arg HTTP_ENDPOINT="${HTTP_ENDPOINT}" --build-arg BROWSER_HTTP_ENDPOINT="${BROWSER_HTTP_ENDPOINT}" ${_DOCKERFILE_LOCATION_DIR}
+
+  push ${_ECR_URI} "${_IMAGE_NANE}:latest" "${_IMAGE_TAG}"
+
+  local _SERVICE_ARN; {
+    _SERVICE_ARN="$(service_arn "${_CLUSTER_NAME}" ${_SEVICE_NAME})"
+    readonly _SERVICE_ARN
+  }
+
+  local _NEW_TASK_DEF; {
+    _NEW_TASK_DEF=$(revision "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_IMAGE_NANE}" "${_ECR_URI}:${_IMAGE_TAG}")
+    readonly _NEW_TASK_DEF
+  }
+
+  apply_task_def_to_service "${_CLUSTER_NAME}" "${_SERVICE_ARN}" "${_NEW_TASK_DEF}"
+)
+
+# main
+
+IMAGE_TAG=; {
+  IMAGE_TAG="$(git log --oneline | head -n 1 | awk '{print $1}')"
+  readonly IMAGE_TAG
+}
+
+case "${SERVICE}" in
+  graphql)
+    deploy_graphql "${IMAGE_TAG}"
+    ;;
+  application-ui)
+    deploy_application_ui "${IMAGE_TAG}"
+    ;;
+  *)
+    echo "unknown service: ${SERVICE}" 2>&1
+    exit 1
+    ;;
+esac

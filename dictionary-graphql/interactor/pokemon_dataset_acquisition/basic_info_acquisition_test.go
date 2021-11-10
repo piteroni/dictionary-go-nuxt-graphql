@@ -1,7 +1,7 @@
 package pokemon_dataset_acquisition
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/database/migration"
+	"piteroni/dictionary-go-nuxt-graphql/database"
 	"piteroni/dictionary-go-nuxt-graphql/model"
 	"piteroni/dictionary-go-nuxt-graphql/persistence"
 	itesting "piteroni/dictionary-go-nuxt-graphql/testing"
@@ -18,7 +18,7 @@ func TestBasicInfoAcquisition(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = migration.Migrate(db)
+	err = database.Migrate(db)
 	if err != nil {
 		t.Fatal(err)
 	}

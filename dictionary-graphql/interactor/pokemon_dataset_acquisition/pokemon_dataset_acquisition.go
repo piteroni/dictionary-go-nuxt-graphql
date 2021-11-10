@@ -37,7 +37,7 @@ func New(db *gorm.DB) *pokemonDatasetAcquisition {
 
 func (u *pokemonDatasetAcquisition) GetPokemonDataset(pokemonID int) (*PokemonDataset, error) {
 	// memo: pokemon Modelは以降でも使い回すから、なるだけstructは下位のInteractorクラスには値渡しで渡したいけど結構むずそう.
-	// go言語でdeepcopyはかなりめんどくさそう、gormの使用をきっちり調べて何が入力としてあればいいのか把握して、下位のInteractorオブジェクトごとにinputオブジェクトを用意する必要がありそう
+	// go言語でdeepcopyはかなりめんどくさそう、gormの仕様をきっちり調べて何が入力としてあればいいのか把握して、下位のInteractorオブジェクトごとにinputオブジェクトを用意する必要がありそう
 	pokemon, err := u.commandToFindPokemon.execute(pokemonID)
 	if err != nil {
 		return nil, err

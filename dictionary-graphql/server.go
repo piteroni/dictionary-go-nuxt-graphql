@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 
@@ -12,23 +13,27 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
 
-func main() {
-	logger := driver.NewLogger(os.Stdout)
+const (
+	statusOk    = 0
+	statusError = 1
+)
 
-	err := godotenv.Load()
-	if err != nil {
-		logger.Errorf("unexpected error occurred during loading .env: %v", err)
-		os.Exit(1)
-	}
+func main() {
+	statusCode := serve()
+
+	os.Exit(statusCode)
+}
+
+func serve() int {
+	logger := driver.NewLogger(os.Stdout)
 
 	db, err := database.ConnectToDatabase()
 	if err != nil {
-		logger.Errorf("unexpected error occurred during connect database: %v", err)
-		os.Exit(1)
+		logger.Error(err)
+		return statusError
 	}
 
 	r := &graph.Resolver{
@@ -36,15 +41,33 @@ func main() {
 		Logger: *logger,
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: r}))
+	schema := generated.NewExecutableSchema(generated.Config{Resolvers: r})
+	srv := handler.NewDefaultServer(schema)
 
 	router := mux.NewRouter()
+
+	router.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 
 	router.Handle("/api/i/query", srv)
 	router.Handle("/", playground.Handler("GraphQL playground", "/api/i/query"))
 
+	o, err := driver.Env("ALLOW_ORIGINS")
+	if err != nil {
+		logger.Error(err)
+		return statusError
+	}
+
+	origins := []string{}
+	err = json.Unmarshal([]byte(o), &origins)
+	if err != nil {
+		logger.Error(err)
+		return statusError
+	}
+
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedOrigins: origins,
 		AllowedHeaders: []string{"*"},
 		AllowedMethods: []string{
 			http.MethodGet,
@@ -60,5 +83,8 @@ func main() {
 	err = http.ListenAndServe(":8080", c.Handler(router))
 	if err != nil {
 		logger.Error(err)
+		return statusError
 	}
+
+	return statusOk
 }

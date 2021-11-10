@@ -1,11 +1,14 @@
-FROM golang:1.16-alpine
+# base
+FROM golang:1.16-alpine AS base
 
 RUN apk upgrade --update && \
     apk --no-cache add git gcc libc-dev
 
-ENV TZ=Asia/Tokyo
+# development
+FROM base AS dev
 
-ENV PS1='\h /\W\ # '
+ENV TZ=Asia/Tokyo \
+    PS1='\h /\W\ # '
 
 RUN cd /tmp && \
     go get -u github.com/cosmtrek/air && \
@@ -22,4 +25,24 @@ RUN \
     go get -u gopkg.in/yaml.v2@v2.3.0 && \
     go mod download
 
-CMD ["air", "-c", ".air.toml"]
+CMD ["bash"]
+
+# production
+FROM base AS builder
+
+WORKDIR /build
+
+COPY . .
+
+RUN go mod download && \
+    GOOS=linux go build -ldflags="-s -w" -trimpath -o main .
+
+FROM alpine:3.14.2 AS production
+
+ENV TZ=Asia/Tokyo
+
+WORKDIR /app
+
+COPY --from=builder /build/main ./
+
+ENTRYPOINT ["/app/main"]

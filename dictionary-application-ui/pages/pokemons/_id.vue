@@ -1,8 +1,8 @@
 <template>
   <div class="site">
     <app-header>
-      <h1 class="site-logo">
-        <img src="~/assets/image/logo.svg" alt="site-logo">
+      <h1>
+        <img class="site-logo" src="~/assets/image/logo.svg" alt="site-logo">
       </h1>
     </app-header>
 
@@ -17,49 +17,40 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useContext, useFetch, provide, inject } from "@nuxtjs/composition-api"
-import { pokemonDetailsKey, usePokemonDetails } from "@/composables/pokemonDetails"
+import { Vue, Component } from "nuxt-property-decorator"
+import { HttpStatusCode } from "@/shared/http"
 import Header from "@/components/singletons/Header.vue"
-import Footer from "@/components/singletons/Footer.vue"
 import PokemonHeading from "@/components/tightly-coupled/pokemons/_id/PokemonHeading.vue"
-import PokemonDetails from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
+import Details from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
 import EvolutionTable from "@/components/tightly-coupled/pokemons/_id/EvolutionTable.vue"
+import Footer from "@/components/singletons/Footer.vue"
 
-export default defineComponent({
+@Component({
   components: {
     "app-header": Header,
-    "app-footer": Footer,
     "pokemon-heading": PokemonHeading,
-    "pokemon-details": PokemonDetails,
+    "pokemon-details": Details,
     "evolution-table": EvolutionTable,
+    "app-footer": Footer
   },
-  setup() {
-    provide(pokemonDetailsKey, usePokemonDetails())
-
-    const { pokemon, fetch } = inject(pokemonDetailsKey)!!
-
-    const { route, error } = useContext()
-
-    const pokemonId = parseInt(route.value.params.id)
-
-    if (isNaN(pokemonId)) {
-      error({ statusCode: 404 })
-
-      return { pokemon }
-    }
-
-    useFetch(async () => {
-      try {
-        await fetch({ pokemonId })
-      } catch (e) {
-        console.error(e)
-        error({ statusCode: 404 })
-      }
-    })
-
-    return { pokemon }
-  }
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
+  },
 })
+export default class PokemonDetails extends Vue {
+  public async fetch(): Promise<void> {
+    const pokemonId = parseInt(this.$route.params.id)
+
+    try {
+      await this.$accessor.pokemonDataset.fetch({ pokemonId })
+    } catch (e) {
+      console.error(e)
+      return this.$nuxt.error({
+        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+      })
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -68,7 +59,6 @@ export default defineComponent({
   background-image: url('~/assets/image/pattern.svg');
   background-repeat: repeat;
 }
-
 .site-logo {
   width: 192px;
 }
