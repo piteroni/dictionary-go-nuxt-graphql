@@ -45,9 +45,8 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator"
-import { PokemonQuery } from "@/graphql/generated/client"
+import { nationalNoToText } from "@/store/pokemonDataset"
 import Type from "@/components/basic/Type.vue"
-import { nationalNoToText } from "~/store/pokemonDataset"
 
 @Component({
   components: {
@@ -63,17 +62,16 @@ export default class EvolutionTable extends Vue {
     return this.$accessor.pokemonDataset.name
   }
 
-  // public get canEvolution(): boolean {
-  //   return this.$accessor.pokemonDataset.ca
-  // }
-
   public get nationalNo(): string {
     return this.$accessor.pokemonDataset.nationalNoText
   }
 
   public get evolutions() {
-    return this.$accessor.pokemonDataset.evolutions.map(p => {
-      return {...p, nationalToText: nationalNoToText(p.nationalNo)}
+    return this.$accessor.pokemonDataset.evolutions.map(pokemon => {
+      return {
+        ...pokemon,
+        nationalToText: nationalNoToText(pokemon.nationalNo)
+      }
     })
   }
 }

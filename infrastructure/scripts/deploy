@@ -112,7 +112,11 @@ deploy_application_ui() (
   # local
   local -r _DOCKERFILE_LOCATION_DIR=dictionary-application-ui
 
-  docker build --target production -t "${_IMAGE_NANE}:latest" ${_DOCKERFILE_LOCATION_DIR}
+  # dependency variables
+  export HTTP_ENDPOINT=https://graphql.dictionary-go-nuxt-graphql.link/api/i/query
+  export BROWSER_HTTP_ENDPOINT=https://graphql.dictionary-go-nuxt-graphql.link/api/i/query
+
+  docker build --target production -t "${_IMAGE_NANE}:latest" --build-arg HTTP_ENDPOINT="${HTTP_ENDPOINT}" --build-arg BROWSER_HTTP_ENDPOINT="${BROWSER_HTTP_ENDPOINT}" ${_DOCKERFILE_LOCATION_DIR}
 
   push ${_ECR_URI} "${_IMAGE_NANE}:latest" "${_IMAGE_TAG}"
 
