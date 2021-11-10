@@ -121,92 +121,110 @@
         </div>
       </div>
 
-      <div v-if="description.text !== ''" class="details-container pokemon-description mt-8">
-        {{ description.text }} （{{ description.series }}）
+      <div class="details-container pokemon-description mt-8">
+        {{ descriptionText }}
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, readonly } from "@nuxtjs/composition-api"
-import { pokemonDetailsKey, abilityMaxStatus } from "@/composables/pokemonDetails"
-import { Ability } from "@/graphql/generated/client"
-import Type from "@/components/basic/Type.vue"
+import { Vue, Component } from "nuxt-property-decorator"
+import { abilityMaxStatus } from "@/store/pokemonDataset"
+import { Characteristic, Type } from "@/graphql/generated/client"
 
-export default defineComponent({
-  components: {
-    "type": Type
-  },
-  setup() {
-    const pokemon = inject(pokemonDetailsKey)!!
+@Component
+export default class PokemonDetails extends Vue {
+  private evaluation = 15
 
-    const evaluation = 15
-
-    const scaleAbility = (value: number, maxValue: number, evaluation: number): number => {
-      return Math.round(evaluation * (value / maxValue))
-    }
-
-    const evaluateAbility = (ability: Ability): Ability => {
-      return {
-        heart: scaleAbility(ability.heart, abilityMaxStatus.heart, evaluation),
-        attack: scaleAbility(ability.attack, abilityMaxStatus.attack, evaluation),
-        defense: scaleAbility(ability.defense, abilityMaxStatus.defense, evaluation),
-        specialAttack: scaleAbility(ability.specialAttack, abilityMaxStatus.specialAttack, evaluation),
-        specialDefense: scaleAbility(ability.specialDefense, abilityMaxStatus.specialDefense, evaluation),
-        speed: scaleAbility(ability.speed, abilityMaxStatus.speed, evaluation),
-      }
-    }
-
-    const valueState = readonly({
-      on: "on",
-      off: "off"
-    })
-
-    const generateAbilityValue = (value: number, evaluation: number): string[] => {
-      const gauge = []
-
-      if (value < 0 || value > evaluation) {
-        throw new Error(`incorrect ability value, value = ${value}`)
-      }
-
-      for (let i = 0; i < evaluation; i++) {
-        if (value !== 0) {
-          gauge.push(valueState.on)
-          value--
-        } else {
-          gauge.push(valueState.off)
-        }
-      }
-
-      return gauge
-    }
-
-    const ability = computed(() => evaluateAbility(pokemon.ability.value))
-
-    const heartGauge = computed(() => generateAbilityValue(ability.value.heart, evaluation))
-    const attackGauge = computed(() => generateAbilityValue(ability.value.attack, evaluation))
-    const defenseGauge = computed(() => generateAbilityValue(ability.value.defense, evaluation))
-    const specialAttackGauge = computed(() => generateAbilityValue(ability.value.specialAttack, evaluation))
-    const specialDefenseGauge = computed(() => generateAbilityValue(ability.value.specialDefense, evaluation))
-    const speedGauge = computed(() => generateAbilityValue(ability.value.speed, evaluation))
-
-    return {
-      species: pokemon.species,
-      weight: pokemon.weight,
-      height: pokemon.height,
-      types: pokemon.types,
-      characteristics: pokemon.characteristics,
-      description: pokemon.description,
-      heartGauge,
-      attackGauge,
-      defenseGauge,
-      specialAttackGauge,
-      specialDefenseGauge,
-      speedGauge,
-    }
+  private valueState = {
+    on: "on",
+    off: "off"
   }
-})
+
+  public get species(): string {
+    return this.$accessor.pokemonDataset.species
+  }
+
+  public get weight(): string {
+    return this.$accessor.pokemonDataset.weight
+  }
+
+  public get height(): string {
+    return this.$accessor.pokemonDataset.height
+  }
+
+  public get types(): Type[] {
+    return this.$accessor.pokemonDataset.types
+  }
+
+  public get characteristics(): Characteristic[] {
+    return this.$accessor.pokemonDataset.characteristics
+  }
+
+  public get descriptionText(): string {
+    return `${this.$accessor.pokemonDataset.description.text}（${this.$accessor.pokemonDataset.description.series}）`
+  }
+
+  public get heartGauge(): string[] {
+    const ability = this.scaleAbility(this.$accessor.pokemonDataset.ability.heart, abilityMaxStatus.heart, this.evaluation)
+
+    return this.generateAbilityValue(ability, this.evaluation)
+  }
+
+  public get attackGauge(): string[] {
+    const ability = this.scaleAbility(this.$accessor.pokemonDataset.ability.attack, abilityMaxStatus.attack, this.evaluation)
+
+    return this.generateAbilityValue(ability, this.evaluation)
+  }
+
+  public get defenseGauge(): string[] {
+    const ability = this.scaleAbility(this.$accessor.pokemonDataset.ability.defense, abilityMaxStatus.defense, this.evaluation)
+
+    return this.generateAbilityValue(ability, this.evaluation)
+  }
+
+  public get specialAttackGauge(): string[] {
+    const ability = this.scaleAbility(this.$accessor.pokemonDataset.ability.specialAttack, abilityMaxStatus.specialAttack, this.evaluation)
+
+    return this.generateAbilityValue(ability, this.evaluation)
+  }
+
+  public get specialDefenseGauge(): string[] {
+    const ability = this.scaleAbility(this.$accessor.pokemonDataset.ability.specialDefense, abilityMaxStatus.specialDefense, this.evaluation)
+
+    return this.generateAbilityValue(ability, this.evaluation)
+  }
+
+  public get speedGauge(): string[] {
+    const ability = this.scaleAbility(this.$accessor.pokemonDataset.ability.speed, abilityMaxStatus.speed, this.evaluation)
+
+    return this.generateAbilityValue(ability, this.evaluation)
+  }
+
+  private scaleAbility(value: number, maxValue: number, evaluation: number): number {
+    return Math.round(evaluation * (value / maxValue))
+  }
+
+  private generateAbilityValue(value: number, evaluation: number): string[] {
+    const gauge = []
+
+    if (value < 0 || value > evaluation) {
+      throw new Error(`incorrect ability value, value = ${value}`)
+    }
+
+    for (let i = 0; i < evaluation; i++) {
+      if (value !== 0) {
+        gauge.push(this.valueState.on)
+        value--
+      } else {
+        gauge.push(this.valueState.off)
+      }
+    }
+
+    return gauge
+  }
+}
 </script>
 
 <style scoped>
@@ -216,43 +234,35 @@ export default defineComponent({
   border: 3px solid rgb(204, 204, 204);
   border-radius: 7px;
 }
-
 .details-key {
   font-size: 20px;
   font-weight: 700;
 }
-
 .details-value {
   font-size: 20px;
 }
-
 .pokemon-description {
   width: 1014px;
   font-size: 20px;
   font-weight: 200;
 }
-
 .type-icon {
   font-size: 5px;
   font-weight: 600;
 }
-
 .ability {
   padding: 30px 25px;
   width: 500px;
 }
-
 .ability-value {
   border-radius: 12px;
   margin-right: 5px;
   height: 35px;
   width: 15px;
 }
-
 .ability-value.on {
   background-color: #fc0;
 }
-
 .ability-value.off {
   background-color: #f2f2f2;
 }

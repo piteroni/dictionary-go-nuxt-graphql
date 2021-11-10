@@ -1,6 +1,8 @@
 export default {
+  // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: "dictionary-go-nuxt-graphql",
+    titleTemplate: "%s - dictionary-application-ui",
+    title: "dictionary-application-ui",
     htmlAttrs: {
       lang: "ja"
     },
@@ -21,8 +23,6 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    "~/plugins/axios",
-    "~/plugins/apollo"
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -34,13 +34,12 @@ export default {
     "@nuxt/typescript-build",
     // https://go.nuxtjs.dev/tailwindcss
     "@nuxtjs/tailwindcss",
-    // https://composition-api.nuxtjs.org
-    "@nuxtjs/composition-api/module"
+    // https://typed-vuex.roe.dev
+    "nuxt-typed-vuex",
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    "@nuxtjs/axios",
     "@nuxtjs/apollo"
   ],
 
@@ -51,9 +50,17 @@ export default {
   apollo: {
     clientConfigs: {
       default: {
-        httpEndpoint: process.env.HTTP_ENDPOINT ?? "",
-        browserHttpEndpoint: process.env.BROWSER_HTTP_ENDPOINT ?? ""
+        httpEndpoint: process.env.HTTP_ENDPOINT,
+        browserHttpEndpoint: process.env.BROWSER_HTTP_ENDPOINT,
       }
+    }
+  },
+
+  router: {
+    extendRoutes(routes) {
+      routes.push(
+        { path: "/", redirect: "/pokemons" },
+      )
     }
   }
 }

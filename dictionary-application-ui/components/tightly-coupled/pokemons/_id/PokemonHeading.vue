@@ -1,6 +1,6 @@
 <template>
   <div class="heading-container px-12 w-full flex flex-wrap content-center justify-between">
-    <div style="width: 30px" class="nav flex flex-wrap content-center">
+    <div class="w-8 nav flex flex-wrap content-center">
       <div v-if="hasPrev" class="nav-button flex flex-wrap justify-center content-center" @click="moveToPrev">
         <img width="12px" src="~/assets/image/prev.png" alt="prev">
       </div>
@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <div style="width: 30px" class="nav flex flex-wrap content-center">
+    <div class="w-8 nav flex flex-wrap content-center">
       <div v-if="hasNext" class="nav-button flex flex-wrap justify-center content-center" @click="moveToNext">
         <img width="12px" src="~/assets/image/next.png" alt="next">
       </div>
@@ -43,65 +43,64 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, useRouter } from "@nuxtjs/composition-api"
-import { pokemonDetailsKey } from "@/composables/pokemonDetails"
+import { Vue, Component } from "nuxt-property-decorator"
+import { Gender } from "@/graphql/generated/client"
 
-export default defineComponent({
-  setup() {
-    const pokemon = inject(pokemonDetailsKey)!!
-
-    const router = useRouter()
-
-    const formatNationalNo = (nationalNo: number) => {
-      const formated = ("000" + nationalNo.toString()).slice(-3)
-
-      return `No.${formated}`
-    }
-
-    const nationalNo = computed(() => formatNationalNo(pokemon.nationalNo.value))
-
-    function moveToPrev() {
-      if (!pokemon.linkInfo.value.hasPrev) {
-        return
-      }
-
-      router.push(`/pokemons/${pokemon.linkInfo.value.prevNationalNo}`)
-    }
-
-    function moveToNext() {
-      if (!pokemon.linkInfo.value.hasNext) {
-        return
-      }
-
-      router.push(`/pokemons/${pokemon.linkInfo.value.nextNationalNo}`)
-    }
-
-    const hasPrev = computed(() => pokemon.linkInfo.value.hasPrev)
-    const hasNext = computed(() => pokemon.linkInfo.value.hasNext)
-
-    return {
-      nationalNo,
-      name: pokemon.name,
-      imageURL: pokemon.imageURL,
-      genders: pokemon.genders,
-      hasPrev,
-      hasNext,
-      moveToPrev,
-      moveToNext,
-    }
+@Component
+export default class PokemonHeading extends Vue {
+  public get nationalNo(): string {
+    return this.$accessor.pokemonDataset.nationalNoText
   }
-})
+
+  public get name(): string {
+    return this.$accessor.pokemonDataset.name
+  }
+
+  public get genders(): Gender[] {
+    return this.$accessor.pokemonDataset.genders
+  }
+
+  public get imageURL(): string {
+    return this.$accessor.pokemonDataset.imageURL
+  }
+
+  public get hasPrev(): boolean {
+    return this.$accessor.pokemonDataset.linkInfo.hasPrev
+  }
+
+  public get hasNext(): boolean {
+    return this.$accessor.pokemonDataset.linkInfo.hasNext
+  }
+
+  public moveToPrev() {
+    if (!this.$accessor.pokemonDataset.linkInfo.hasPrev) {
+      return
+    }
+
+    const id = this.$accessor.pokemonDataset.linkInfo.prevNationalNo
+
+    this.$router.push(`/pokemons/${id}`)
+  }
+
+  public moveToNext() {
+    if (!this.$accessor.pokemonDataset.linkInfo.hasNext) {
+      return
+    }
+
+    const id = this.$accessor.pokemonDataset.linkInfo.nextNationalNo
+
+    this.$router.push(`/pokemons/${id}`)
+  }
+}
 </script>
 
 <style scoped>
 .heading-container {
   height: 360px;
 }
-
 .nav {
   height: 360px;
 }
-
 .nav-button {
   height: 130px;
   cursor: pointer;
@@ -111,13 +110,11 @@ export default defineComponent({
   background-color: rgb(255, 255, 255);
   border: 2px solid rgb(204, 204, 204);
 }
-
 .pokemon-heading {
   height: 360px;
   padding-left: 160px;
   padding-right: 80px;
 }
-
 .pokemon-abstract {
   padding-top: 30px;
   padding-left: 30px;
@@ -128,17 +125,14 @@ export default defineComponent({
   border-radius: 10px;
   box-shadow: 8px 8px 0 #d9d9d9;
 }
-
 .national-no {
   font-size: 20px;
   font-weight: 700;
 }
-
 .pokemon-name {
   font-size: 28px;
   font-weight: 700;
 }
-
 .fixed-aria {
   height: 338px;
   width: 338px;

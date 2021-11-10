@@ -12,18 +12,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@nuxtjs/composition-api"
+import { Vue, Component, Prop } from "nuxt-property-decorator"
 
-export default defineComponent({
-  props: {
-    iconURL: {
-      type: String,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    }
-  }
-})
+@Component
+export default class Type extends Vue {
+  @Prop({ required: true, type: String })
+  public iconURL!: string
+
+  @Prop({ required: true, type: String })
+  public name!: string
+}
 </script>

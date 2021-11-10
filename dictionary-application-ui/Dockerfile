@@ -31,7 +31,8 @@ RUN yarn build
 
 FROM base AS production
 
+COPY /static /app/static
+
 COPY --from=builder /app/.nuxt /app/.nuxt
-COPY --from=builder /app/static /app/static
 
 CMD ["yarn", "start"]

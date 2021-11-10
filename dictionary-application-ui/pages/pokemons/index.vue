@@ -4,12 +4,13 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Vue, Component } from "nuxt-property-decorator"
 
+@Component
+export default class Index extends Vue {
+  // constructor() {
+  //   // this.$config.
+  // }
 }
 </script>
-
-<style>
-
-</style>
