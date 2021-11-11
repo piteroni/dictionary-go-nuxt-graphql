@@ -19,10 +19,10 @@
 
           <div class="details-value">
             <div class="flex">
-              <type
+              <pokemon-type
                 v-for="(type, key) in types"
                 :key="key"
-                :icon-u-r-l="type.iconURL"
+                :icon-url="type.iconURL"
                 :name="type.name"
               />
             </div>
@@ -59,6 +59,7 @@
           </div>
         </div>
       </div>
+
       <div class="details-container ability">
         <div class="flex flex-wrap content-center justify-center mb-8">
           <div class="details-key w-20">
@@ -132,8 +133,13 @@
 import { Vue, Component } from "nuxt-property-decorator"
 import { abilityMaxStatus } from "@/store/pokemonDataset"
 import { Characteristic, Type } from "@/graphql/generated/client"
+import PokemonType from "@/components/basic/PokemonType.vue"
 
-@Component
+@Component({
+  components: {
+    "pokemon-type": PokemonType
+  }
+})
 export default class PokemonDetails extends Vue {
   private evaluation = 15
 

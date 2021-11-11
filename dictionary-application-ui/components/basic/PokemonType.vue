@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="mr-3">
-      <img class="mx-auto" height="36px" width="36px" :src="iconURL" :alt="name">
-      <div class="font-semibold flex justify-center" style="font-size: 5px;">
+      <img class="mx-auto" height="36px" width="36px" :src="iconUrl" :alt="name">
+      <div class="font-semibold text-xs flex justify-center">
         <span>
           {{ name }}
         </span>
@@ -15,9 +15,9 @@
 import { Vue, Component, Prop } from "nuxt-property-decorator"
 
 @Component
-export default class Type extends Vue {
+export default class PokemonType extends Vue {
   @Prop({ required: true, type: String })
-  public iconURL!: string
+  public iconUrl!: string
 
   @Prop({ required: true, type: String })
   public name!: string

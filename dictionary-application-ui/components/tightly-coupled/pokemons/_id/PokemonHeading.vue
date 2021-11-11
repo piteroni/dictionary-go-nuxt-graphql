@@ -2,13 +2,13 @@
   <div class="heading-container px-12 w-full flex flex-wrap content-center justify-between">
     <div class="w-8 nav flex flex-wrap content-center">
       <div v-if="hasPrev" class="nav-button flex flex-wrap justify-center content-center" @click="moveToPrev">
-        <img width="12px" src="~/assets/image/prev.png" alt="prev">
+        <img class="w-3" src="~/assets/image/prev.png" alt="prev">
       </div>
     </div>
 
     <div class="pokemon-heading flex flex-wrap content-center">
       <div class="fixed-aria">
-        <img v-show="imageURL !== ''" height="338px" width="338px" :src="imageURL" alt="image-of-pokemon">
+        <img v-show="imageURL !== ''" class="pokemon-heading-image" :src="imageURL" alt="image-of-pokemon">
       </div>
 
       <div class="flex flex-wrap content-center">
@@ -36,7 +36,7 @@
 
     <div class="w-8 nav flex flex-wrap content-center">
       <div v-if="hasNext" class="nav-button flex flex-wrap justify-center content-center" @click="moveToNext">
-        <img width="12px" src="~/assets/image/next.png" alt="next">
+        <img class="w-3" src="~/assets/image/next.png" alt="next">
       </div>
     </div>
   </div>
@@ -96,10 +96,10 @@ export default class PokemonHeading extends Vue {
 
 <style scoped>
 .heading-container {
-  height: 360px;
+  height: 22.5em;
 }
 .nav {
-  height: 360px;
+  height: 22.5em;
 }
 .nav-button {
   height: 130px;
@@ -111,9 +111,12 @@ export default class PokemonHeading extends Vue {
   border: 2px solid rgb(204, 204, 204);
 }
 .pokemon-heading {
-  height: 360px;
+  height: 22.5em;
   padding-left: 160px;
   padding-right: 80px;
+}
+.pokemon-heading-image {
+  width: 22rem;
 }
 .pokemon-abstract {
   padding-top: 30px;
@@ -134,7 +137,7 @@ export default class PokemonHeading extends Vue {
   font-weight: 700;
 }
 .fixed-aria {
-  height: 338px;
-  width: 338px;
+  height: 22rem;
+  width: 22rem;
 }
 </style>

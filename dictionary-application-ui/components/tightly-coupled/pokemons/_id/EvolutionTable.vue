@@ -2,16 +2,16 @@
   <div>
     <div class="table-container">
       <div class="caption flex justify-center">
-        <img style="margin: 0 auto;" width="400px" src="~/assets/image/ttl_evolution.svg" alt="evolution-caption">
+        <img class="caption-image mx-auto" src="~/assets/image/ttl_evolution.svg" alt="evolution-caption">
       </div>
 
       <div class="evolution-table">
         <div v-if="doneLoad" class="flex justify-center">
           <div v-for="(pokemon, key) in evolutions" :key="key" class="mr-2">
             <div class="flex items-center">
-              <img class="pokemon mb-2" width="290px" height="290px" :src="pokemon.imageURL" :alt="pokemon.name">
+              <img class="pokemon mb-2" :src="pokemon.imageURL" :alt="pokemon.name">
 
-              <div class="ml-2" style="height: 40px;">
+              <div class="h-10 ml-2">
                 <div v-if="pokemon.canEvolution" class="evolution-allow" />
               </div>
             </div>
@@ -25,10 +25,10 @@
             </p>
 
             <div class="flex">
-              <type
+              <pokemon-type
                 v-for="(type, typeKey) in pokemon.types"
                 :key="typeKey"
-                :icon-u-r-l="type.iconURL"
+                :icon-url="type.iconURL"
                 :name="type.name"
               />
             </div>
@@ -46,11 +46,11 @@
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator"
 import { nationalNoToText } from "@/store/pokemonDataset"
-import Type from "@/components/basic/Type.vue"
+import PokemonType from "@/components/basic/PokemonType.vue"
 
 @Component({
   components: {
-    "type": Type
+    "pokemon-type": PokemonType
   }
 })
 export default class EvolutionTable extends Vue {
@@ -93,10 +93,14 @@ export default class EvolutionTable extends Vue {
   right: 0;
   margin: auto;
 }
+.caption-image {
+  width: 25rem;
+}
 .evolution-table {
   padding: 80px 20px 30px;
 }
 .pokemon {
+  width: 18.125rem;
   border: solid 1.5px #d9d9d9;
   border-radius: 5px;
 }
