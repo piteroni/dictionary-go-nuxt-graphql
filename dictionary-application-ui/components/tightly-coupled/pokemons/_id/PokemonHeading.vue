@@ -77,7 +77,7 @@ export default class PokemonHeading extends Vue {
       return
     }
 
-    const id = this.$accessor.pokemonDataset.linkInfo.prevNationalNo
+    const id = this.$accessor.pokemonDataset.linkInfo.prevId
 
     this.$router.push(`/pokemons/${id}`)
   }
@@ -87,7 +87,7 @@ export default class PokemonHeading extends Vue {
       return
     }
 
-    const id = this.$accessor.pokemonDataset.linkInfo.nextNationalNo
+    const id = this.$accessor.pokemonDataset.linkInfo.nextId
 
     this.$router.push(`/pokemons/${id}`)
   }

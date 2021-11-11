@@ -24,8 +24,8 @@ export const state = () => ({
     speed: 0
   } as Ability,
   linkInfo: {
-    prevNationalNo: 0,
-    nextNationalNo: 0,
+    prevId: 0,
+    nextId: 0,
     hasPrev: false,
     hasNext: false
   } as LinkInfo,

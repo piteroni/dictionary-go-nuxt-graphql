@@ -67,10 +67,10 @@ type ComplexityRoot struct {
 	}
 
 	LinkInfo struct {
-		HasNext        func(childComplexity int) int
-		HasPrev        func(childComplexity int) int
-		NextNationalNo func(childComplexity int) int
-		PrevNationalNo func(childComplexity int) int
+		HasNext func(childComplexity int) int
+		HasPrev func(childComplexity int) int
+		NextID  func(childComplexity int) int
+		PrevID  func(childComplexity int) int
 	}
 
 	Pokemon struct {
@@ -217,19 +217,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.LinkInfo.HasPrev(childComplexity), true
 
-	case "LinkInfo.nextNationalNo":
-		if e.complexity.LinkInfo.NextNationalNo == nil {
+	case "LinkInfo.nextId":
+		if e.complexity.LinkInfo.NextID == nil {
 			break
 		}
 
-		return e.complexity.LinkInfo.NextNationalNo(childComplexity), true
+		return e.complexity.LinkInfo.NextID(childComplexity), true
 
-	case "LinkInfo.prevNationalNo":
-		if e.complexity.LinkInfo.PrevNationalNo == nil {
+	case "LinkInfo.prevId":
+		if e.complexity.LinkInfo.PrevID == nil {
 			break
 		}
 
-		return e.complexity.LinkInfo.PrevNationalNo(childComplexity), true
+		return e.complexity.LinkInfo.PrevID(childComplexity), true
 
 	case "Pokemon.ability":
 		if e.complexity.Pokemon.Ability == nil {
@@ -452,8 +452,8 @@ type Ability {
 }
 
 type LinkInfo {
-  prevNationalNo: Int!
-  nextNationalNo: Int!
+  prevId: Int!
+  nextId: Int!
   hasPrev: Boolean!
   hasNext: Boolean!
 }
@@ -957,7 +957,7 @@ func (ec *executionContext) _Gender_iconURL(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _LinkInfo_prevNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
+func (ec *executionContext) _LinkInfo_prevId(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -975,7 +975,7 @@ func (ec *executionContext) _LinkInfo_prevNationalNo(ctx context.Context, field 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PrevNationalNo, nil
+		return obj.PrevID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -992,7 +992,7 @@ func (ec *executionContext) _LinkInfo_prevNationalNo(ctx context.Context, field 
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _LinkInfo_nextNationalNo(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
+func (ec *executionContext) _LinkInfo_nextId(ctx context.Context, field graphql.CollectedField, obj *model.LinkInfo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1010,7 +1010,7 @@ func (ec *executionContext) _LinkInfo_nextNationalNo(ctx context.Context, field 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.NextNationalNo, nil
+		return obj.NextID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3059,13 +3059,13 @@ func (ec *executionContext) _LinkInfo(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("LinkInfo")
-		case "prevNationalNo":
-			out.Values[i] = ec._LinkInfo_prevNationalNo(ctx, field, obj)
+		case "prevId":
+			out.Values[i] = ec._LinkInfo_prevId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "nextNationalNo":
-			out.Values[i] = ec._LinkInfo_nextNationalNo(ctx, field, obj)
+		case "nextId":
+			out.Values[i] = ec._LinkInfo_nextId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

@@ -45,8 +45,8 @@ type Ability {
 }
 
 type LinkInfo {
-  prevNationalNo: Int!
-  nextNationalNo: Int!
+  prevId: Int!
+  nextId: Int!
   hasPrev: Boolean!
   hasNext: Boolean!
 }

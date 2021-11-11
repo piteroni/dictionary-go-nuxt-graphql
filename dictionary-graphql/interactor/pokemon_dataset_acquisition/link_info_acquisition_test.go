@@ -68,10 +68,10 @@ func TestLinkInfoAcquisition(t *testing.T) {
 			assert.Nil(t, err)
 
 			assert.Equal(t, linkInfo, &LinkInfo{
-				PrevNationalNo: 0,
-				NextNationalNo: 2,
-				HasPrev:        false,
-				HasNext:        true,
+				PrevID:  0,
+				NextID:  2,
+				HasPrev: false,
+				HasNext: true,
 			})
 		})
 
@@ -85,10 +85,10 @@ func TestLinkInfoAcquisition(t *testing.T) {
 			assert.Nil(t, err)
 
 			assert.Equal(t, linkInfo, &LinkInfo{
-				PrevNationalNo: 1,
-				NextNationalNo: 3,
-				HasPrev:        true,
-				HasNext:        false,
+				PrevID:  1,
+				NextID:  3,
+				HasPrev: true,
+				HasNext: false,
 			})
 		})
 	})

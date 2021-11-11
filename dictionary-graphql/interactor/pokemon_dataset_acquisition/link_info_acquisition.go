@@ -20,13 +20,13 @@ type linkInfoAcquisition struct {
 
 func (i *linkInfoAcquisition) getLinkInfo(pokemon *model.Pokemon) (*LinkInfo, error) {
 	link := &LinkInfo{
-		PrevNationalNo: pokemon.NationalNo - 1,
-		NextNationalNo: pokemon.NationalNo + 1,
+		PrevID: int(pokemon.ID - 1),
+		NextID: int(pokemon.ID + 1),
 	}
 
 	var tx *gorm.DB
 
-	tx = i.db.Model(&model.Pokemon{}).Where("national_no = ?", link.PrevNationalNo).First(&model.Pokemon{})
+	tx = i.db.Model(&model.Pokemon{}).Where("id = ?", link.PrevID).First(&model.Pokemon{})
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return nil, tx.Error
@@ -35,7 +35,7 @@ func (i *linkInfoAcquisition) getLinkInfo(pokemon *model.Pokemon) (*LinkInfo, er
 
 	link.HasPrev = tx.RowsAffected > 0
 
-	tx = i.db.Model(&model.Pokemon{}).Where("national_no = ?", link.NextNationalNo).First(&model.Pokemon{})
+	tx = i.db.Model(&model.Pokemon{}).Where("id = ?", link.NextID).First(&model.Pokemon{})
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return nil, tx.Error

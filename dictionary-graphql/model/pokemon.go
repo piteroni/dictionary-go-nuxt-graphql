@@ -8,7 +8,7 @@ type Pokemon struct {
 	gorm.Model
 
 	// identify
-	NationalNo int `gorm:"unique"`
+	NationalNo int
 
 	// profile
 	Name         string `gorm:"unique"`

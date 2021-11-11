@@ -106,10 +106,10 @@ type Ability struct {
 }
 
 type LinkInfo struct {
-	PrevNationalNo int
-	NextNationalNo int
-	HasPrev        bool
-	HasNext        bool
+	PrevID  int
+	NextID  int
+	HasPrev bool
+	HasNext bool
 }
 
 var _ error = (*PokemonNotFound)(nil)

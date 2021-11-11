@@ -27,10 +27,10 @@ type Gender struct {
 }
 
 type LinkInfo struct {
-	PrevNationalNo int  `json:"prevNationalNo"`
-	NextNationalNo int  `json:"nextNationalNo"`
-	HasPrev        bool `json:"hasPrev"`
-	HasNext        bool `json:"hasNext"`
+	PrevID  int  `json:"prevId"`
+	NextID  int  `json:"nextId"`
+	HasPrev bool `json:"hasPrev"`
+	HasNext bool `json:"hasNext"`
 }
 
 type Pokemon struct {

@@ -28,10 +28,10 @@ func TestPokemonDatasetAcquisition(t *testing.T) {
 		// link information is set.
 		assert.NotNil(t, dataset.LinkInfo)
 		assert.Equal(t, dataset.LinkInfo, &LinkInfo{
-			PrevNationalNo: 200,
-			NextNationalNo: 202,
-			HasPrev:        true,
-			HasNext:        true,
+			PrevID:  200,
+			NextID:  202,
+			HasPrev: true,
+			HasNext: true,
 		})
 
 		// evolution table of pokemon is set.
@@ -89,10 +89,10 @@ func (m *linkInfoAcquisitionMock) getLinkInfo(pokemon *model.Pokemon) (*LinkInfo
 	assert.Equal(m.t, pokemon.Name, "pokemon-201")
 
 	return &LinkInfo{
-		PrevNationalNo: 200,
-		NextNationalNo: 202,
-		HasPrev:        true,
-		HasNext:        true,
+		PrevID:  200,
+		NextID:  202,
+		HasPrev: true,
+		HasNext: true,
 	}, nil
 }
 
