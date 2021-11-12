@@ -18,12 +18,14 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator"
+import { PokemonDocument, PokemonQuery, PokemonQueryVariables } from "@/graphql/generated"
 import { HttpStatusCode } from "@/shared/http"
 import Header from "@/components/singletons/Header.vue"
 import PokemonHeading from "@/components/tightly-coupled/pokemons/_id/PokemonHeading.vue"
 import Details from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
 import EvolutionTable from "@/components/tightly-coupled/pokemons/_id/EvolutionTable.vue"
 import Footer from "@/components/singletons/Footer.vue"
+import { PokemonQueryType } from "~/store/pokemonDataset"
 
 @Component({
   components: {
@@ -41,13 +43,32 @@ export default class PokemonDetails extends Vue {
   public async fetch(): Promise<void> {
     const pokemonId = parseInt(this.$route.params.id)
 
+    let queryReturn: PokemonQuery
+
     try {
-      await this.$accessor.pokemonDataset.fetch({ pokemonId })
+      const response = await this.$apollo.query<PokemonQuery, PokemonQueryVariables>({
+        query: PokemonDocument,
+        variables: { pokemonId }
+      })
+
+      queryReturn = response.data
     } catch (e) {
       console.error(e)
+
       return this.$nuxt.error({
         statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
       })
+    }
+
+    const typename = queryReturn.pokemon.__typename
+
+    switch (typename) {
+      case "Pokemon":
+        return this.$accessor.pokemonDataset.save(queryReturn.pokemon as PokemonQueryType<"Pokemon">)
+      case "PokemonNotFound":
+        return this.$nuxt.error({ statusCode: HttpStatusCode.NOT_FOUND })
+      default:
+        throw new Error(`unexpected type name: ${typename}`)
     }
   }
 }

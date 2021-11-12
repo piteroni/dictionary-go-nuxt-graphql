@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator"
-import { Gender } from "@/graphql/generated/client"
+import { Gender } from "@/graphql/generated"
 
 @Component
 export default class PokemonHeading extends Vue {

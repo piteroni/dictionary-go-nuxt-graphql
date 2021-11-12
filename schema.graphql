@@ -51,6 +51,12 @@ type LinkInfo {
   hasNext: Boolean!
 }
 
+union PokemonResult = Pokemon | PokemonNotFound
+
+type PokemonNotFound {
+  message: String!
+}
+
 type Query {
-  pokemon(pokemonId: Int!): Pokemon!
+  pokemon(pokemonId: Int!): PokemonResult!
 }

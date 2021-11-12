@@ -49,11 +49,16 @@ export default {
 
   apollo: {
     clientConfigs: {
-      default: {
-        httpEndpoint: process.env.HTTP_ENDPOINT,
-        browserHttpEndpoint: process.env.BROWSER_HTTP_ENDPOINT,
-      }
+      default: "~/apollo.config.ts"
     }
+  },
+
+  privateRuntimeConfig: {
+    httpEndpoint: process.env.HTTP_ENDPOINT
+  },
+
+  publicRuntimeConfig: {
+    browserHttpEndpoint: process.env.BROWSER_HTTP_ENDPOINT,
   },
 
   router: {

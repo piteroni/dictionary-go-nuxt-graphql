@@ -1,8 +1,13 @@
 schema: /schema.graphql
-documents: graphql/**/*.graphql
+documents: graphql/queries/*.graphql
 generates:
-  graphql/generated/client.ts:
+  graphql/generated/index.ts:
     plugins:
       - typescript
       - typescript-operations
       - typed-document-node
+  graphql/generated/introspection.json:
+    plugins:
+      - fragment-matcher
+    config:
+      apolloClientVersion: 2

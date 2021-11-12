@@ -132,7 +132,7 @@
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator"
 import { abilityMaxStatus } from "@/store/pokemonDataset"
-import { Characteristic, Type } from "@/graphql/generated/client"
+import { Characteristic, Type } from "@/graphql/generated"
 import PokemonType from "@/components/basic/PokemonType.vue"
 
 @Component({

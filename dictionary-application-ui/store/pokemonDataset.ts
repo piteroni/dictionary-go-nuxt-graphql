@@ -1,5 +1,8 @@
-import { getterTree, mutationTree, actionTree } from "typed-vuex"
-import { Type, Gender, Characteristic, Description, Ability, LinkInfo, PokemonQuery, PokemonDocument, PokemonQueryVariables } from "@/graphql/generated/client"
+import { getterTree, mutationTree } from "typed-vuex"
+import { Type, Gender, Characteristic, Description, Ability, LinkInfo, PokemonQuery } from "@/graphql/generated"
+import { QueryType } from "@/shared/graphql"
+
+export type PokemonQueryType<Typename extends PokemonQuery["pokemon"]["__typename"]> = QueryType<PokemonQuery["pokemon"], Typename>
 
 export const state = () => ({
   nationalNo: 0,
@@ -29,7 +32,7 @@ export const state = () => ({
     hasPrev: false,
     hasNext: false
   } as LinkInfo,
-  evolutions: [] as PokemonQuery["pokemon"]["evolutions"]
+  evolutions: [] as PokemonQueryType<"Pokemon">["evolutions"]
 })
 
 export const abilityMaxStatus = {
@@ -52,7 +55,7 @@ export const getters = getterTree(state, {
 })
 
 export const mutations = mutationTree(state, {
-  save(state, params: PokemonQuery["pokemon"]): void {
+  save(state, params: PokemonQueryType<"Pokemon">): void {
     state.nationalNo = params.nationalNo
     state.name = params.name
     state.species = params.species
@@ -66,16 +69,5 @@ export const mutations = mutationTree(state, {
     state.ability = params.ability
     state.linkInfo = params.linkInfo
     state.evolutions = params.evolutions
-  }
-})
-
-export const actions = actionTree({ state, mutations }, {
-  async fetch({ commit }, variables: PokemonQueryVariables): Promise<void> {
-    const response = await this.app.apolloProvider!.defaultClient.query<PokemonQuery>({
-      query: PokemonDocument,
-      variables
-    })
-
-    commit("save", response.data.pokemon)
   }
 })

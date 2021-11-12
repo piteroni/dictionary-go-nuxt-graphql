@@ -1249,7 +1249,23 @@
     "@graphql-tools/utils" "^8.1.1"
     tslib "~2.3.0"
 
-"@graphql-codegen/plugin-helpers@^2.3.0":
+"@graphql-codegen/fragment-matcher@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/fragment-matcher/-/fragment-matcher-3.2.0.tgz#03857bdefe70cf1b50900ba4eb1815906a461f44"
+  integrity sha512-+i7wfatf48exKL9gWTOqu4bH/+5+34W+n20kzDN0naWmmC4LxcML2/n4MUKkU4TfqfwiA6RZ4E/wzvwTMUY7Mg==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.3.0"
+    tslib "~2.3.0"
+
+"@graphql-codegen/introspection@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/introspection/-/introspection-2.1.0.tgz#07c7a321e69a053fbd2d80ec8d7a32b3ce28ca30"
+  integrity sha512-seGWZaX9vUd1RxSs+MBa9WOU+PCl8DNeScsOmxQP4qRC6rCle7y8pjeLKGduRarucIbO+nzY9jqaTAiMUogo8g==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.1.0"
+    tslib "~2.3.0"
+
+"@graphql-codegen/plugin-helpers@^2.1.0", "@graphql-codegen/plugin-helpers@^2.3.0":
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-2.3.1.tgz#b66c742d3209a85bc2f72f9e2eceb6b08fc81f85"
   integrity sha512-rWH7igcjYqZ6rqNFTb4Wyp31863fRmmVpsRN8VHzBCltrepOO97jwTwB93aAw+T6Dm8aZto3QFfDIC79u8wA2Q==

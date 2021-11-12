@@ -1,50 +1,58 @@
 query pokemon($pokemonId: Int!) {
   pokemon(pokemonId: $pokemonId) {
-    nationalNo
-    name
-    imageURL
-    species
-    weight
-    height
-    genders {
-      name
-      iconURL
-    }
-    types {
-      name
-      iconURL
-    }
-    characteristics {
-      name
-      description
-    }
-    description {
-      text
-      series
-    }
-    ability {
-      heart
-      attack
-      defense
-      specialAttack
-      specialDefense
-      speed
-		}
-    linkInfo {
-      prevId
-      nextId
-      hasPrev
-      hasNext
-    }
-    evolutions {
+    __typename
+
+    ... on Pokemon {
       nationalNo
       name
       imageURL
+      species
+      weight
+      height
+      genders {
+        name
+        iconURL
+      }
       types {
         name
         iconURL
       }
-      canEvolution
+      characteristics {
+        name
+        description
+      }
+      description {
+        text
+        series
+      }
+      ability {
+        heart
+        attack
+        defense
+        specialAttack
+        specialDefense
+        speed
+      }
+      linkInfo {
+        prevId
+        nextId
+        hasPrev
+        hasNext
+      }
+      evolutions {
+        nationalNo
+        name
+        imageURL
+        types {
+          name
+          iconURL
+        }
+        canEvolution
+      }
+    }
+
+    ... on PokemonNotFound {
+      message
     }
   }
 }

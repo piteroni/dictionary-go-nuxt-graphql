@@ -10,16 +10,16 @@ import (
 	"piteroni/dictionary-go-nuxt-graphql/interactor/pokemon_dataset_acquisition"
 )
 
-func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (*model.Pokemon, error) {
+func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.PokemonResult, error) {
 	u := pokemon_dataset_acquisition.New(r.DB)
 
 	p, err := u.GetPokemonDataset(pokemonID)
 	if err != nil {
 		if _, ok := err.(*pokemon_dataset_acquisition.PokemonNotFound); ok {
-			r.Logger.Warn(err.Error())
-
-			return nil, err
+			return model.PokemonNotFound{Message: err.Error()}, nil
 		}
+
+		r.Logger.Error(err)
 
 		return nil, internalSystemError
 	}

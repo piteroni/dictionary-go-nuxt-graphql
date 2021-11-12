@@ -2,6 +2,10 @@
 
 package model
 
+type PokemonResult interface {
+	IsPokemonResult()
+}
+
 type Ability struct {
 	Heart          int `json:"heart"`
 	Attack         int `json:"attack"`
@@ -49,6 +53,14 @@ type Pokemon struct {
 	Evolutions      []*Pokemon        `json:"evolutions"`
 	LinkInfo        *LinkInfo         `json:"linkInfo"`
 }
+
+func (Pokemon) IsPokemonResult() {}
+
+type PokemonNotFound struct {
+	Message string `json:"message"`
+}
+
+func (PokemonNotFound) IsPokemonResult() {}
 
 type Type struct {
 	Name    string `json:"name"`
