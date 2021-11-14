@@ -40,6 +40,7 @@ query pokemon($pokemonId: Int!) {
         hasNext
       }
       evolutions {
+        id
         nationalNo
         name
         imageURL

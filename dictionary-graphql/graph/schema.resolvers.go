@@ -66,6 +66,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.Pokem
 		link := (*model.LinkInfo)(evolution.LinkInfo)
 
 		evolutions = append(evolutions, &model.Pokemon{
+			ID:              evolution.ID,
 			NationalNo:      evolution.NationalNo,
 			Name:            evolution.Name,
 			ImageURL:        evolution.ImageURL,
@@ -83,6 +84,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.Pokem
 	}
 
 	return &model.Pokemon{
+		ID:              p.ID,
 		NationalNo:      p.NationalNo,
 		Name:            p.Name,
 		ImageURL:        p.ImageURL,

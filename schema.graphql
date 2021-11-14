@@ -1,4 +1,5 @@
 type Pokemon {
+  id: Int!
   nationalNo: Int!
   name: String!
   imageURL: String!

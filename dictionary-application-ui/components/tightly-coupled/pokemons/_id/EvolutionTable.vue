@@ -7,7 +7,7 @@
 
       <div class="evolution-table">
         <div v-if="doneLoad" class="flex justify-center">
-          <div v-for="(pokemon, key) in evolutions" :key="key" class="mr-2">
+          <div v-for="(pokemon, key) in evolutions" :key="key" @click="() => showPokemon(pokemon.id)" class="mr-2">
             <div class="flex items-center">
               <img class="pokemon mb-2" :src="pokemon.imageURL" :alt="pokemon.name">
 
@@ -74,6 +74,10 @@ export default class EvolutionTable extends Vue {
       }
     })
   }
+
+  public showPokemon(pokemonId: number): void {
+    this.$router.push(`/pokemons/${pokemonId}`)
+  }
 }
 </script>
 
@@ -103,6 +107,11 @@ export default class EvolutionTable extends Vue {
   width: 18.125rem;
   border: solid 1.5px #d9d9d9;
   border-radius: 5px;
+  cursor: pointer;
+  transition: .3s;
+}
+.pokemon:hover {
+  opacity: 0.8;
 }
 .national-no {
   font-size: 16px;

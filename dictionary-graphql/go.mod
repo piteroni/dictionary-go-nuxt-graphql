@@ -13,6 +13,7 @@ require (
 	github.com/rs/cors v1.8.0
 	github.com/stretchr/testify v1.7.0
 	github.com/vektah/gqlparser/v2 v2.2.0
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	gorm.io/driver/mysql v1.1.2
 	gorm.io/driver/sqlite v1.2.4

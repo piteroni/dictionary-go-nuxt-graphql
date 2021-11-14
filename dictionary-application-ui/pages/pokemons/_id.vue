@@ -1,9 +1,11 @@
 <template>
   <div class="site">
     <app-header>
-      <h1>
-        <img class="site-logo" src="~/assets/image/logo.svg" alt="site-logo">
-      </h1>
+      <NuxtLink to="/">
+        <h1>
+          <img class="site-logo" src="~/assets/image/logo.svg" alt="site-logo">
+        </h1>
+      </NuxtLink>
     </app-header>
 
     <pokemon-heading />

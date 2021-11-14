@@ -82,6 +82,7 @@ type ComplexityRoot struct {
 		Evolutions      func(childComplexity int) int
 		Genders         func(childComplexity int) int
 		Height          func(childComplexity int) int
+		ID              func(childComplexity int) int
 		ImageURL        func(childComplexity int) int
 		LinkInfo        func(childComplexity int) int
 		Name            func(childComplexity int) int
@@ -285,6 +286,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pokemon.Height(childComplexity), true
 
+	case "Pokemon.id":
+		if e.complexity.Pokemon.ID == nil {
+			break
+		}
+
+		return e.complexity.Pokemon.ID(childComplexity), true
+
 	case "Pokemon.imageURL":
 		if e.complexity.Pokemon.ImageURL == nil {
 			break
@@ -418,6 +426,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "/schema.graphql", Input: `type Pokemon {
+  id: Int!
   nationalNo: Int!
   name: String!
   imageURL: String!
@@ -1113,6 +1122,41 @@ func (ec *executionContext) _LinkInfo_hasNext(ctx context.Context, field graphql
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Pokemon_id(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Pokemon",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pokemon_nationalNo(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
@@ -3177,6 +3221,11 @@ func (ec *executionContext) _Pokemon(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Pokemon")
+		case "id":
+			out.Values[i] = ec._Pokemon_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "nationalNo":
 			out.Values[i] = ec._Pokemon_nationalNo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

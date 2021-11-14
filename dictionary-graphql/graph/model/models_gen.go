@@ -38,6 +38,7 @@ type LinkInfo struct {
 }
 
 type Pokemon struct {
+	ID              int               `json:"id"`
 	NationalNo      int               `json:"nationalNo"`
 	Name            string            `json:"name"`
 	ImageURL        string            `json:"imageURL"`

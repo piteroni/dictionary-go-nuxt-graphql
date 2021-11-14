@@ -59,6 +59,7 @@ func (u *pokemonDatasetAcquisition) GetPokemonDataset(pokemonID int) (*PokemonDa
 }
 
 type PokemonDataset struct {
+	ID              int
 	NationalNo      int
 	Name            string
 	ImageURL        string

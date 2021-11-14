@@ -90,6 +90,7 @@ func (i *basicInfoAcquisition) getBasicInfo(pokemon *model.Pokemon) (*PokemonDat
 	canEvolution := pokemon.Evolution != nil
 
 	return &PokemonDataset{
+		ID:              int(pokemon.ID),
 		NationalNo:      pokemon.NationalNo,
 		Name:            pokemon.Name,
 		ImageURL:        pokemon.ImageURL,

@@ -48,6 +48,7 @@ func TestBasicInfoAcquisition(t *testing.T) {
 		assert.NotNil(t, dataset)
 		assert.Nil(t, err)
 
+		assert.Equal(t, dataset.ID, 1)
 		assert.Equal(t, dataset.NationalNo, 1)
 		assert.Equal(t, dataset.Name, "pokemon-1")
 		assert.Equal(t, dataset.ImageURL, "pokemon-1.jpg")
