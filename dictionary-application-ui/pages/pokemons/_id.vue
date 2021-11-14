@@ -62,6 +62,7 @@ export default class PokemonDetails extends Vue {
 
     switch (typename) {
       case "Pokemon":
+        // Explicitly specify the type as inference will not work well after build.
         return this.$accessor.pokemonDataset.save(response.data.pokemon as PokemonQueryType<"Pokemon">)
       case "PokemonNotFound":
         return this.$nuxt.error({ statusCode: HttpStatusCode.NOT_FOUND })

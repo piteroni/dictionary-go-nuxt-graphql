@@ -1,5 +1,5 @@
 import { getterTree, mutationTree } from "typed-vuex"
-import { Type, Gender, Characteristic, Description, Ability, LinkInfo, PokemonQuery } from "@/graphql/generated"
+import { Type, Gender, Characteristic, Description, Ability, LinkInfo, PokemonQuery, Pokemon } from "@/graphql/generated"
 import { QueryType } from "@/shared/graphql"
 
 export type PokemonQueryType<Typename extends PokemonQuery["pokemon"]["__typename"]> = QueryType<PokemonQuery["pokemon"], Typename>

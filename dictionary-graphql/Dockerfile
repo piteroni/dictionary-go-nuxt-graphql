@@ -45,4 +45,4 @@ WORKDIR /app
 
 COPY --from=builder /build/main ./
 
-ENTRYPOINT ["/app/main"]
+CMD ["/app/main"]

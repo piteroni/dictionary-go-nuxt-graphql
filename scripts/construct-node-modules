@@ -8,7 +8,10 @@ cd "$(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")"
 
 docker-compose build application-ui
 
-./scripts/attach-application-ui tar zcvf node_modules_tmp node_modules > /dev/null
+./scripts/attach-application-ui <<EOL
+yarn
+tar zcvf node_modules_tmp node_modules > /dev/null
+EOL
 
 cd dictionary-application-ui
 

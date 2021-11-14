@@ -10,11 +10,6 @@ ENV TZ=Asia/Tokyo
 
 WORKDIR /app
 
-COPY package.json /app/package.json
-COPY yarn.lock /app/yarn.lock
-
-RUN yarn
-
 ARG HTTP_ENDPOINT
 ARG BROWSER_HTTP_ENDPOINT
 
@@ -26,14 +21,17 @@ FROM base as dev
 
 ENV PS1='\h /\W\ # '
 
-CMD ["yarn", "dev"]
+CMD ["bash"]
 
 # production
 FROM base as builder
 
 COPY . .
 
-RUN yarn build
+COPY package.json /app/package.json
+COPY yarn.lock /app/yarn.lock
+
+RUN yarn && yarn build
 
 FROM base AS production
 
