@@ -7,7 +7,7 @@
 
       <div class="evolution-table">
         <div v-if="doneLoad" class="flex justify-center">
-          <div v-for="(pokemon, key) in evolutions" :key="key" @click="() => showPokemon(pokemon.id)" class="mr-2">
+          <div v-for="(pokemon, key) in evolutions" :key="key" class="mr-2" @click="() => showPokemon(pokemon.id)">
             <div class="flex items-center">
               <img class="pokemon mb-2" :src="pokemon.imageURL" :alt="pokemon.name">
 
