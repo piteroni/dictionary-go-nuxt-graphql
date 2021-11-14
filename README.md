@@ -74,10 +74,16 @@ ENABLE_ORM_LOGGING= ./scripts/attach-graphql scripts/test
 ./scripts/attach-application-ui npm run codegen
 ```
 
+### lint frontend code
+
+```
+./scripts/attach-application-ui yarn lint
+```
+
 ### test graphql resolver
 
 ```
-docker-compose up graphql # go to http://localhost8080/
+docker-compose up graphql # go to http://localhost:8080/
 ```
 
 ## todo
