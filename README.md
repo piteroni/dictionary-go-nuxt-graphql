@@ -76,6 +76,5 @@ ENABLE_ORM_LOGGING= ./scripts/attach-graphql scripts/test
 
 ## todo
 
-- GraphQLでエラー種別をスキーマで定義すること、[参考リンク](https://www.youtube.com/watch?v=RDNTP66oY2o)
 - resolverのテスト
 - resolverの複雑度の計算
