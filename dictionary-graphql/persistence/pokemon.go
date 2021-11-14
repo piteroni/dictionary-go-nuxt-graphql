@@ -3,6 +3,7 @@ package persistence
 import (
 	"piteroni/dictionary-go-nuxt-graphql/model"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -21,11 +22,21 @@ func (dao *PokemonDAO) ScanTypes(p *model.Pokemon) error {
 		return nil
 	}
 
-	return dao.db.Model(p).Association("Types").Find(&p.Types)
+	err := dao.db.Model(p).Association("Types").Find(&p.Types)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) AddType(p *model.Pokemon, t *model.Type) error {
-	return dao.db.Model(p).Association("Types").Append(t)
+	err := dao.db.Model(p).Association("Types").Append(t)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) ScanGenders(p *model.Pokemon) error {
@@ -33,11 +44,21 @@ func (dao *PokemonDAO) ScanGenders(p *model.Pokemon) error {
 		return nil
 	}
 
-	return dao.db.Model(p).Association("Genders").Find(&p.Genders)
+	err := dao.db.Model(p).Association("Genders").Find(&p.Genders)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) AddGender(p *model.Pokemon, g *model.Gender) error {
-	return dao.db.Model(p).Association("Genders").Append(g)
+	err := dao.db.Model(p).Association("Genders").Append(g)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) ScanDescriptions(p *model.Pokemon) error {
@@ -45,13 +66,23 @@ func (dao *PokemonDAO) ScanDescriptions(p *model.Pokemon) error {
 		return nil
 	}
 
-	return dao.db.Model(p).Association("Descriptions").Find(&p.Descriptions)
+	err := dao.db.Model(p).Association("Descriptions").Find(&p.Descriptions)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) AddDescripton(p *model.Pokemon, d *model.Description) error {
 	d.PokemonID = p.ID
 
-	return dao.db.Create(d).Error
+	err := dao.db.Create(d).Error
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) ScanCharacteristics(p *model.Pokemon) error {
@@ -59,11 +90,21 @@ func (dao *PokemonDAO) ScanCharacteristics(p *model.Pokemon) error {
 		return nil
 	}
 
-	return dao.db.Model(p).Association("Characteristics").Find(&p.Characteristics)
+	err := dao.db.Model(p).Association("Characteristics").Find(&p.Characteristics)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) AddCharacteristics(p *model.Pokemon, c *model.Characteristic) error {
-	return dao.db.Model(p).Association("Characteristics").Append(c)
+	err := dao.db.Model(p).Association("Characteristics").Append(c)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
 
 func (dao *PokemonDAO) ScanEvolution(p *model.Pokemon) error {
@@ -77,7 +118,7 @@ func (dao *PokemonDAO) ScanEvolution(p *model.Pokemon) error {
 
 	err := dao.db.Model(&model.Pokemon{}).First(&p.Evolution, *p.EvolutionID).Error
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil

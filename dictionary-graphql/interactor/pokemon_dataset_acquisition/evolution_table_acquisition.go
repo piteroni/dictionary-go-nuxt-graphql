@@ -1,9 +1,10 @@
 package pokemon_dataset_acquisition
 
 import (
-	"errors"
 	"piteroni/dictionary-go-nuxt-graphql/model"
 	"piteroni/dictionary-go-nuxt-graphql/persistence"
+
+	"github.com/pkg/errors"
 
 	"gorm.io/gorm"
 )
@@ -29,7 +30,7 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 		// ErrRecordNotFound is an expected error,
 		// that occurs when there is no pre-evolution pokemon.
 		if !errors.Is(r.Error, gorm.ErrRecordNotFound) {
-			return nil, r.Error
+			return nil, errors.WithStack(r.Error)
 		}
 	}
 
@@ -43,7 +44,7 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					break
 				} else {
-					return nil, err
+					return nil, errors.WithStack(err)
 				}
 			}
 
@@ -58,7 +59,7 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 	err := dao.ScanEvolution(before)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 	}
 
@@ -80,7 +81,7 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 		err := dao.ScanEvolution(before)
 		if err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, err
+				return nil, errors.WithStack(err)
 			}
 		}
 
@@ -90,7 +91,7 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 
 		dataset, err := i.basicInfoAcquisition.getBasicInfo(before.Evolution)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		datasets = append(datasets, dataset)

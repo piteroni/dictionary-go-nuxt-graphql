@@ -1,9 +1,10 @@
 package pokemon_dataset_acquisition
 
 import (
-	"errors"
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/model"
+
+	"github.com/pkg/errors"
 
 	"gorm.io/gorm"
 )
@@ -24,12 +25,12 @@ func (c *commandToFindPokemon) execute(pokemonID int) (*model.Pokemon, error) {
 	err := c.db.Model(&model.Pokemon{}).First(pokemon, pokemonID).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &PokemonNotFound{
+			return nil, errors.WithStack(&PokemonNotFound{
 				message: fmt.Sprintf("specified pokemon does not exists, pokemonID = %d", pokemonID),
-			}
+			})
 		}
 
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	return pokemon, nil

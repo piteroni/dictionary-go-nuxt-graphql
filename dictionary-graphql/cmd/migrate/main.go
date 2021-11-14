@@ -12,7 +12,7 @@ func main() {
 
 	db, err := database.ConnectToDatabase()
 	if err != nil {
-		logger.Errorf("unexpected error occurred during connect database: %v", err)
+		logger.Printf("unexpected error occurred during connect database: %+v", err)
 		os.Exit(internal.StatusError)
 	}
 

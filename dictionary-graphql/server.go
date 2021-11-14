@@ -12,33 +12,53 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/rs/cors"
+	"github.com/pkg/errors"
 )
 
-const (
-	statusOk    = 0
-	statusError = 1
-)
+var logger *driver.AppLogger
 
-func main() {
-	statusCode := serve()
-
-	os.Exit(statusCode)
+func init() {
+	logger = driver.NewLogger(os.Stdout)
 }
 
-func serve() int {
-	logger := driver.NewLogger(os.Stdout)
+func main() {
+	logger.Error(serve())
+}
+
+func serve() error {
+	o, err := driver.Env("ALLOW_ORIGINS")
+	if err != nil {
+		return err
+	}
+
+	origins := []string{}
+	err = json.Unmarshal([]byte(o), &origins)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	allowHeaders := handlers.AllowedHeaders([]string{"*"})
+	allowOrigins := handlers.AllowedOrigins(origins)
+	allowMethods := handlers.AllowedMethods([]string{
+		http.MethodGet,
+		http.MethodPost,
+		http.MethodPut,
+		http.MethodPatch,
+		http.MethodDelete,
+		http.MethodOptions,
+		http.MethodHead,
+	})
 
 	db, err := database.ConnectToDatabase()
 	if err != nil {
-		logger.Error(err)
-		return statusError
+		return err
 	}
 
 	r := &graph.Resolver{
 		DB:     db,
-		Logger: *logger,
+		Logger: logger,
 	}
 
 	schema := generated.NewExecutableSchema(generated.Config{Resolvers: r})
@@ -46,45 +66,17 @@ func serve() int {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
-		w.WriteHeader(http.StatusOK)
+	router.HandleFunc("/health", func(rw http.ResponseWriter, _ *http.Request) {
+		rw.WriteHeader(http.StatusOK)
 	})
 
 	router.Handle("/api/i/query", srv)
 	router.Handle("/", playground.Handler("GraphQL playground", "/api/i/query"))
 
-	o, err := driver.Env("ALLOW_ORIGINS")
+	err = http.ListenAndServe(":8080", handlers.CORS(allowHeaders, allowOrigins, allowMethods)(router))
 	if err != nil {
-		logger.Error(err)
-		return statusError
+		return errors.WithStack(err)
 	}
 
-	origins := []string{}
-	err = json.Unmarshal([]byte(o), &origins)
-	if err != nil {
-		logger.Error(err)
-		return statusError
-	}
-
-	c := cors.New(cors.Options{
-		AllowedOrigins: origins,
-		AllowedHeaders: []string{"*"},
-		AllowedMethods: []string{
-			http.MethodGet,
-			http.MethodPost,
-			http.MethodPut,
-			http.MethodPatch,
-			http.MethodDelete,
-			http.MethodOptions,
-			http.MethodHead,
-		},
-	})
-
-	err = http.ListenAndServe(":8080", c.Handler(router))
-	if err != nil {
-		logger.Error(err)
-		return statusError
-	}
-
-	return statusOk
+	return nil
 }

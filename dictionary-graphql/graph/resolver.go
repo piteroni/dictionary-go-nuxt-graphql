@@ -8,5 +8,5 @@ import (
 
 type Resolver struct {
 	DB     *gorm.DB
-	Logger driver.AppLogger
+	Logger *driver.AppLogger
 }

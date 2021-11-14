@@ -7,6 +7,8 @@ import (
 	"piteroni/dictionary-go-nuxt-graphql/testing/factories"
 	"testing"
 
+	"github.com/pkg/errors"
+
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
@@ -61,6 +63,6 @@ func TestCommandToFindPokemon(t *testing.T) {
 
 		assert.Nil(t, pokemon)
 		assert.NotNil(t, err)
-		assert.IsType(t, err, &PokemonNotFound{})
+		assert.IsType(t, errors.Cause(err), &PokemonNotFound{})
 	})
 }

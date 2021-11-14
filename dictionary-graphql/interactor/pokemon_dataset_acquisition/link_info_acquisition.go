@@ -1,8 +1,9 @@
 package pokemon_dataset_acquisition
 
 import (
-	"errors"
 	"piteroni/dictionary-go-nuxt-graphql/model"
+
+	"github.com/pkg/errors"
 
 	"gorm.io/gorm"
 )
@@ -29,7 +30,7 @@ func (i *linkInfoAcquisition) getLinkInfo(pokemon *model.Pokemon) (*LinkInfo, er
 	tx = i.db.Model(&model.Pokemon{}).Where("id = ?", link.PrevID).First(&model.Pokemon{})
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, tx.Error
+			return nil, errors.WithStack(tx.Error)
 		}
 	}
 
@@ -38,7 +39,7 @@ func (i *linkInfoAcquisition) getLinkInfo(pokemon *model.Pokemon) (*LinkInfo, er
 	tx = i.db.Model(&model.Pokemon{}).Where("id = ?", link.NextID).First(&model.Pokemon{})
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, tx.Error
+			return nil, errors.WithStack(tx.Error)
 		}
 	}
 
