@@ -12,8 +12,6 @@ type Pokemon {
   description: Description!
   ability: Ability!
   canEvolution: Boolean!
-  evolutions: [Pokemon!]!
-  linkInfo: LinkInfo!
 }
 
 type Gender {
@@ -45,19 +43,37 @@ type Ability {
   speed: Int!
 }
 
-type LinkInfo {
+type PageInfo {
   prevId: Int!
   nextId: Int!
   hasPrev: Boolean!
   hasNext: Boolean!
 }
 
-union PokemonResult = Pokemon | PokemonNotFound
+type Evolutions {
+  pokemons: [Pokemon]
+}
+
+type PokemonConnection {
+  nextToken: String
+  items: [Pokemon!]!
+}
+
+type IllegalArgument {
+  message: String!
+}
 
 type PokemonNotFound {
   message: String!
 }
 
+union PokemonResult = Pokemon | PokemonNotFound
+union EvolutionsResult = Evolutions | PokemonNotFound
+union PageInfoResult = PageInfo | IllegalArgument | PokemonNotFound
+
 type Query {
   pokemon(pokemonId: Int!): PokemonResult!
+  pageInfo(pokemonId: Int!): PageInfoResult!
+  evolutions(pokemonId: Int!): EvolutionsResult!
+  pokemons(first: Int, after: Int): PokemonConnection!
 }

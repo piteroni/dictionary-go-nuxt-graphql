@@ -1,11 +1,7 @@
 <template>
-  <div class="site">
+  <div>
     <app-header>
-      <NuxtLink to="/">
-        <h1>
-          <img class="site-logo" src="~/assets/image/logo.svg" alt="site-logo">
-        </h1>
-      </NuxtLink>
+      <logo />
     </app-header>
 
     <pokemon-heading />
@@ -24,6 +20,7 @@ import { PokemonDocument, PokemonQuery, PokemonQueryVariables } from "@/graphql/
 import { PokemonQueryType } from "@/store/pokemonDataset"
 import { HttpStatusCode } from "@/shared/http"
 import Header from "@/components/singletons/Header.vue"
+import Logo from "@/components/singletons/Logo.vue"
 import PokemonHeading from "@/components/tightly-coupled/pokemons/_id/PokemonHeading.vue"
 import Details from "@/components/tightly-coupled/pokemons/_id/PokemonDetails.vue"
 import EvolutionTable from "@/components/tightly-coupled/pokemons/_id/EvolutionTable.vue"
@@ -32,6 +29,7 @@ import Footer from "@/components/singletons/Footer.vue"
 @Component({
   components: {
     "app-header": Header,
+    "logo": Logo,
     "pokemon-heading": PokemonHeading,
     "pokemon-details": Details,
     "evolution-table": EvolutionTable,
@@ -76,11 +74,6 @@ export default class PokemonDetails extends Vue {
 </script>
 
 <style scoped>
-.site {
-  background-color: rgb(242, 242, 242);
-  background-image: url('~/assets/image/pattern.svg');
-  background-repeat: repeat;
-}
 .site-logo {
   width: 192px;
 }

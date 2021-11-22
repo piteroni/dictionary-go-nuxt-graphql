@@ -1,9 +1,10 @@
 package driver
 
 import (
-	"errors"
 	"fmt"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
 func Env(key string) (string, error) {

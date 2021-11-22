@@ -2,6 +2,14 @@
 
 package model
 
+type EvolutionsResult interface {
+	IsEvolutionsResult()
+}
+
+type PageInfoResult interface {
+	IsPageInfoResult()
+}
+
 type PokemonResult interface {
 	IsPokemonResult()
 }
@@ -25,17 +33,31 @@ type Description struct {
 	Series string `json:"series"`
 }
 
+type Evolutions struct {
+	Pokemons []*Pokemon `json:"pokemons"`
+}
+
+func (Evolutions) IsEvolutionsResult() {}
+
 type Gender struct {
 	Name    string `json:"name"`
 	IconURL string `json:"iconURL"`
 }
 
-type LinkInfo struct {
+type IllegalArgument struct {
+	Message string `json:"message"`
+}
+
+func (IllegalArgument) IsPageInfoResult() {}
+
+type PageInfo struct {
 	PrevID  int  `json:"prevId"`
 	NextID  int  `json:"nextId"`
 	HasPrev bool `json:"hasPrev"`
 	HasNext bool `json:"hasNext"`
 }
+
+func (PageInfo) IsPageInfoResult() {}
 
 type Pokemon struct {
 	ID              int               `json:"id"`
@@ -51,17 +73,22 @@ type Pokemon struct {
 	Description     *Description      `json:"description"`
 	Ability         *Ability          `json:"ability"`
 	CanEvolution    bool              `json:"canEvolution"`
-	Evolutions      []*Pokemon        `json:"evolutions"`
-	LinkInfo        *LinkInfo         `json:"linkInfo"`
 }
 
 func (Pokemon) IsPokemonResult() {}
+
+type PokemonConnection struct {
+	NextToken *string    `json:"nextToken"`
+	Items     []*Pokemon `json:"items"`
+}
 
 type PokemonNotFound struct {
 	Message string `json:"message"`
 }
 
-func (PokemonNotFound) IsPokemonResult() {}
+func (PokemonNotFound) IsPokemonResult()    {}
+func (PokemonNotFound) IsEvolutionsResult() {}
+func (PokemonNotFound) IsPageInfoResult()   {}
 
 type Type struct {
 	Name    string `json:"name"`

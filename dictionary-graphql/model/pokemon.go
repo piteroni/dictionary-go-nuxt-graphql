@@ -17,14 +17,14 @@ type Pokemon struct {
 
 	// attribute
 	Species     string
-	Types       []Type `gorm:"many2many:type_possessed"`
+	Types       []Type `gorm:"many2many:pokemon_types"`
 	EvolutionID *uint  `gorm:"unique"`
 	Evolution   *Pokemon
 
 	// physical
 	Height  string
 	Weight  string
-	Genders []Gender `gorm:"many2many:gender_possessed"`
+	Genders []Gender `gorm:"many2many:pokemon_genders"`
 
 	// ability status, see https://pokemondb.net/pokedex
 	HeartPoint          int
@@ -33,5 +33,5 @@ type Pokemon struct {
 	SpecialAttackPoint  int
 	SpecialDefensePoint int
 	SpeedPoint          int
-	Characteristics     []Characteristic `gorm:"many2many:characteristic_possessed"`
+	Characteristics     []Characteristic `gorm:"many2many:pokemon_characteristics"`
 }

@@ -4,4 +4,4 @@ set -eu
 
 cd "$(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")"
 
-docker-compose run --rm application-ui "${*:-sh}"
+docker-compose run --rm application-ui "${@:-sh}"

@@ -88,4 +88,5 @@ docker-compose up graphql # go to http://localhost:8080/
 
 ## todo
 
+- connectionからdatasetを呼ぶときのN+1問題をどうにかする -> data loaderっぽいけど...
 - resolverの複雑度の計算

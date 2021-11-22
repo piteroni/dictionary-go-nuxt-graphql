@@ -2,6 +2,7 @@ package testing
 
 import (
 	"os"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -20,6 +21,9 @@ func ConnnectToInMemoryDatabase() (*gorm.DB, error) {
 
 	return gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{
 		Logger: logger.Default.LogMode(level),
+		NowFunc: func() time.Time {
+			return time.Time{}
+		},
 	})
 }
 
