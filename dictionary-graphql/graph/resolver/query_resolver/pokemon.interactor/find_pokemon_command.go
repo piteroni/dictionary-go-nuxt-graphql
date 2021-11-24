@@ -1,4 +1,4 @@
-package pokemon_loader
+package pokemon_interactor
 
 import (
 	"fmt"
@@ -10,11 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type findPokemonCommand struct {
-	db *gorm.DB
+type FindPokemonCommand struct {
+	DB *gorm.DB
 }
 
-func (c *findPokemonCommand) execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (c *FindPokemonCommand) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	f, a, err := c.decideParameters(first, after)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (c *findPokemonCommand) execute(first *int, after *int) ([]*model.Pokemon, 
 	return *pokemons, nil
 }
 
-func (c *findPokemonCommand) decideParameters(first *int, after *int) (int, int, error) {
+func (c *FindPokemonCommand) decideParameters(first *int, after *int) (int, int, error) {
 	var (
 		f = 0
 		a = 0
@@ -84,10 +84,10 @@ func (c *findPokemonCommand) decideParameters(first *int, after *int) (int, int,
 	return f, a, nil
 }
 
-func (c *findPokemonCommand) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
+func (c *FindPokemonCommand) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
 	pokemons := &[]*model.Pokemon{}
 
-	err := c.db.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after-1, after+first).Scan(pokemons).Error
+	err := c.DB.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after-1, after+first).Scan(pokemons).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -100,7 +100,7 @@ func (c *findPokemonCommand) findPokemons(first int, after int) (*[]*model.Pokem
 	return pokemons, nil
 }
 
-func (c *findPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error {
+func (c *FindPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error {
 	pokemonIDs := []uint{}
 
 	for _, pokemon := range *pokemons {
@@ -109,7 +109,7 @@ func (c *findPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error 
 
 	rs := []*result{}
 
-	err := c.db.
+	err := c.DB.
 		Table("pokemons").
 		Select(
 			// pokemon
@@ -259,7 +259,7 @@ func (c *findPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error 
 	return nil
 }
 
-func (_ *findPokemonCommand) sort(s map[uint]interface{}) *[]interface{} {
+func (_ *FindPokemonCommand) sort(s map[uint]interface{}) *[]interface{} {
 	r := []interface{}{}
 
 	keys := make([]int, 0, len(s))

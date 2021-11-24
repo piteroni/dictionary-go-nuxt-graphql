@@ -12,7 +12,10 @@ type Pokemon {
   description: Description!
   ability: Ability!
   canEvolution: Boolean!
-  evolutions: [Pokemon!]!
+}
+
+type Evolutions {
+  pokemons: [Pokemon!]!
 }
 
 type Gender {
@@ -51,10 +54,6 @@ type PageInfo {
   hasNext: Boolean!
 }
 
-type Evolutions {
-  pokemons: [Pokemon]
-}
-
 type PokemonConnection {
   nextID: Int!
   items: [Pokemon!]!
@@ -69,11 +68,13 @@ type PokemonNotFound {
 }
 
 union PokemonResult = Pokemon | PokemonNotFound
+union EvolutionsResult = Evolutions | PokemonNotFound
 union PageInfoResult = PageInfo | IllegalArgument | PokemonNotFound
 union PokemonConnectionResult = PokemonConnection | IllegalArgument | PokemonNotFound
 
 type Query {
   pokemon(pokemonId: Int!): PokemonResult!
+  evolutions(pokemonId: Int!): EvolutionsResult!
   pageInfo(pokemonId: Int!): PageInfoResult!
   pokemons(first: Int, after: Int): PokemonConnectionResult!
 }

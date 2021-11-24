@@ -2,6 +2,10 @@
 
 package model
 
+type EvolutionsResult interface {
+	IsEvolutionsResult()
+}
+
 type PageInfoResult interface {
 	IsPageInfoResult()
 }
@@ -36,6 +40,8 @@ type Description struct {
 type Evolutions struct {
 	Pokemons []*Pokemon `json:"pokemons"`
 }
+
+func (Evolutions) IsEvolutionsResult() {}
 
 type Gender struct {
 	Name    string `json:"name"`
@@ -72,7 +78,6 @@ type Pokemon struct {
 	Description     *Description      `json:"description"`
 	Ability         *Ability          `json:"ability"`
 	CanEvolution    bool              `json:"canEvolution"`
-	Evolutions      []*Pokemon        `json:"evolutions"`
 }
 
 func (Pokemon) IsPokemonResult() {}
@@ -89,6 +94,7 @@ type PokemonNotFound struct {
 }
 
 func (PokemonNotFound) IsPokemonResult()           {}
+func (PokemonNotFound) IsEvolutionsResult()        {}
 func (PokemonNotFound) IsPageInfoResult()          {}
 func (PokemonNotFound) IsPokemonConnectionResult() {}
 

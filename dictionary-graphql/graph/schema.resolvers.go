@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
 	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pageinfo"
@@ -19,6 +20,10 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.Pokem
 	}
 
 	return qr.Pokemon(pokemonID)
+}
+
+func (r *queryResolver) Evolutions(ctx context.Context, pokemonID int) (model.EvolutionsResult, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) PageInfo(ctx context.Context, pokemonID int) (model.PageInfoResult, error) {

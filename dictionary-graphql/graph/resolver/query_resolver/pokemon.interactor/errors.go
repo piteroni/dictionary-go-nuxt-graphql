@@ -1,4 +1,4 @@
-package pokemon_loader
+package pokemon_interactor
 
 var _ error = (*PokemonNotFound)(nil)
 

@@ -3,7 +3,7 @@ package pokemon
 import (
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
-	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon_loader"
+	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
 
 	"gorm.io/gorm"
 )
@@ -14,27 +14,19 @@ type PokemonQueryResolver struct {
 }
 
 func (r *PokemonQueryResolver) Pokemon(pokemonID int) (model.PokemonResult, error) {
-	l := pokemon_loader.NewPokemonLoader(r.DB)
+	command := pokemon_interactor.FindPokemonCommand{DB: r.DB}
+
 	first := 0
 
-	pokemons, err := l.Pokemons(&first, &pokemonID)
+	pokemons, err := command.Execute(&first, &pokemonID)
 	if err != nil {
-		_, ok := err.(*pokemon_loader.PokemonNotFound)
+		_, ok := err.(*pokemon_interactor.PokemonNotFound)
 		if ok {
 			return &model.PokemonNotFound{}, nil
 		}
-
-		return nil, err
 	}
 
-	p := (*pokemons)[0]
-
-	evolutions, err := l.Evolutions(uint(p.ID))
-	if err != nil {
-		return nil, err
-	}
-
-	p.Evolutions = *evolutions
+	p := pokemon_interactor.GraphQLModel((pokemons)[0])
 
 	return p, nil
 }

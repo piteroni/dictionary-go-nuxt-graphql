@@ -3,7 +3,8 @@ package pokemons
 import (
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
-	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon_loader"
+	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
+	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
 
 	"gorm.io/gorm"
 )
@@ -14,11 +15,13 @@ type PokemonsQueryResolver struct {
 }
 
 func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonConnectionResult, error) {
-	l := pokemon_loader.NewPokemonLoader(r.DB)
+	command := pokemon_interactor.FindPokemonCommand{DB: r.DB}
 
-	p, err := l.Pokemons(first, after)
+	p, err := command.Execute(first, after)
 	if err != nil {
-		e, ok := err.(*pokemon_loader.PokemonNotFound)
+		var e error
+
+		e, ok := err.(*pokemon_interactor.PokemonNotFound)
 		if ok {
 			r.Logger.Print(e.Error())
 
@@ -27,7 +30,7 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 			}, nil
 		}
 
-		_, ok = err.(*pokemon_loader.IllegalArgument)
+		e, ok = err.(*pokemon_interactor.IllegalArgument)
 		if ok {
 			r.Logger.Print(e.Error())
 
@@ -35,11 +38,14 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 				Message: e.Error(),
 			}, nil
 		}
-
-		return nil, err
 	}
 
-	pokemons := *p
+	pokemons := []*graph.Pokemon{}
+
+	for _, pokemon := range p {
+		pokemons = append(pokemons, pokemon_interactor.GraphQLModel(pokemon))
+	}
+
 	token := pokemons[len(pokemons)-1].ID
 
 	return model.PokemonConnection{
