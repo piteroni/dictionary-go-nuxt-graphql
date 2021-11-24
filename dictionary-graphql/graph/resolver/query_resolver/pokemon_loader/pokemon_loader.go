@@ -8,7 +8,8 @@ import (
 )
 
 type pokemonLoader struct {
-	command *findPokemonCommand
+	command                   *findPokemonCommand
+	evolutionTableAcquisition *evolutionTableAcquisition
 }
 
 func NewPokemonLoader(db *gorm.DB) *pokemonLoader {
@@ -16,16 +17,30 @@ func NewPokemonLoader(db *gorm.DB) *pokemonLoader {
 		command: &findPokemonCommand{
 			db: db,
 		},
+		evolutionTableAcquisition: &evolutionTableAcquisition{
+			db: db,
+		},
 	}
 }
 
-func (l *pokemonLoader) Load(first *int, after *int) (*[]*graph.Pokemon, error) {
+func (l *pokemonLoader) Pokemons(first *int, after *int) (*[]*graph.Pokemon, error) {
 	pokemons, err := l.command.execute(first, after)
 	if err != nil {
 		return nil, err
 	}
 
 	p := l.graphQLModels(pokemons)
+
+	return p, nil
+}
+
+func (l *pokemonLoader) Evolutions(pokemonID uint) (*[]*graph.Pokemon, error) {
+	pokemons, err := l.evolutionTableAcquisition.getEvolutionTable(pokemonID)
+	if err != nil {
+		return nil, err
+	}
+
+	p := l.graphQLModels(*pokemons)
 
 	return p, nil
 }

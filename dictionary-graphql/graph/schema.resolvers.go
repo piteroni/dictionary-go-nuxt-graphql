@@ -5,28 +5,38 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
+	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pageinfo"
 	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon"
+	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemons"
 )
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.PokemonResult, error) {
-	qr := pokemon.PokemonQueryResolver{DB: r.DB, Logger: r.Logger}
+	qr := pokemon.PokemonQueryResolver{
+		DB:     r.DB,
+		Logger: r.Logger,
+	}
 
 	return qr.Pokemon(pokemonID)
 }
 
 func (r *queryResolver) PageInfo(ctx context.Context, pokemonID int) (model.PageInfoResult, error) {
-	panic(fmt.Errorf("not implemented"))
+	qr := pageinfo.PageInfoQueryResolver{
+		DB:     r.DB,
+		Logger: r.Logger,
+	}
+
+	return qr.PageInfo(pokemonID)
 }
 
-func (r *queryResolver) Evolutions(ctx context.Context, pokemonID int) (model.EvolutionsResult, error) {
-	panic(fmt.Errorf("not implemented"))
-}
+func (r *queryResolver) Pokemons(ctx context.Context, first *int, after *int) (model.PokemonConnectionResult, error) {
+	qr := pokemons.PokemonsQueryResolver{
+		DB:     r.DB,
+		Logger: r.Logger,
+	}
 
-func (r *queryResolver) Pokemons(ctx context.Context, first *int, after *int) (*model.PokemonConnection, error) {
-	panic(fmt.Errorf("not implemented"))
+	return qr.Pokemons(first, after)
 }
 
 // Query returns generated.QueryResolver implementation.

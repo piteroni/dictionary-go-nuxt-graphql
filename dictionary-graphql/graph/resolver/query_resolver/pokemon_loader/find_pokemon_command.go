@@ -14,13 +14,13 @@ type findPokemonCommand struct {
 	db *gorm.DB
 }
 
-func (c *findPokemonCommand) execute(o *int, l *int) ([]*model.Pokemon, error) {
-	offset, limit, err := c.decideParameters(o, l)
+func (c *findPokemonCommand) execute(first *int, after *int) ([]*model.Pokemon, error) {
+	f, a, err := c.decideParameters(first, after)
 	if err != nil {
 		return nil, err
 	}
 
-	pokemons, err := c.findPokemons(offset, limit)
+	pokemons, err := c.findPokemons(f, a)
 	if err != nil {
 		return nil, err
 	}
@@ -33,57 +33,61 @@ func (c *findPokemonCommand) execute(o *int, l *int) ([]*model.Pokemon, error) {
 	return *pokemons, nil
 }
 
-func (c *findPokemonCommand) decideParameters(o *int, l *int) (offset int, limit int, err error) {
-	const (
-		limitMin  = 0
-		limitMax  = 15
-		offsetMin = 0
+func (c *findPokemonCommand) decideParameters(first *int, after *int) (int, int, error) {
+	var (
+		f = 0
+		a = 0
 	)
 
-	if l != nil {
-		if *l < limitMin {
+	const (
+		firstMin = 0
+		firstMax = 15
+		afterMin = 0
+	)
+
+	if first != nil {
+		if *first < firstMin {
 			err := errors.Cause(&IllegalArgument{
-				message: fmt.Sprintf("limit less then %d: limit = %d", limitMin, *l),
+				message: fmt.Sprintf("first less then %d: first = %d", firstMin, *first),
 			})
 
 			return 0, 0, err
 		}
 
-		if *l > limitMax {
+		if *first > firstMax {
 			err := errors.Cause(&IllegalArgument{
-				message: fmt.Sprintf("limit graeter then %d: limit = %d", limitMax, *l),
+				message: fmt.Sprintf("first graeter then %d: first = %d", firstMax, *first),
 			})
 
 			return 0, 0, err
 		}
 
-		limit = *l
+		f = *first
 	} else {
-		limit = limitMax
+		f = firstMax
 	}
 
-	if o != nil {
-		if *o < offsetMin {
+	if after != nil {
+		if *after < afterMin {
 			err := errors.Cause(&IllegalArgument{
-				message: fmt.Sprintf("offset less then %d: offset = %d", offsetMin, *o),
+				message: fmt.Sprintf("offset less then %d: offset = %d", afterMin, *after),
 			})
 
 			return 0, 0, err
 		}
 
-		offset = *o
+		a = *after
 	} else {
-		offset = offsetMin
+		a = afterMin
 	}
 
-	return offset, limit, nil
+	return f, a, nil
 }
 
-func (c *findPokemonCommand) findPokemons(offset int, limit int) (*[]*model.Pokemon, error) {
-	fmt.Printf("offset: %v\n", offset)
+func (c *findPokemonCommand) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
 	pokemons := &[]*model.Pokemon{}
 
-	err := c.db.Model(&model.Pokemon{}).Limit(limit).Offset(offset).Scan(pokemons).Error
+	err := c.db.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after-1, after+first).Scan(pokemons).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -109,37 +113,37 @@ func (c *findPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error 
 		Table("pokemons").
 		Select(
 			// pokemon
-			"pokemons.id as pokemon_id",
+			"pokemons.id AS pokemon_id",
 			// gender
-			"genders.id as gender_id",
-			"genders.name as gender_name",
-			"genders.icon_url as gender_icon_url",
+			"genders.id AS gender_id",
+			"genders.name AS gender_name",
+			"genders.icon_url AS gender_icon_url",
 			// type
-			"types.id as type_id",
-			"types.name as type_name",
-			"types.icon_url as type_icon_url",
+			"types.id AS type_id",
+			"types.name AS type_name",
+			"types.icon_url AS type_icon_url",
 			// characteristics
-			"characteristics.id as characteristic_id",
-			"characteristics.name as characteristic_name",
-			"characteristics.description as characteristic_description",
+			"characteristics.id AS characteristic_id",
+			"characteristics.name AS characteristic_name",
+			"characteristics.description AS characteristic_description",
 			// description
-			"descriptions.id as description_id",
-			"descriptions.text as description_text",
-			"descriptions.series as description_series",
+			"descriptions.id AS description_id",
+			"descriptions.text AS description_text",
+			"descriptions.series AS description_series",
 		).
 		Joins(`
-			left outer join pokemon_genders on pokemons.id = pokemon_genders.pokemon_id
-			left outer join genders on pokemon_genders.gender_id = genders.id
+			LEFT OUTER JOIN pokemon_genders ON pokemons.id = pokemon_genders.pokemon_id
+			LEFT OUTER JOIN genders ON pokemon_genders.gender_id = genders.id
 		`).
 		Joins(`
-			left outer join pokemon_types on pokemons.id = pokemon_types.pokemon_id
-			left outer join types on pokemon_types.type_id = types.id
+			LEFT OUTER JOIN pokemon_types ON pokemons.id = pokemon_types.pokemon_id
+			LEFT OUTER JOIN types ON pokemon_types.type_id = types.id
 		`).
 		Joins(`
-			left outer join pokemon_characteristics on pokemons.id = pokemon_characteristics.pokemon_id
-			left outer join characteristics on pokemon_characteristics.characteristic_id = characteristics.id
+			LEFT OUTER JOIN pokemon_characteristics ON pokemons.id = pokemon_characteristics.pokemon_id
+			LEFT OUTER JOIN characteristics ON pokemon_characteristics.characteristic_id = characteristics.id
 		`).
-		Joins("left outer join descriptions on pokemons.id = descriptions.pokemon_id").
+		Joins("LEFT OUTER JOIN descriptions ON pokemons.id = descriptions.pokemon_id").
 		Where("pokemons.id in ?", pokemonIDs).
 		Find(&rs).Error
 

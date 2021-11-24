@@ -1,31 +1,30 @@
-package pokemon_dataset_acquisition
+package pokemon_loader
 
 import (
 	"piteroni/dictionary-go-nuxt-graphql/model"
 	"piteroni/dictionary-go-nuxt-graphql/persistence"
 
 	"github.com/pkg/errors"
-
 	"gorm.io/gorm"
 )
 
-var _ iEvolutionTableAcquisition = (*evolutionTableAcquisition)(nil)
-
-// that provides the pokemon evolution table.
-type iEvolutionTableAcquisition interface {
-	getEvolutionTable(pokemon *model.Pokemon) ([]*PokemonDataset, error)
-}
-
 type evolutionTableAcquisition struct {
-	db                   *gorm.DB
-	basicInfoAcquisition *basicInfoAcquisition
+	db *gorm.DB
 }
 
-func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([]*PokemonDataset, error) {
-	datasets := []*PokemonDataset{}
+func (i *evolutionTableAcquisition) getEvolutionTable(pokemonID uint) (*[]*model.Pokemon, error) {
+	var evolutionID *uint
+
+	i.db.Model(&model.Pokemon{}).Select("evolutionID").Where("id = ?", pokemonID).Scan(evolutionID)
+
+	// when not evolution.
+	if evolutionID == nil {
+		return &[]*model.Pokemon{}, nil
+	}
+
 	before := &model.Pokemon{}
 
-	r := i.db.Model(&model.Pokemon{}).Where("evolution_id = ?", pokemon.ID).First(before)
+	r := i.db.Model(&model.Pokemon{}).Where("evolution_id = ?", evolutionID).First(before)
 	if r.Error != nil {
 		// ErrRecordNotFound is an expected error,
 		// that occurs when there is no pre-evolution pokemon.
@@ -50,8 +49,6 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 
 			before = row
 		}
-	} else {
-		before = pokemon
 	}
 
 	dao := persistence.NewPokemonDAO(i.db)
@@ -63,18 +60,8 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 		}
 	}
 
-	// when not evolution.
-	if before.Evolution == nil {
-		return datasets, nil
-	}
-
 	// add a starting point.
-	dataset, err := i.basicInfoAcquisition.getBasicInfo(before)
-	if err != nil {
-		return nil, err
-	}
-
-	datasets = append(datasets, dataset)
+	pokemons := []*model.Pokemon{before}
 
 	// tracing evolution.
 	for {
@@ -89,15 +76,10 @@ func (i *evolutionTableAcquisition) getEvolutionTable(pokemon *model.Pokemon) ([
 			break
 		}
 
-		dataset, err := i.basicInfoAcquisition.getBasicInfo(before.Evolution)
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-
-		datasets = append(datasets, dataset)
+		pokemons = append(pokemons, before.Evolution)
 
 		before = before.Evolution
 	}
 
-	return datasets, nil
+	return &pokemons, nil
 }

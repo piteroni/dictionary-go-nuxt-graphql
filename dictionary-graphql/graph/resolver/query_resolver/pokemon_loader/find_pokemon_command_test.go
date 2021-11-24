@@ -40,7 +40,7 @@ func TestCommandToFindPokemon(t *testing.T) {
 
 		defer cleanup()
 
-		pokemons, err := c.execute(itesting.Int(0), itesting.Int(3))
+		pokemons, err := c.execute(itesting.Int(3), itesting.Int(1))
 
 		assert.Nil(t, err)
 		assert.Len(t, pokemons, 3)
