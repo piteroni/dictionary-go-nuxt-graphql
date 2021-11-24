@@ -16,7 +16,7 @@ type EvolutionsQueryResolver struct {
 	Logger *driver.AppLogger
 }
 
-func (r *EvolutionsQueryResolver) Evolutions(pokemonID uint) (graph.EvolutionsResult, error) {
+func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsResult, error) {
 	var evolutionID *uint
 
 	err := r.DB.Model(&model.Pokemon{}).Select("evolution_id").Where("id = ?", pokemonID).Scan(evolutionID).Error
@@ -92,9 +92,13 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID uint) (graph.EvolutionsRe
 		before = before.Evolution
 	}
 
-	p := pokemon_interactor.GraphQLModels(pokemons)
+	p := []*graph.Pokemon{}
+
+	for _, pokemon := range pokemons {
+		p = append(p, pokemon_interactor.GraphQLModel(pokemon))
+	}
 
 	return graph.Evolutions{
-		Pokemons: *p,
+		Pokemons: p,
 	}, nil
 }
