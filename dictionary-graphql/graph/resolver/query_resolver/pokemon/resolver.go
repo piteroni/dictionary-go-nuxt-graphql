@@ -2,7 +2,6 @@ package pokemon
 
 import (
 	"piteroni/dictionary-go-nuxt-graphql/driver"
-	graph_internal "piteroni/dictionary-go-nuxt-graphql/graph/internal"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
 	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon_loader"
 
@@ -25,9 +24,7 @@ func (r *PokemonQueryResolver) Pokemon(pokemonID int) (model.PokemonResult, erro
 			return &model.PokemonNotFound{}, nil
 		}
 
-		r.Logger.Error(err)
-
-		return nil, graph_internal.InternalSystemError
+		return nil, err
 	}
 
 	p := (*pokemons)[0]

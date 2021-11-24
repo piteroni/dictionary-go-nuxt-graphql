@@ -2,7 +2,6 @@ package pageinfo
 
 import (
 	"piteroni/dictionary-go-nuxt-graphql/driver"
-	graph_internal "piteroni/dictionary-go-nuxt-graphql/graph/internal"
 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
 	"piteroni/dictionary-go-nuxt-graphql/model"
 
@@ -17,17 +16,25 @@ type PageInfoQueryResolver struct {
 }
 
 func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, error) {
-	pokemon := &model.Pokemon{}
-
-	err := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID).Error
+	i, err := r.getPageInfo(pokemonID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return graph.PokemonNotFound{}, nil
 		}
 
-		r.Logger.Error(err)
+		return nil, err
+	}
 
-		return nil, graph_internal.InternalSystemError
+	return i, nil
+}
+
+func (r *PageInfoQueryResolver) getPageInfo(pokemonID int) (graph.PageInfoResult, error) {
+	pokemon := &model.Pokemon{}
+
+	err := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID).Error
+	if err != nil {
+		// return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	i := graph.PageInfo{

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -36,6 +37,12 @@ func serve() error {
 
 	schema := generated.NewExecutableSchema(generated.Config{Resolvers: r})
 	srv := handler.NewDefaultServer(schema)
+
+	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
+		logger.Error(err.(error))
+
+		return errors.New("Internal server error!")
+	})
 
 	router := mux.NewRouter()
 
