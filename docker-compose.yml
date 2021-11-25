@@ -44,8 +44,8 @@ services:
       dockerfile: Dockerfile
       target: dev
       args:
-        - HTTP_ENDPOINT=http://graphql:8080/api/i/query
-        - BROWSER_HTTP_ENDPOINT=http://localhost:8080/api/i/query
+        - HTTP_ENDPOINT=http://graphql:8080/graphql
+        - BROWSER_HTTP_ENDPOINT=http://localhost:8080/graphql
     command: yarn dev
     depends_on:
       - graphql

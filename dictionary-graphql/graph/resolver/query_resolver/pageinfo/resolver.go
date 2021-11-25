@@ -32,7 +32,7 @@ func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, e
 		NextID: int(pokemon.ID + 1),
 	}
 
-	var tx *gorm.DB
+	tx := &gorm.DB{}
 
 	tx = r.DB.Model(&model.Pokemon{}).Where("id = ?", i.PrevID).First(&model.Pokemon{})
 	if tx.Error != nil {

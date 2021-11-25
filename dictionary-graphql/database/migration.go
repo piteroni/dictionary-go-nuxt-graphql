@@ -33,8 +33,8 @@ func DropTables(db *gorm.DB) error {
 		&model.Characteristic{},
 		&model.Description{},
 		&model.Pokemon{},
-		"type_possessed",
-		"characteristic_possessed",
-		"gender_possessed",
+		"pokemon_types",
+		"pokemon_characteristics",
+		"pokemon_genders",
 	)
 }

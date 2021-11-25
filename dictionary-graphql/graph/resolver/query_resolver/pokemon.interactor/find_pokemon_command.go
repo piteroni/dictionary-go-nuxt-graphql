@@ -131,18 +131,12 @@ func (c *FindPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error 
 			"descriptions.text AS description_text",
 			"descriptions.series AS description_series",
 		).
-		Joins(`
-			LEFT OUTER JOIN pokemon_genders ON pokemons.id = pokemon_genders.pokemon_id
-			LEFT OUTER JOIN genders ON pokemon_genders.gender_id = genders.id
-		`).
-		Joins(`
-			LEFT OUTER JOIN pokemon_types ON pokemons.id = pokemon_types.pokemon_id
-			LEFT OUTER JOIN types ON pokemon_types.type_id = types.id
-		`).
-		Joins(`
-			LEFT OUTER JOIN pokemon_characteristics ON pokemons.id = pokemon_characteristics.pokemon_id
-			LEFT OUTER JOIN characteristics ON pokemon_characteristics.characteristic_id = characteristics.id
-		`).
+		Joins("LEFT OUTER JOIN pokemon_genders ON pokemons.id = pokemon_genders.pokemon_id").
+		Joins("LEFT OUTER JOIN genders ON pokemon_genders.gender_id = genders.id").
+		Joins("LEFT OUTER JOIN pokemon_types ON pokemons.id = pokemon_types.pokemon_id").
+		Joins("LEFT OUTER JOIN types ON pokemon_types.type_id = types.id").
+		Joins("LEFT OUTER JOIN pokemon_characteristics ON pokemons.id = pokemon_characteristics.pokemon_id").
+		Joins("LEFT OUTER JOIN characteristics ON pokemon_characteristics.characteristic_id = characteristics.id").
 		Joins("LEFT OUTER JOIN descriptions ON pokemons.id = descriptions.pokemon_id").
 		Where("pokemons.id in ?", pokemonIDs).
 		Find(&rs).Error

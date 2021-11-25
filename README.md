@@ -83,10 +83,11 @@ ENABLE_ORM_LOGGING= ./scripts/attach-graphql scripts/test
 ### test graphql resolver
 
 ```
-docker-compose up graphql # go to http://localhost:8080/
+docker-compose up graphql
+# go to http://localhost:8080/
 ```
 
 ## todo
 
-- connectionからdatasetを呼ぶときのN+1問題をどうにかする -> data loaderっぽいけど...
+- graphql serverへのqueryのlogging
 - resolverの複雑度の計算

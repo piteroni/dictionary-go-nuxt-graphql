@@ -39,9 +39,9 @@ func serve() error {
 	srv := handler.NewDefaultServer(schema)
 
 	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
-		logger.Error(err.(error))
+		logger.Printf("unexpected error: %#v", err)
 
-		return errors.New("Internal server error!")
+		return errors.New("Internal server error!!")
 	})
 
 	router := mux.NewRouter()
@@ -50,8 +50,8 @@ func serve() error {
 		rw.WriteHeader(http.StatusOK)
 	})
 
-	router.Handle("/api/i/query", srv)
-	router.Handle("/", playground.Handler("GraphQL playground", "/api/i/query"))
+	router.Handle("/graphql", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
 
 	c, err := cors()
 	if err != nil {

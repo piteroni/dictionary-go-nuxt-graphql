@@ -17,9 +17,9 @@ type EvolutionsQueryResolver struct {
 }
 
 func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsResult, error) {
-	var evolutionID *uint
+	var evolutionID uint
 
-	err := r.DB.Model(&model.Pokemon{}).Select("evolution_id").Where("id = ?", pokemonID).Scan(evolutionID).Error
+	err := r.DB.Model(&model.Pokemon{}).Select("evolution_id").Where("id = ?", pokemonID).Row().Scan(&evolutionID)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return graph.PokemonNotFound{}, nil
@@ -29,7 +29,7 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 	}
 
 	// when not evolution.
-	if evolutionID == nil {
+	if evolutionID == 0 {
 		return graph.Evolutions{}, nil
 	}
 
@@ -98,7 +98,5 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 		p = append(p, pokemon_interactor.GraphQLModel(pokemon))
 	}
 
-	return graph.Evolutions{
-		Pokemons: p,
-	}, nil
+	return graph.Evolutions{Pokemons: p}, nil
 }
