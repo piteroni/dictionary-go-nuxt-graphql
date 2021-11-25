@@ -33,13 +33,25 @@ query pokemon($pokemonId: Int!) {
         specialDefense
         speed
       }
-      linkInfo {
-        prevId
-        nextId
-        hasPrev
-        hasNext
-      }
-      evolutions {
+    }
+
+    ... on PokemonNotFound {
+      message
+    }
+  }
+
+  pageInfo(pokemonId: $pokemonId) {
+    ... on PageInfo {
+      hasPrev
+      hasNext
+      prevId
+      nextId
+    }
+  }
+
+  evolutions(pokemonId: $pokemonId) {
+    ... on Evolutions {
+      pokemons {
         id
         nationalNo
         name
@@ -50,10 +62,6 @@ query pokemon($pokemonId: Int!) {
         }
         canEvolution
       }
-    }
-
-    ... on PokemonNotFound {
-      message
     }
   }
 }

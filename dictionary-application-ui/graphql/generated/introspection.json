@@ -3,6 +3,48 @@
     "types": [
       {
         "kind": "UNION",
+        "name": "EvolutionsResult",
+        "possibleTypes": [
+          {
+            "name": "Evolutions"
+          },
+          {
+            "name": "PokemonNotFound"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
+        "name": "PageInfoResult",
+        "possibleTypes": [
+          {
+            "name": "IllegalArgument"
+          },
+          {
+            "name": "PageInfo"
+          },
+          {
+            "name": "PokemonNotFound"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
+        "name": "PokemonConnectionResult",
+        "possibleTypes": [
+          {
+            "name": "IllegalArgument"
+          },
+          {
+            "name": "PokemonConnection"
+          },
+          {
+            "name": "PokemonNotFound"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
         "name": "PokemonResult",
         "possibleTypes": [
           {
