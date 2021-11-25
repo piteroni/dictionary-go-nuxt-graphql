@@ -61,14 +61,9 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 			before = row
 		}
 	}
-
-	dao := persistence.NewPokemonDAO(r.DB)
-
-	err = dao.ScanEvolution(before)
+	err = r.resolveRelations(before)
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithStack(err)
-		}
+		return nil, errors.WithStack(err)
 	}
 
 	// add a starting point.
@@ -76,11 +71,9 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 
 	// tracing evolution.
 	for {
-		err := dao.ScanEvolution(before)
+		err = r.resolveRelations(before)
 		if err != nil {
-			if !errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, errors.WithStack(err)
-			}
+			return nil, errors.WithStack(err)
 		}
 
 		if before.Evolution == nil {
@@ -99,4 +92,37 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 	}
 
 	return graph.Evolutions{Pokemons: p}, nil
+}
+
+func (r *EvolutionsQueryResolver) resolveRelations(pokemon *model.Pokemon) error {
+	dao := persistence.NewPokemonDAO(r.DB)
+
+	err := dao.ScanEvolution(pokemon)
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.WithStack(err)
+		}
+	}
+
+	err = dao.ScanTypes(pokemon)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	err = dao.ScanGenders(pokemon)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	err = dao.ScanCharacteristics(pokemon)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	err = dao.ScanDescriptions(pokemon)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
 }
