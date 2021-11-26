@@ -41,6 +41,8 @@ query pokemon($pokemonId: Int!) {
   }
 
   pageInfo(pokemonId: $pokemonId) {
+    __typename
+
     ... on PageInfo {
       hasPrev
       hasNext
@@ -50,6 +52,8 @@ query pokemon($pokemonId: Int!) {
   }
 
   evolutions(pokemonId: $pokemonId) {
+    __typename
+
     ... on Evolutions {
       pokemons {
         id
@@ -62,6 +66,29 @@ query pokemon($pokemonId: Int!) {
         }
         canEvolution
       }
+    }
+  }
+}
+
+query pokemons($first: Int, $after: Int) {
+  pokemons(first: $first, after: $after) {
+    __typename
+
+    ... on PokemonConnection {
+      nextID
+      items {
+        id
+        name
+        imageURL
+      }
+    }
+
+    ... on IllegalArgument {
+      message
+    }
+
+    ... on PokemonNotFound {
+      message
     }
   }
 }

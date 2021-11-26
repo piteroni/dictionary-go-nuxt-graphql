@@ -1,8 +1,8 @@
 import { getterTree, mutationTree } from "typed-vuex"
-import { Type, Gender, Characteristic, Description, Ability, LinkInfo, PokemonQuery } from "@/graphql/generated"
+import { Type, Gender, Characteristic, Description, Ability, PokemonQuery } from "@/graphql/generated"
 import { QueryType } from "@/shared/graphql"
 
-export type PokemonQueryType<Typename extends PokemonQuery["pokemon"]["__typename"]> = QueryType<PokemonQuery["pokemon"], Typename>
+export type PokemonQueryType<Model extends keyof Omit<PokemonQuery, "__typename">, Typename extends PokemonQuery[Model]["__typename"]> = QueryType<PokemonQuery[Model], Typename>
 
 export const state = () => ({
   nationalNo: 0,
@@ -26,13 +26,13 @@ export const state = () => ({
     specialDefense: 0,
     speed: 0
   } as Ability,
-  linkInfo: {
+  pageInfo: {
     prevId: 0,
     nextId: 0,
     hasPrev: false,
     hasNext: false
-  } as LinkInfo,
-  evolutions: [] as PokemonQueryType<"Pokemon">["evolutions"]
+  } as PokemonQueryType<"pageInfo", "PageInfo">,
+  evolutions: [] as PokemonQueryType<"evolutions", "Evolutions">["pokemons"]
 })
 
 export const abilityMaxStatus = {
@@ -55,19 +55,23 @@ export const getters = getterTree(state, {
 })
 
 export const mutations = mutationTree(state, {
-  save(state, params: PokemonQueryType<"Pokemon">): void {
-    state.nationalNo = params.nationalNo
-    state.name = params.name
-    state.species = params.species
-    state.height = params.height
-    state.weight = params.weight
-    state.imageURL = params.imageURL
-    state.genders = params.genders
-    state.types = params.types
-    state.characteristics = params.characteristics
-    state.description = params.description
-    state.ability = params.ability
-    state.linkInfo = params.linkInfo
-    state.evolutions = params.evolutions
+  save(state, params: {
+    pokemon: PokemonQueryType<"pokemon", "Pokemon">,
+    pageInfo: PokemonQueryType<"pageInfo", "PageInfo">,
+    evolutions: PokemonQueryType<"evolutions", "Evolutions">
+  }): void {
+    state.nationalNo = params.pokemon.nationalNo
+    state.name = params.pokemon.name
+    state.species = params.pokemon.species
+    state.height = params.pokemon.height
+    state.weight = params.pokemon.weight
+    state.imageURL = params.pokemon.imageURL
+    state.genders = params.pokemon.genders
+    state.types = params.pokemon.types
+    state.characteristics = params.pokemon.characteristics
+    state.description = params.pokemon.description
+    state.ability = params.pokemon.ability
+    state.pageInfo = params.pageInfo
+    state.evolutions = params.evolutions.pokemons
   }
 })

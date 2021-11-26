@@ -58,17 +58,15 @@ export default class PokemonDetails extends Vue {
       })
     }
 
-    const typename = response.data.pokemon.__typename
-
-    switch (typename) {
-      case "Pokemon":
-        // Explicitly specify the type as inference will not work well after build.
-        return this.$accessor.pokemonDataset.save(response.data.pokemon as PokemonQueryType<"Pokemon">)
-      case "PokemonNotFound":
-        return this.$nuxt.error({ statusCode: HttpStatusCode.NOT_FOUND })
-      default:
-        throw new Error(`unexpected type name: ${typename}`)
+    if (response.data.pokemon.__typename == "PokemonNotFound") {
+      return this.$nuxt.error({ statusCode: HttpStatusCode.NOT_FOUND })
     }
+
+    this.$accessor.pokemonDataset.save({
+      pokemon: response.data.pokemon as PokemonQueryType<"pokemon", "Pokemon">,
+      evolutions: response.data.evolutions as PokemonQueryType<"evolutions", "Evolutions">,
+      pageInfo: response.data.pageInfo as PokemonQueryType<"pageInfo", "PageInfo">
+    })
   }
 }
 </script>

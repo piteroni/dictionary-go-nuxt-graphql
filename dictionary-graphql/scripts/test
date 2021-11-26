@@ -5,5 +5,5 @@ set -eu
 cd "$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 [ ! -d tmp ] && mkdir tmp
-gotest -v -cover resolver/query_resolver/pokemon_loader/* -coverprofile=tmp/cover.out
+gotest -v -cover ./... -coverprofile=tmp/cover.out
 go tool cover -html=tmp/cover.out -o tmp/cover.html

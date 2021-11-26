@@ -69,7 +69,7 @@ type PokemonNotFound {
 
 union PokemonResult = Pokemon | PokemonNotFound
 union EvolutionsResult = Evolutions | PokemonNotFound
-union PageInfoResult = PageInfo | IllegalArgument | PokemonNotFound
+union PageInfoResult = PageInfo | PokemonNotFound
 union PokemonConnectionResult = PokemonConnection | IllegalArgument | PokemonNotFound
 
 type Query {

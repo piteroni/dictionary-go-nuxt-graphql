@@ -26,7 +26,7 @@ func (r *PokemonQueryResolver) Pokemon(pokemonID int) (model.PokemonResult, erro
 		}
 	}
 
-	p := pokemon_interactor.GraphQLModel((pokemons)[0])
+	p := pokemon_interactor.MappingGraphQLModel((pokemons)[0])
 
 	return p, nil
 }

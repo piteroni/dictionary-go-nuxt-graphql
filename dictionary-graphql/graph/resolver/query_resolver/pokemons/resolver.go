@@ -43,7 +43,7 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 	pokemons := []*graph.Pokemon{}
 
 	for _, pokemon := range p {
-		pokemons = append(pokemons, pokemon_interactor.GraphQLModel(pokemon))
+		pokemons = append(pokemons, pokemon_interactor.MappingGraphQLModel(pokemon))
 	}
 
 	token := pokemons[len(pokemons)-1].ID

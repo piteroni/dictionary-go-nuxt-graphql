@@ -88,7 +88,7 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 	p := []*graph.Pokemon{}
 
 	for _, pokemon := range pokemons {
-		p = append(p, pokemon_interactor.GraphQLModel(pokemon))
+		p = append(p, pokemon_interactor.MappingGraphQLModel(pokemon))
 	}
 
 	return graph.Evolutions{Pokemons: p}, nil

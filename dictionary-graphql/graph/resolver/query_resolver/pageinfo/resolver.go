@@ -18,13 +18,13 @@ type PageInfoQueryResolver struct {
 func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, error) {
 	pokemon := &model.Pokemon{}
 
-	err := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return graph.PokemonNotFound{}, nil
-		}
+	tx := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID)
+	if tx.Error != nil {
+		return nil, errors.WithStack(tx.Error)
+	}
 
-		return nil, errors.WithStack(err)
+	if tx.RowsAffected <= 0 {
+		return graph.PokemonNotFound{}, nil
 	}
 
 	i := graph.PageInfo{
@@ -32,7 +32,7 @@ func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, e
 		NextID: int(pokemon.ID + 1),
 	}
 
-	tx := &gorm.DB{}
+	tx = &gorm.DB{}
 
 	tx = r.DB.Model(&model.Pokemon{}).Where("id = ?", i.PrevID).First(&model.Pokemon{})
 	if tx.Error != nil {
