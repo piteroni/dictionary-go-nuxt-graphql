@@ -61,6 +61,7 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 			before = row
 		}
 	}
+
 	err = r.resolveRelations(before)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -88,7 +89,8 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 	p := []*graph.Pokemon{}
 
 	for _, pokemon := range pokemons {
-		p = append(p, pokemon_interactor.MappingGraphQLModel(pokemon))
+		g := pokemon_interactor.MappingGraphQLModel(pokemon)
+		p = append(p, g)
 	}
 
 	return graph.Evolutions{Pokemons: p}, nil
@@ -104,12 +106,12 @@ func (r *EvolutionsQueryResolver) resolveRelations(pokemon *model.Pokemon) error
 		}
 	}
 
-	err = dao.ScanTypes(pokemon)
+	err = dao.ScanGenders(pokemon)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	err = dao.ScanGenders(pokemon)
+	err = dao.ScanTypes(pokemon)
 	if err != nil {
 		return errors.WithStack(err)
 	}

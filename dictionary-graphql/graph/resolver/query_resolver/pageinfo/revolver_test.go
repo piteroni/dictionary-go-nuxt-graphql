@@ -56,7 +56,8 @@ func TestPageInfoQueryResolver(t *testing.T) {
 			渡したオブジェクトの前に位置するレコードが存在しない場合、HasPrevはfalseに設定される
 			また渡したオブジェクトの次に位置するレコードが存在する場合、HasNextはtrueに設定される
 		`, func(t *testing.T) {
-			info, err := r.PageInfo(1)
+			actual, err := r.PageInfo(1)
+
 			expected := graph.PageInfo{
 				PrevID:  0,
 				NextID:  2,
@@ -64,7 +65,7 @@ func TestPageInfoQueryResolver(t *testing.T) {
 				HasNext: true,
 			}
 
-			assert.Equal(t, expected, info)
+			assert.Equal(t, expected, actual)
 			assert.Nil(t, err)
 		})
 
@@ -72,7 +73,7 @@ func TestPageInfoQueryResolver(t *testing.T) {
 			渡したオブジェクトの前に位置するレコードが存在する場合、HasPrevはtrueに設定される
 			また渡したオブジェクトの次に位置するレコードが存在しない場合、HasNextはfalseに設定される
 		`, func(t *testing.T) {
-			info, err := r.PageInfo(2)
+			actual, err := r.PageInfo(2)
 
 			expected := graph.PageInfo{
 				PrevID:  1,
@@ -81,7 +82,7 @@ func TestPageInfoQueryResolver(t *testing.T) {
 				HasNext: false,
 			}
 
-			assert.Equal(t, expected, info)
+			assert.Equal(t, expected, actual)
 			assert.Nil(t, err)
 		})
 	})

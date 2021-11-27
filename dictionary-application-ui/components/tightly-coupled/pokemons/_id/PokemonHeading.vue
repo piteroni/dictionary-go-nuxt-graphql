@@ -65,29 +65,29 @@ export default class PokemonHeading extends Vue {
   }
 
   public get hasPrev(): boolean {
-    return this.$accessor.pokemonDataset.linkInfo.hasPrev
+    return this.$accessor.pokemonDataset.pageInfo.hasPrev
   }
 
   public get hasNext(): boolean {
-    return this.$accessor.pokemonDataset.linkInfo.hasNext
+    return this.$accessor.pokemonDataset.pageInfo.hasNext
   }
 
   public moveToPrev() {
-    if (!this.$accessor.pokemonDataset.linkInfo.hasPrev) {
+    if (!this.$accessor.pokemonDataset.pageInfo.hasPrev) {
       return
     }
 
-    const id = this.$accessor.pokemonDataset.linkInfo.prevId
+    const id = this.$accessor.pokemonDataset.pageInfo.prevId
 
     this.$router.push(`/pokemons/${id}`)
   }
 
   public moveToNext() {
-    if (!this.$accessor.pokemonDataset.linkInfo.hasNext) {
+    if (!this.$accessor.pokemonDataset.pageInfo.hasNext) {
       return
     }
 
-    const id = this.$accessor.pokemonDataset.linkInfo.nextId
+    const id = this.$accessor.pokemonDataset.pageInfo.nextId
 
     this.$router.push(`/pokemons/${id}`)
   }
