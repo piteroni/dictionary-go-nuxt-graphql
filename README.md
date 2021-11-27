@@ -89,5 +89,6 @@ docker-compose up graphql
 
 ## todo
 
-- graphql serverへのqueryのlogging
 - resolverの複雑度の計算
+- resolverのregresion test、golden testとかいうやつをググる
+
