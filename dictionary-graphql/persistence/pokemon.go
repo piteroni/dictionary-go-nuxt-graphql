@@ -118,7 +118,9 @@ func (dao *PokemonDAO) ScanEvolution(p *model.Pokemon) error {
 
 	err := dao.db.Model(&model.Pokemon{}).First(&p.Evolution, *p.EvolutionID).Error
 	if err != nil {
-		return errors.WithStack(err)
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.WithStack(err)
+		}
 	}
 
 	return nil

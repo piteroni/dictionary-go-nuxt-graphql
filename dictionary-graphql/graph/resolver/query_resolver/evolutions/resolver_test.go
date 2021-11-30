@@ -94,19 +94,13 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 		})
 	})
 
-	t.Run("進化表データには関連テーブル情報が含まれる", func(t *testing.T) {
+	t.Run("指定したポケモンが進化しない場合、空の進化表が返ってくる", func(t *testing.T) {
 		data := []*model.Pokemon{
 			{
-				Model:      gorm.Model{ID: 1},
-				NationalNo: 1,
-				Name:       "pokemon-1",
-				Genders: []model.Gender{
-					{
-						Model:   gorm.Model{ID: 1},
-						Name:    "gender-1",
-						IconURL: "gender-1.jpg",
-					},
-				},
+				Model:       gorm.Model{ID: 1},
+				NationalNo:  1,
+				Name:        "pokemon-1",
+				EvolutionID: nil,
 			},
 		}
 
@@ -123,7 +117,49 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 		assert.Nil(t, err)
 
 		assert.IsType(t, graph.Evolutions{}, evolutions)
-		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 1)
+		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 0)
+		assert.Equal(t, evolutions, graph.Evolutions{})
+	})
+
+	// t.Run("指定したポケモンの進化", func(t *testing.T) {
+	// })
+
+	t.Run("進化表データには関連テーブル情報が含まれる", func(t *testing.T) {
+		data := []*model.Pokemon{
+			{
+				Model:       gorm.Model{ID: 1},
+				NationalNo:  1,
+				Name:        "pokemon-1",
+				EvolutionID: itesting.UInt(2),
+				Genders: []model.Gender{
+					{
+						Model:   gorm.Model{ID: 1},
+						Name:    "gender-1",
+						IconURL: "gender-1.jpg",
+					},
+				},
+			},
+			{
+				Model:      gorm.Model{ID: 2},
+				NationalNo: 2,
+				Name:       "pokemon-2",
+			},
+		}
+
+		err := db.Create(data).Error
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer cleanup()
+
+		evolutions, err := r.Evolutions(1)
+
+		assert.NotNil(t, evolutions)
+		assert.Nil(t, err)
+
+		assert.IsType(t, graph.Evolutions{}, evolutions)
+		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 2)
 		assert.Equal(t, evolutions, graph.Evolutions{
 			Pokemons: []*graph.Pokemon{
 				{
@@ -137,8 +173,26 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 							IconURL: "gender-1.jpg",
 						},
 					},
+					CanEvolution: true,
+				},
+				{
+					ID:           2,
+					NationalNo:   2,
+					Name:         "pokemon-2",
+					Ability:      &graph.Ability{},
+					CanEvolution: false,
 				},
 			},
 		})
+	})
+
+	t.Run("指定したポケモンが存在しない場合、例外が送出される", func(t *testing.T) {
+		actual, err := r.Evolutions(100)
+		expected := graph.PokemonNotFound{}
+
+		assert.NotNil(t, actual)
+		assert.Nil(t, err)
+
+		assert.IsType(t, expected, actual)
 	})
 }

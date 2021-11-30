@@ -17,57 +17,58 @@ type EvolutionsQueryResolver struct {
 }
 
 func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsResult, error) {
-	var evolutionID uint
+	pokemon := &model.Pokemon{}
 
-	err := r.DB.Model(&model.Pokemon{}).Select("evolution_id").Where("id = ?", pokemonID).Row().Scan(&evolutionID)
-	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return graph.PokemonNotFound{}, nil
-		}
+	tx := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID)
+	if tx.Error != nil {
+		return nil, errors.WithStack(tx.Error)
+	}
 
-		return nil, errors.WithStack(err)
+	if tx.RowsAffected <= 0 {
+		return graph.PokemonNotFound{}, nil
 	}
 
 	// when not evolution.
-	if evolutionID == 0 {
+	if pokemon.EvolutionID == nil {
 		return graph.Evolutions{}, nil
 	}
 
 	before := &model.Pokemon{}
 
-	tx := r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", evolutionID).First(before)
+	tx = r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", pokemon.EvolutionID).First(before)
 	if tx.Error != nil {
 		// ErrRecordNotFound is an expected error,
 		// that occurs when there is no pre-evolution pokemon.
-		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return graph.Evolutions{}, nil
+		} else {
 			return nil, errors.WithStack(tx.Error)
 		}
 	}
 
 	// tracing pre-evolution.
-	if tx.RowsAffected != 0 {
-		for {
-			row := &model.Pokemon{}
+	for {
+		row := &model.Pokemon{}
 
-			err := r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", before.ID).First(row).Error
-			if err != nil {
-				if errors.Is(err, gorm.ErrRecordNotFound) {
-					break
-				} else {
-					return nil, errors.WithStack(err)
-				}
+		err := r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", before.ID).First(row).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				break
+			} else {
+				return nil, errors.WithStack(err)
 			}
-
-			before = row
 		}
+
+		before = row
 	}
 
-	err = r.resolveRelations(before)
+	// add a starting point.
+
+	err := r.resolveRelations(before)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	// add a starting point.
 	pokemons := []*model.Pokemon{before}
 
 	// tracing evolution.
@@ -101,9 +102,7 @@ func (r *EvolutionsQueryResolver) resolveRelations(pokemon *model.Pokemon) error
 
 	err := dao.ScanEvolution(pokemon)
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithStack(err)
-		}
+		return errors.WithStack(err)
 	}
 
 	err = dao.ScanGenders(pokemon)
