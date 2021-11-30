@@ -121,9 +121,6 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 		assert.Equal(t, evolutions, graph.Evolutions{})
 	})
 
-	// t.Run("指定したポケモンの進化", func(t *testing.T) {
-	// })
-
 	t.Run("進化表データには関連テーブル情報が含まれる", func(t *testing.T) {
 		data := []*model.Pokemon{
 			{
