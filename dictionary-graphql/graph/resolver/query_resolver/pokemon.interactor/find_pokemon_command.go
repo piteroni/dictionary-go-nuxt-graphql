@@ -87,7 +87,7 @@ func (c *FindPokemonCommand) decideParameters(first *int, after *int) (int, int,
 func (c *FindPokemonCommand) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
 	pokemons := &[]*model.Pokemon{}
 
-	err := c.DB.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after-1, after+first).Scan(pokemons).Error
+	err := c.DB.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after, after+first).Scan(pokemons).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
