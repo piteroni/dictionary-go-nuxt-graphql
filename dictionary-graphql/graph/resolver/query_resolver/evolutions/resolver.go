@@ -24,67 +24,18 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 		return nil, errors.WithStack(tx.Error)
 	}
 
-	if tx.RowsAffected <= 0 {
+	if tx.RowsAffected == 0 {
 		return graph.PokemonNotFound{}, nil
 	}
 
-	// when not evolution.
-	if pokemon.EvolutionID == nil {
-		return graph.Evolutions{}, nil
-	}
-
-	before := &model.Pokemon{}
-
-	tx = r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", pokemon.EvolutionID).First(before)
-	if tx.Error != nil {
-		// ErrRecordNotFound is an expected error,
-		// that occurs when there is no pre-evolution pokemon.
-		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return graph.Evolutions{}, nil
-		} else {
-			return nil, errors.WithStack(tx.Error)
-		}
-	}
-
-	// tracing pre-evolution.
-	for {
-		row := &model.Pokemon{}
-
-		err := r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", before.ID).First(row).Error
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				break
-			} else {
-				return nil, errors.WithStack(err)
-			}
-		}
-
-		before = row
-	}
-
-	// add a starting point.
-
-	err := r.resolveRelations(before)
+	err := r.tracingPreEvolution(pokemon)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 
-	pokemons := []*model.Pokemon{before}
-
-	// tracing evolution.
-	for {
-		err = r.resolveRelations(before)
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-
-		if before.Evolution == nil {
-			break
-		}
-
-		pokemons = append(pokemons, before.Evolution)
-
-		before = before.Evolution
+	pokemons, err := r.getEvolutions(pokemon)
+	if err != nil {
+		return nil, err
 	}
 
 	p := []*graph.Pokemon{}
@@ -95,6 +46,59 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 	}
 
 	return graph.Evolutions{Pokemons: p}, nil
+}
+
+func (r *EvolutionsQueryResolver) tracingPreEvolution(pokemon *model.Pokemon) error {
+	for {
+		row := &model.Pokemon{}
+
+		err := r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", pokemon.ID).First(row).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				break
+			} else {
+				return errors.WithStack(err)
+			}
+		}
+
+		*pokemon = *row
+	}
+
+	return nil
+}
+
+func (r *EvolutionsQueryResolver) getEvolutions(pokemon *model.Pokemon) ([]*model.Pokemon, error) {
+	pokemons := []*model.Pokemon{}
+
+	// add a starting point.
+	err := r.resolveRelations(pokemon)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	pokemons = append(pokemons, pokemon)
+
+	for {
+		err := r.resolveRelations(pokemon)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+
+		if pokemon.Evolution == nil {
+			break
+		}
+
+		pokemons = append(pokemons, pokemon.Evolution)
+
+		pokemon = pokemon.Evolution
+	}
+
+	// return empty list when evolution.
+	if len(pokemons) == 1 && pokemons[0].ID == pokemon.ID {
+		return []*model.Pokemon{}, nil
+	}
+
+	return pokemons, nil
 }
 
 func (r *EvolutionsQueryResolver) resolveRelations(pokemon *model.Pokemon) error {

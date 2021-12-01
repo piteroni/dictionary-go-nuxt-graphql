@@ -60,13 +60,100 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 
 		defer cleanup()
 
-		evolutions, err := r.Evolutions(2)
+		// The same result can be obtained by specifying ID: 1 or ID: 3.
+		for _, id := range []int{1, 2, 3} {
+			evolutions, err := r.Evolutions(id)
+
+			assert.NotNil(t, evolutions)
+			assert.Nil(t, err)
+
+			assert.IsType(t, graph.Evolutions{}, evolutions)
+			assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 3)
+			assert.Equal(t, evolutions, graph.Evolutions{
+				Pokemons: []*graph.Pokemon{
+					{
+						ID:           1,
+						NationalNo:   1,
+						Name:         "pokemon-1",
+						CanEvolution: true,
+						Ability:      &graph.Ability{},
+					},
+					{
+						ID:           2,
+						NationalNo:   2,
+						Name:         "pokemon-2",
+						CanEvolution: true,
+						Ability:      &graph.Ability{},
+					},
+					{
+						ID:           3,
+						NationalNo:   3,
+						Name:         "pokemon-3",
+						CanEvolution: false,
+						Ability:      &graph.Ability{},
+					},
+				},
+			})
+		}
+	})
+
+	t.Run("進化表データには関連テーブル情報が含まれる", func(t *testing.T) {
+		data := []*model.Pokemon{
+			{
+				Model:       gorm.Model{ID: 1},
+				NationalNo:  1,
+				Name:        "pokemon-1",
+				EvolutionID: itesting.UInt(2),
+				Genders: []model.Gender{
+					{
+						Model:   gorm.Model{ID: 1},
+						Name:    "gender-1",
+						IconURL: "gender-1.jpg",
+					},
+				},
+				Types: []model.Type{
+					{
+						Model:   gorm.Model{ID: 1},
+						Name:    "type-1",
+						IconURL: "type-1.jpg",
+					},
+				},
+				Characteristics: []model.Characteristic{
+					{
+						Model:       gorm.Model{ID: 1},
+						Name:        "characteristic-1",
+						Description: "characteristic-1-description",
+					},
+				},
+				Descriptions: []model.Description{
+					{
+						Model:  gorm.Model{ID: 1},
+						Text:   "description-1-text",
+						Series: "description-1-series",
+					},
+				},
+			},
+			{
+				Model:      gorm.Model{ID: 2},
+				NationalNo: 2,
+				Name:       "pokemon-2",
+			},
+		}
+
+		err := db.Create(data).Error
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer cleanup()
+
+		evolutions, err := r.Evolutions(1)
 
 		assert.NotNil(t, evolutions)
 		assert.Nil(t, err)
 
 		assert.IsType(t, graph.Evolutions{}, evolutions)
-		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 3)
+		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 2)
 		assert.Equal(t, evolutions, graph.Evolutions{
 			Pokemons: []*graph.Pokemon{
 				{
@@ -75,20 +162,35 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 					Name:         "pokemon-1",
 					CanEvolution: true,
 					Ability:      &graph.Ability{},
+					Genders: []*graph.Gender{
+						{
+							Name:    "gender-1",
+							IconURL: "gender-1.jpg",
+						},
+					},
+					Types: []*graph.Type{
+						{
+							Name:    "type-1",
+							IconURL: "type-1.jpg",
+						},
+					},
+					Characteristics: []*graph.Characteristic{
+						{
+							Name:        "characteristic-1",
+							Description: "characteristic-1-description",
+						},
+					},
+					Description: &graph.Description{
+						Text:   "description-1-text",
+						Series: "description-1-series",
+					},
 				},
 				{
 					ID:           2,
 					NationalNo:   2,
 					Name:         "pokemon-2",
-					CanEvolution: true,
 					Ability:      &graph.Ability{},
-				},
-				{
-					ID:           3,
-					NationalNo:   3,
-					Name:         "pokemon-3",
 					CanEvolution: false,
-					Ability:      &graph.Ability{},
 				},
 			},
 		})
@@ -118,73 +220,11 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 
 		assert.IsType(t, graph.Evolutions{}, evolutions)
 		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 0)
-		assert.Equal(t, evolutions, graph.Evolutions{})
-	})
-
-	t.Run("進化表データには関連テーブル情報が含まれる", func(t *testing.T) {
-		data := []*model.Pokemon{
-			{
-				Model:       gorm.Model{ID: 1},
-				NationalNo:  1,
-				Name:        "pokemon-1",
-				EvolutionID: itesting.UInt(2),
-				Genders: []model.Gender{
-					{
-						Model:   gorm.Model{ID: 1},
-						Name:    "gender-1",
-						IconURL: "gender-1.jpg",
-					},
-				},
-			},
-			{
-				Model:      gorm.Model{ID: 2},
-				NationalNo: 2,
-				Name:       "pokemon-2",
-			},
-		}
-
-		err := db.Create(data).Error
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		defer cleanup()
-
-		evolutions, err := r.Evolutions(1)
-
-		assert.NotNil(t, evolutions)
-		assert.Nil(t, err)
-
-		assert.IsType(t, graph.Evolutions{}, evolutions)
-		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 2)
-		assert.Equal(t, evolutions, graph.Evolutions{
-			Pokemons: []*graph.Pokemon{
-				{
-					ID:         1,
-					NationalNo: 1,
-					Name:       "pokemon-1",
-					Ability:    &graph.Ability{},
-					Genders: []*graph.Gender{
-						{
-							Name:    "gender-1",
-							IconURL: "gender-1.jpg",
-						},
-					},
-					CanEvolution: true,
-				},
-				{
-					ID:           2,
-					NationalNo:   2,
-					Name:         "pokemon-2",
-					Ability:      &graph.Ability{},
-					CanEvolution: false,
-				},
-			},
-		})
+		assert.Equal(t, graph.Evolutions{Pokemons: []*graph.Pokemon{}}, evolutions)
 	})
 
 	t.Run("指定したポケモンが存在しない場合、例外が送出される", func(t *testing.T) {
-		actual, err := r.Evolutions(100)
+		actual, err := r.Evolutions(1)
 		expected := graph.PokemonNotFound{}
 
 		assert.NotNil(t, actual)
