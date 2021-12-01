@@ -10,11 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type FindPokemonCommand struct {
+type FindPokemonCommand interface {
+	Execute(first *int, after *int) ([]*model.Pokemon, error)
+}
+
+var _ FindPokemonCommand = (*FindPokemonCommandImpl)(nil)
+
+type FindPokemonCommandImpl struct {
 	DB *gorm.DB
 }
 
-func (c *FindPokemonCommand) Execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (c *FindPokemonCommandImpl) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	f, a, err := c.decideParameters(first, after)
 	if err != nil {
 		return nil, err
@@ -33,7 +39,7 @@ func (c *FindPokemonCommand) Execute(first *int, after *int) ([]*model.Pokemon, 
 	return *pokemons, nil
 }
 
-func (c *FindPokemonCommand) decideParameters(first *int, after *int) (int, int, error) {
+func (c *FindPokemonCommandImpl) decideParameters(first *int, after *int) (int, int, error) {
 	var (
 		f = 0
 		a = 0
@@ -84,7 +90,7 @@ func (c *FindPokemonCommand) decideParameters(first *int, after *int) (int, int,
 	return f, a, nil
 }
 
-func (c *FindPokemonCommand) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
+func (c *FindPokemonCommandImpl) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
 	pokemons := &[]*model.Pokemon{}
 
 	err := c.DB.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after, after+first).Scan(pokemons).Error
@@ -100,7 +106,7 @@ func (c *FindPokemonCommand) findPokemons(first int, after int) (*[]*model.Pokem
 	return pokemons, nil
 }
 
-func (c *FindPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error {
+func (c *FindPokemonCommandImpl) resolveRelations(pokemons *[]*model.Pokemon) error {
 	pokemonIDs := []uint{}
 
 	for _, pokemon := range *pokemons {
@@ -253,7 +259,7 @@ func (c *FindPokemonCommand) resolveRelations(pokemons *[]*model.Pokemon) error 
 	return nil
 }
 
-func (_ *FindPokemonCommand) sort(s map[uint]interface{}) *[]interface{} {
+func (_ *FindPokemonCommandImpl) sort(s map[uint]interface{}) *[]interface{} {
 	r := []interface{}{}
 
 	keys := make([]int, 0, len(s))

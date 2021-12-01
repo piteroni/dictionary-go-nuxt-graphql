@@ -10,20 +10,20 @@ import (
 )
 
 type PokemonsQueryResolver struct {
-	DB     *gorm.DB
-	Logger *driver.AppLogger
+	*gorm.DB
+	*driver.AppLogger
+	*pokemon_interactor.GraphQLModelMapper
+	pokemon_interactor.FindPokemonCommand
 }
 
 func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonConnectionResult, error) {
-	command := pokemon_interactor.FindPokemonCommand{DB: r.DB}
-
-	p, err := command.Execute(first, after)
+	p, err := r.FindPokemonCommand.Execute(first, after)
 	if err != nil {
 		var e error
 
 		e, ok := err.(*pokemon_interactor.PokemonNotFound)
 		if ok {
-			r.Logger.Print(e.Error())
+			r.AppLogger.Print(e.Error())
 
 			return model.PokemonNotFound{
 				Message: e.Error(),
@@ -32,7 +32,7 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 
 		e, ok = err.(*pokemon_interactor.IllegalArgument)
 		if ok {
-			r.Logger.Print(e.Error())
+			r.AppLogger.Print(e.Error())
 
 			return model.IllegalArgument{
 				Message: e.Error(),
@@ -43,7 +43,7 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 	pokemons := []*graph.Pokemon{}
 
 	for _, pokemon := range p {
-		pokemons = append(pokemons, pokemon_interactor.MappingGraphQLModel(pokemon))
+		pokemons = append(pokemons, r.GraphQLModelMapper.Mapping(pokemon))
 	}
 
 	token := pokemons[len(pokemons)-1].ID

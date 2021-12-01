@@ -5,7 +5,9 @@ import (
 	"piteroni/dictionary-go-nuxt-graphql/model"
 )
 
-func MappingGraphQLModel(pokemon *model.Pokemon) *graph.Pokemon {
+type GraphQLModelMapper struct{}
+
+func (_ *GraphQLModelMapper) Mapping(pokemon *model.Pokemon) *graph.Pokemon {
 	m := &graph.Pokemon{
 		ID:           int(pokemon.ID),
 		NationalNo:   pokemon.NationalNo,

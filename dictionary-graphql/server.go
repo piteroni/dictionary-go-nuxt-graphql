@@ -31,8 +31,8 @@ func serve() error {
 	}
 
 	r := &graph.Resolver{
-		DB:     db,
-		Logger: logger,
+		DB:        db,
+		AppLogger: logger,
 	}
 
 	schema := generated.NewExecutableSchema(generated.Config{Resolvers: r})

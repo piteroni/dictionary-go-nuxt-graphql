@@ -5,6 +5,7 @@ import (
 
 	"piteroni/dictionary-go-nuxt-graphql/database"
 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
+	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
 	"piteroni/dictionary-go-nuxt-graphql/model"
 	itesting "piteroni/dictionary-go-nuxt-graphql/testing"
 
@@ -30,7 +31,10 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 		}
 	}
 
-	r := &EvolutionsQueryResolver{DB: db}
+	r := &EvolutionsQueryResolver{
+		DB:                 db,
+		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
+	}
 
 	t.Run("指定したポケモンの進化表を取得できる", func(t *testing.T) {
 		data := []*model.Pokemon{
@@ -60,7 +64,7 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 
 		defer cleanup()
 
-		// The same result can be obtained by specifying ID: 1 or ID: 3.
+		// same result can be obtained by specifying ID 1 to 3.
 		for _, id := range []int{1, 2, 3} {
 			evolutions, err := r.Evolutions(id)
 

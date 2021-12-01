@@ -1,7 +1,6 @@
 package pageinfo
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/driver"
 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
 	"piteroni/dictionary-go-nuxt-graphql/model"
 
@@ -11,8 +10,7 @@ import (
 )
 
 type PageInfoQueryResolver struct {
-	DB     *gorm.DB
-	Logger *driver.AppLogger
+	DB *gorm.DB
 }
 
 func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, error) {

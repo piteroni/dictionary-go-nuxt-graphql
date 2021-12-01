@@ -7,6 +7,6 @@ import (
 )
 
 type Resolver struct {
-	DB     *gorm.DB
-	Logger *driver.AppLogger
+	*gorm.DB
+	*driver.AppLogger
 }
