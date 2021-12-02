@@ -16,9 +16,9 @@ import (
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.PokemonResult, error) {
 	qr := pokemon.PokemonQueryResolver{
-		DB:                 r.DB,
-		FindPokemonCommand: &pokemon_interactor.FindPokemonCommandImpl{DB: r.DB},
-		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
+		DB:                   r.DB,
+		PokemonSearchCommand: &pokemon_interactor.PokemonSearchCommandImpl{DB: r.DB},
+		GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
 	}
 
 	return qr.Pokemon(pokemonID)
@@ -43,9 +43,9 @@ func (r *queryResolver) PageInfo(ctx context.Context, pokemonID int) (model.Page
 
 func (r *queryResolver) Pokemons(ctx context.Context, first *int, after *int) (model.PokemonConnectionResult, error) {
 	qr := pokemons.PokemonsQueryResolver{
-		AppLogger:          r.AppLogger,
-		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-		FindPokemonCommand: &pokemon_interactor.FindPokemonCommandImpl{DB: r.DB},
+		AppLogger:            r.AppLogger,
+		GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
+		PokemonSearchCommand: &pokemon_interactor.PokemonSearchCommandImpl{DB: r.DB},
 	}
 
 	return qr.Pokemons(first, after)

@@ -10,17 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type FindPokemonCommand interface {
+type PokemonSearchCommand interface {
 	Execute(first *int, after *int) ([]*model.Pokemon, error)
 }
 
-var _ FindPokemonCommand = (*FindPokemonCommandImpl)(nil)
+var _ PokemonSearchCommand = (*PokemonSearchCommandImpl)(nil)
 
-type FindPokemonCommandImpl struct {
+type PokemonSearchCommandImpl struct {
 	DB *gorm.DB
 }
 
-func (c *FindPokemonCommandImpl) Execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (c *PokemonSearchCommandImpl) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	f, a, err := c.decideParameters(first, after)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (c *FindPokemonCommandImpl) Execute(first *int, after *int) ([]*model.Pokem
 	return *pokemons, nil
 }
 
-func (c *FindPokemonCommandImpl) decideParameters(first *int, after *int) (int, int, error) {
+func (c *PokemonSearchCommandImpl) decideParameters(first *int, after *int) (int, int, error) {
 	var (
 		f = 0
 		a = 0
@@ -90,7 +90,7 @@ func (c *FindPokemonCommandImpl) decideParameters(first *int, after *int) (int, 
 	return f, a, nil
 }
 
-func (c *FindPokemonCommandImpl) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
+func (c *PokemonSearchCommandImpl) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
 	pokemons := &[]*model.Pokemon{}
 
 	err := c.DB.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after, after+first).Scan(pokemons).Error
@@ -106,7 +106,7 @@ func (c *FindPokemonCommandImpl) findPokemons(first int, after int) (*[]*model.P
 	return pokemons, nil
 }
 
-func (c *FindPokemonCommandImpl) resolveRelations(pokemons *[]*model.Pokemon) error {
+func (c *PokemonSearchCommandImpl) resolveRelations(pokemons *[]*model.Pokemon) error {
 	pokemonIDs := []uint{}
 
 	for _, pokemon := range *pokemons {
@@ -259,7 +259,7 @@ func (c *FindPokemonCommandImpl) resolveRelations(pokemons *[]*model.Pokemon) er
 	return nil
 }
 
-func (_ *FindPokemonCommandImpl) sort(s map[uint]interface{}) *[]interface{} {
+func (_ *PokemonSearchCommandImpl) sort(s map[uint]interface{}) *[]interface{} {
 	r := []interface{}{}
 
 	keys := make([]int, 0, len(s))

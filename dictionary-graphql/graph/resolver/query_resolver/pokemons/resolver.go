@@ -10,11 +10,11 @@ import (
 type PokemonsQueryResolver struct {
 	*driver.AppLogger
 	*pokemon_interactor.GraphQLModelMapper
-	pokemon_interactor.FindPokemonCommand
+	pokemon_interactor.PokemonSearchCommand
 }
 
 func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonConnectionResult, error) {
-	p, err := r.FindPokemonCommand.Execute(first, after)
+	p, err := r.PokemonSearchCommand.Execute(first, after)
 	if err != nil {
 		var e error
 

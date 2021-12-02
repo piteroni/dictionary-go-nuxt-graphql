@@ -18,8 +18,8 @@ import (
 func TestPokemonsQueryResolver(t *testing.T) {
 	t.Run("ポケモンのIDとそれに続く範囲を指定することで、複数のポケモンのデータを取得できる", func(t *testing.T) {
 		r := &PokemonsQueryResolver{
-			GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-			FindPokemonCommand: &findPokemonCommandMock{t: t},
+			GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
+			PokemonSearchCommand: &pokemonSearchCommandMock{t: t},
 		}
 
 		expected := graph.PokemonConnection{
@@ -58,9 +58,9 @@ func TestPokemonsQueryResolver(t *testing.T) {
 		logger := driver.NewLogger(os.Stdout)
 
 		r := &PokemonsQueryResolver{
-			GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-			FindPokemonCommand: &findPokemonCommandMockWhenNotFound{t: t},
-			AppLogger:          logger,
+			GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
+			PokemonSearchCommand: &pokemonSearchCommandMockWhenNotFound{t: t},
+			AppLogger:            logger,
 		}
 
 		expected := graph.PokemonNotFound{}
@@ -77,9 +77,9 @@ func TestPokemonsQueryResolver(t *testing.T) {
 		logger := driver.NewLogger(os.Stdout)
 
 		r := &PokemonsQueryResolver{
-			GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-			FindPokemonCommand: &findPokemonCommandMockWhenIlligalArguments{t: t},
-			AppLogger:          logger,
+			GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
+			PokemonSearchCommand: &PokemonSearchCommandMockWhenIlligalArguments{t: t},
+			AppLogger:            logger,
 		}
 
 		expected := graph.IllegalArgument{}
@@ -93,11 +93,11 @@ func TestPokemonsQueryResolver(t *testing.T) {
 	})
 }
 
-type findPokemonCommandMock struct{ t *testing.T }
+type pokemonSearchCommandMock struct{ t *testing.T }
 
-var _ pokemon_interactor.FindPokemonCommand = (*findPokemonCommandMock)(nil)
+var _ pokemon_interactor.PokemonSearchCommand = (*pokemonSearchCommandMock)(nil)
 
-func (m *findPokemonCommandMock) Execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (m *pokemonSearchCommandMock) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	assert.Equal(m.t, *first, 3)
 	assert.Equal(m.t, *after, 200)
 
@@ -120,22 +120,22 @@ func (m *findPokemonCommandMock) Execute(first *int, after *int) ([]*model.Pokem
 	}, nil
 }
 
-type findPokemonCommandMockWhenNotFound struct{ t *testing.T }
+type pokemonSearchCommandMockWhenNotFound struct{ t *testing.T }
 
-var _ pokemon_interactor.FindPokemonCommand = (*findPokemonCommandMockWhenNotFound)(nil)
+var _ pokemon_interactor.PokemonSearchCommand = (*pokemonSearchCommandMockWhenNotFound)(nil)
 
-func (m *findPokemonCommandMockWhenNotFound) Execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (m *pokemonSearchCommandMockWhenNotFound) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	assert.Equal(m.t, *first, 2)
 	assert.Equal(m.t, *after, 203)
 
 	return nil, &pokemon_interactor.PokemonNotFound{}
 }
 
-type findPokemonCommandMockWhenIlligalArguments struct{ t *testing.T }
+type PokemonSearchCommandMockWhenIlligalArguments struct{ t *testing.T }
 
-var _ pokemon_interactor.FindPokemonCommand = (*findPokemonCommandMockWhenIlligalArguments)(nil)
+var _ pokemon_interactor.PokemonSearchCommand = (*PokemonSearchCommandMockWhenIlligalArguments)(nil)
 
-func (m *findPokemonCommandMockWhenIlligalArguments) Execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (m *PokemonSearchCommandMockWhenIlligalArguments) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	assert.Equal(m.t, *first, 2)
 	assert.Equal(m.t, *after, 203)
 

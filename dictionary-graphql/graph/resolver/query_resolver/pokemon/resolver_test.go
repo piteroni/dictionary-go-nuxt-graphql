@@ -14,8 +14,8 @@ import (
 func TestPokemonQueryResolver(t *testing.T) {
 	t.Run("指定したIDに一致するポケモンのデータセットを取得できる", func(t *testing.T) {
 		r := &PokemonQueryResolver{
-			GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-			FindPokemonCommand: &findPokemonCommandMock{t: t},
+			GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
+			PokemonSearchCommand: &pokemonSearchCommandMock{t: t},
 		}
 
 		expected := &graph.Pokemon{
@@ -35,8 +35,8 @@ func TestPokemonQueryResolver(t *testing.T) {
 
 	t.Run("指定したIDに一致するポケモンが存在しない場合、例外が返る", func(t *testing.T) {
 		r := &PokemonQueryResolver{
-			GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-			FindPokemonCommand: &findPokemonCommandMockWhenNotFound{t: t},
+			GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
+			PokemonSearchCommand: &pokemonSearchCommandMockWhenNotFound{t: t},
 		}
 
 		expected := &graph.PokemonNotFound{}
@@ -50,11 +50,11 @@ func TestPokemonQueryResolver(t *testing.T) {
 	})
 }
 
-var _ pokemon_interactor.FindPokemonCommand = (*findPokemonCommandMock)(nil)
+var _ pokemon_interactor.PokemonSearchCommand = (*pokemonSearchCommandMock)(nil)
 
-type findPokemonCommandMock struct{ t *testing.T }
+type pokemonSearchCommandMock struct{ t *testing.T }
 
-func (m *findPokemonCommandMock) Execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (m *pokemonSearchCommandMock) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	assert.Equal(m.t, *first, 0)
 	assert.Equal(m.t, *after, 100)
 
@@ -67,11 +67,11 @@ func (m *findPokemonCommandMock) Execute(first *int, after *int) ([]*model.Pokem
 	}, nil
 }
 
-type findPokemonCommandMockWhenNotFound struct{ t *testing.T }
+type pokemonSearchCommandMockWhenNotFound struct{ t *testing.T }
 
-var _ pokemon_interactor.FindPokemonCommand = (*findPokemonCommandMock)(nil)
+var _ pokemon_interactor.PokemonSearchCommand = (*pokemonSearchCommandMock)(nil)
 
-func (m *findPokemonCommandMockWhenNotFound) Execute(first *int, after *int) ([]*model.Pokemon, error) {
+func (m *pokemonSearchCommandMockWhenNotFound) Execute(first *int, after *int) ([]*model.Pokemon, error) {
 	assert.Equal(m.t, *first, 0)
 	assert.Equal(m.t, *after, 101)
 

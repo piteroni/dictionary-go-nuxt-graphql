@@ -10,13 +10,13 @@ import (
 type PokemonQueryResolver struct {
 	*gorm.DB
 	*pokemon_interactor.GraphQLModelMapper
-	pokemon_interactor.FindPokemonCommand
+	pokemon_interactor.PokemonSearchCommand
 }
 
 func (r *PokemonQueryResolver) Pokemon(pokemonID int) (model.PokemonResult, error) {
 	first := 0
 
-	pokemons, err := r.FindPokemonCommand.Execute(&first, &pokemonID)
+	pokemons, err := r.PokemonSearchCommand.Execute(&first, &pokemonID)
 	if err != nil {
 		_, ok := err.(*pokemon_interactor.PokemonNotFound)
 		if ok {
