@@ -82,7 +82,7 @@ func TestPokemonsQueryResolver(t *testing.T) {
 			AppLogger:            logger,
 		}
 
-		expected := graph.IllegalArgument{}
+		expected := graph.IllegalArguments{}
 
 		actual, err := r.Pokemons(itesting.Int(2), itesting.Int(203))
 
@@ -139,5 +139,5 @@ func (m *PokemonSearchCommandMockWhenIlligalArguments) Execute(first *int, after
 	assert.Equal(m.t, *first, 2)
 	assert.Equal(m.t, *after, 203)
 
-	return nil, &pokemon_interactor.IllegalArgument{}
+	return nil, &pokemon_interactor.IllegalArguments{}
 }

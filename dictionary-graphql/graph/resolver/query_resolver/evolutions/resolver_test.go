@@ -71,7 +71,6 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 			assert.NotNil(t, evolutions)
 			assert.Nil(t, err)
 
-			assert.IsType(t, graph.Evolutions{}, evolutions)
 			assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 3)
 			assert.Equal(t, evolutions, graph.Evolutions{
 				Pokemons: []*graph.Pokemon{
@@ -156,7 +155,6 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 		assert.NotNil(t, evolutions)
 		assert.Nil(t, err)
 
-		assert.IsType(t, graph.Evolutions{}, evolutions)
 		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 2)
 		assert.Equal(t, evolutions, graph.Evolutions{
 			Pokemons: []*graph.Pokemon{
@@ -222,7 +220,6 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 		assert.NotNil(t, evolutions)
 		assert.Nil(t, err)
 
-		assert.IsType(t, graph.Evolutions{}, evolutions)
 		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 0)
 		assert.Equal(t, graph.Evolutions{Pokemons: []*graph.Pokemon{}}, evolutions)
 	})

@@ -59,7 +59,7 @@ type PokemonConnection {
   items: [Pokemon!]!
 }
 
-type IllegalArgument {
+type IllegalArguments {
   message: String!
 }
 
@@ -70,7 +70,7 @@ type PokemonNotFound {
 union PokemonResult = Pokemon | PokemonNotFound
 union EvolutionsResult = Evolutions | PokemonNotFound
 union PageInfoResult = PageInfo | PokemonNotFound
-union PokemonConnectionResult = PokemonConnection | IllegalArgument | PokemonNotFound
+union PokemonConnectionResult = PokemonConnection | IllegalArguments | PokemonNotFound
 
 type Query {
   pokemon(pokemonId: Int!): PokemonResult!

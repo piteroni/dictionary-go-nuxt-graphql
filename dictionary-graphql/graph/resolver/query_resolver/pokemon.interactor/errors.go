@@ -10,12 +10,12 @@ func (e *PokemonNotFound) Error() string {
 	return e.message
 }
 
-type IllegalArgument struct {
+type IllegalArguments struct {
 	message string
 }
 
-var _ error = (*IllegalArgument)(nil)
+var _ error = (*IllegalArguments)(nil)
 
-func (e *IllegalArgument) Error() string {
+func (e *IllegalArguments) Error() string {
 	return e.message
 }

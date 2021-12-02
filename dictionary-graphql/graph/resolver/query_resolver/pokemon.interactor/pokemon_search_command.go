@@ -53,7 +53,7 @@ func (c *PokemonSearchCommandImpl) decideParameters(first *int, after *int) (int
 
 	if first != nil {
 		if *first < firstMin {
-			err := errors.Cause(&IllegalArgument{
+			err := errors.Cause(&IllegalArguments{
 				message: fmt.Sprintf("first less then %d: first = %d", firstMin, *first),
 			})
 
@@ -61,7 +61,7 @@ func (c *PokemonSearchCommandImpl) decideParameters(first *int, after *int) (int
 		}
 
 		if *first > firstMax {
-			err := errors.Cause(&IllegalArgument{
+			err := errors.Cause(&IllegalArguments{
 				message: fmt.Sprintf("first graeter then %d: first = %d", firstMax, *first),
 			})
 
@@ -75,7 +75,7 @@ func (c *PokemonSearchCommandImpl) decideParameters(first *int, after *int) (int
 
 	if after != nil {
 		if *after < afterMin {
-			err := errors.Cause(&IllegalArgument{
+			err := errors.Cause(&IllegalArguments{
 				message: fmt.Sprintf("offset less then %d: offset = %d", afterMin, *after),
 			})
 

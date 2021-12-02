@@ -27,11 +27,11 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 			}, nil
 		}
 
-		e, ok = err.(*pokemon_interactor.IllegalArgument)
+		e, ok = err.(*pokemon_interactor.IllegalArguments)
 		if ok {
 			r.AppLogger.Print(e.Error())
 
-			return model.IllegalArgument{
+			return model.IllegalArguments{
 				Message: e.Error(),
 			}, nil
 		}

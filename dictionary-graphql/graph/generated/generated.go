@@ -71,7 +71,7 @@ type ComplexityRoot struct {
 		Name    func(childComplexity int) int
 	}
 
-	IllegalArgument struct {
+	IllegalArguments struct {
 		Message func(childComplexity int) int
 	}
 
@@ -233,12 +233,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Gender.Name(childComplexity), true
 
-	case "IllegalArgument.message":
-		if e.complexity.IllegalArgument.Message == nil {
+	case "IllegalArguments.message":
+		if e.complexity.IllegalArguments.Message == nil {
 			break
 		}
 
-		return e.complexity.IllegalArgument.Message(childComplexity), true
+		return e.complexity.IllegalArguments.Message(childComplexity), true
 
 	case "PageInfo.hasNext":
 		if e.complexity.PageInfo.HasNext == nil {
@@ -553,7 +553,7 @@ type PokemonConnection {
   items: [Pokemon!]!
 }
 
-type IllegalArgument {
+type IllegalArguments {
   message: String!
 }
 
@@ -563,8 +563,8 @@ type PokemonNotFound {
 
 union PokemonResult = Pokemon | PokemonNotFound
 union EvolutionsResult = Evolutions | PokemonNotFound
-union PageInfoResult = PageInfo | IllegalArgument | PokemonNotFound
-union PokemonConnectionResult = PokemonConnection | IllegalArgument | PokemonNotFound
+union PageInfoResult = PageInfo | PokemonNotFound
+union PokemonConnectionResult = PokemonConnection | IllegalArguments | PokemonNotFound
 
 type Query {
   pokemon(pokemonId: Int!): PokemonResult!
@@ -1157,7 +1157,7 @@ func (ec *executionContext) _Gender_iconURL(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _IllegalArgument_message(ctx context.Context, field graphql.CollectedField, obj *model.IllegalArgument) (ret graphql.Marshaler) {
+func (ec *executionContext) _IllegalArguments_message(ctx context.Context, field graphql.CollectedField, obj *model.IllegalArguments) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1165,7 +1165,7 @@ func (ec *executionContext) _IllegalArgument_message(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "IllegalArgument",
+		Object:     "IllegalArguments",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -3361,13 +3361,6 @@ func (ec *executionContext) _PageInfoResult(ctx context.Context, sel ast.Selecti
 			return graphql.Null
 		}
 		return ec._PageInfo(ctx, sel, obj)
-	case model.IllegalArgument:
-		return ec._IllegalArgument(ctx, sel, &obj)
-	case *model.IllegalArgument:
-		if obj == nil {
-			return graphql.Null
-		}
-		return ec._IllegalArgument(ctx, sel, obj)
 	case model.PokemonNotFound:
 		return ec._PokemonNotFound(ctx, sel, &obj)
 	case *model.PokemonNotFound:
@@ -3391,13 +3384,13 @@ func (ec *executionContext) _PokemonConnectionResult(ctx context.Context, sel as
 			return graphql.Null
 		}
 		return ec._PokemonConnection(ctx, sel, obj)
-	case model.IllegalArgument:
-		return ec._IllegalArgument(ctx, sel, &obj)
-	case *model.IllegalArgument:
+	case model.IllegalArguments:
+		return ec._IllegalArguments(ctx, sel, &obj)
+	case *model.IllegalArguments:
 		if obj == nil {
 			return graphql.Null
 		}
-		return ec._IllegalArgument(ctx, sel, obj)
+		return ec._IllegalArguments(ctx, sel, obj)
 	case model.PokemonNotFound:
 		return ec._PokemonNotFound(ctx, sel, &obj)
 	case *model.PokemonNotFound:
@@ -3612,19 +3605,19 @@ func (ec *executionContext) _Gender(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
-var illegalArgumentImplementors = []string{"IllegalArgument", "PageInfoResult", "PokemonConnectionResult"}
+var illegalArgumentsImplementors = []string{"IllegalArguments", "PokemonConnectionResult"}
 
-func (ec *executionContext) _IllegalArgument(ctx context.Context, sel ast.SelectionSet, obj *model.IllegalArgument) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, illegalArgumentImplementors)
+func (ec *executionContext) _IllegalArguments(ctx context.Context, sel ast.SelectionSet, obj *model.IllegalArguments) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, illegalArgumentsImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("IllegalArgument")
+			out.Values[i] = graphql.MarshalString("IllegalArguments")
 		case "message":
-			out.Values[i] = ec._IllegalArgument_message(ctx, field, obj)
+			out.Values[i] = ec._IllegalArguments_message(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

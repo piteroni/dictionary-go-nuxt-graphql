@@ -48,12 +48,11 @@ type Gender struct {
 	IconURL string `json:"iconURL"`
 }
 
-type IllegalArgument struct {
+type IllegalArguments struct {
 	Message string `json:"message"`
 }
 
-func (IllegalArgument) IsPageInfoResult()          {}
-func (IllegalArgument) IsPokemonConnectionResult() {}
+func (IllegalArguments) IsPokemonConnectionResult() {}
 
 type PageInfo struct {
 	PrevID  int  `json:"prevId"`
