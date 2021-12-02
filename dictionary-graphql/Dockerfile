@@ -20,9 +20,9 @@ COPY go.mod go.sum ./
 
 RUN \
     # for testing
-    go get -u gorm.io/driver/sqlite && \
+    go get -u gorm.io/driver/sqlite@v1.2.4 && \
     # for test coverage
-    go get -u gopkg.in/yaml.v2@v2.3.0 && \
+    go get -u gopkg.in/yaml.v2@v2.4.0 && \
     go mod download
 
 CMD ["bash"]
