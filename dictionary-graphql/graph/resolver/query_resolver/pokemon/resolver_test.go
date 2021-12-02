@@ -18,13 +18,14 @@ func TestPokemonQueryResolver(t *testing.T) {
 			FindPokemonCommand: &findPokemonCommandMock{t: t},
 		}
 
-		actual, err := r.Pokemon(100)
 		expected := &graph.Pokemon{
 			ID:         100,
 			NationalNo: 100,
 			Name:       "pokemon-100",
 			Ability:    &graph.Ability{},
 		}
+
+		actual, err := r.Pokemon(100)
 
 		assert.NotNil(t, actual)
 		assert.Nil(t, err)
@@ -38,8 +39,9 @@ func TestPokemonQueryResolver(t *testing.T) {
 			FindPokemonCommand: &findPokemonCommandMockWhenNotFound{t: t},
 		}
 
-		actual, err := r.Pokemon(101)
 		expected := &graph.PokemonNotFound{}
+
+		actual, err := r.Pokemon(101)
 
 		assert.NotNil(t, actual)
 		assert.Nil(t, err)

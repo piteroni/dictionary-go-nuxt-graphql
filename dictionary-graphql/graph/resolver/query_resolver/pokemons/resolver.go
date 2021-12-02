@@ -5,12 +5,9 @@ import (
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
 	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
-
-	"gorm.io/gorm"
 )
 
 type PokemonsQueryResolver struct {
-	*gorm.DB
 	*driver.AppLogger
 	*pokemon_interactor.GraphQLModelMapper
 	pokemon_interactor.FindPokemonCommand
@@ -38,6 +35,8 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 				Message: e.Error(),
 			}, nil
 		}
+
+		return nil, err
 	}
 
 	pokemons := []*graph.Pokemon{}
@@ -46,7 +45,7 @@ func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonC
 		pokemons = append(pokemons, r.GraphQLModelMapper.Mapping(pokemon))
 	}
 
-	token := pokemons[len(pokemons)-1].ID
+	token := pokemons[len(pokemons)-1].ID + 1
 
 	return model.PokemonConnection{
 		NextID: token,

@@ -43,7 +43,6 @@ func (r *queryResolver) PageInfo(ctx context.Context, pokemonID int) (model.Page
 
 func (r *queryResolver) Pokemons(ctx context.Context, first *int, after *int) (model.PokemonConnectionResult, error) {
 	qr := pokemons.PokemonsQueryResolver{
-		DB:                 r.DB,
 		AppLogger:          r.AppLogger,
 		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
 		FindPokemonCommand: &pokemon_interactor.FindPokemonCommandImpl{DB: r.DB},
