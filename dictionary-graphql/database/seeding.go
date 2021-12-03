@@ -53,6 +53,11 @@ func Seed(db *gorm.DB) error {
 		return err
 	}
 
+	_, err = createDarkrai(db)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -119,6 +124,7 @@ func createCharacteristics(db *gorm.DB) error {
 		"しんりょく":  `ＨＰが　へったとき　くさタイプの　わざの　いりょくが　あがる。`,
 		"あついしぼう": `あつい　しぼうで　まもられているので　ほのおタイプと　こおりタイプの　わざの　ダメージを　はんげんさせる。`,
 		"もうか":    `ＨＰが　へったとき　ほのおタイプの　わざの　いりょくが　あがる。`,
+		"ナイトメア":  `ねむり　じょうたいの　あいてにダメージを　あたえる。`,
 	}
 
 	for name, description := range entries {
@@ -375,6 +381,76 @@ func createVenusaur(db *gorm.DB) (*model.Pokemon, error) {
 	}
 
 	for _, name := range []string{"しんりょく"} {
+		c := &model.Characteristic{}
+
+		err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error
+		if err != nil {
+			return nil, err
+		}
+
+		err = dao.AddCharacteristics(pokemon, c)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return pokemon, nil
+}
+
+func createDarkrai(db *gorm.DB) (*model.Pokemon, error) {
+	pokemon := &model.Pokemon{
+		NationalNo:          491,
+		Name:                "ダークライ",
+		Species:             "あんこくポケモン",
+		ImageURL:            "/image/58d8af4d8c18b2aad5c524ec90e3dbe7.png",
+		Height:              "1.5m",
+		Weight:              "50.5kg",
+		HeartPoint:          70,
+		AttackPoint:         90,
+		DefensePoint:        90,
+		SpecialAttackPoint:  135,
+		SpecialDefensePoint: 90,
+		SpeedPoint:          125,
+	}
+
+	err := db.Create(pokemon).Error
+	if err != nil {
+		return nil, err
+	}
+
+	dao := persistence.NewPokemonDAO(db)
+
+	for _, name := range []string{"あく"} {
+		t := &model.Type{}
+
+		err := db.Model(&model.Type{}).Where(fmt.Sprintf("name = '%s'", name)).First(t).Error
+		if err != nil {
+			return nil, err
+		}
+
+		err = dao.AddType(pokemon, t)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	descriptions := map[string]string{
+		"ひとびとを　ふかい　ねむりに　さそいゆめを　みせる　のうりょくを　もつ。　しんげつの　よるに　かつどうする。": "ポケモン Y",
+	}
+
+	for description, series := range descriptions {
+		d := &model.Description{
+			Text:   description,
+			Series: series,
+		}
+
+		err := dao.AddDescripton(pokemon, d)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	for _, name := range []string{"ナイトメア"} {
 		c := &model.Characteristic{}
 
 		err := db.Model(&model.Characteristic{}).Where(fmt.Sprintf("name = '%s'", name)).First(c).Error
