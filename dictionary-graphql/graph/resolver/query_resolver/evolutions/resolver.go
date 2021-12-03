@@ -20,7 +20,7 @@ func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsRes
 
 	tx := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID)
 	if tx.Error != nil {
-		return nil, errors.WithStack(tx.Error)
+		return nil, tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
@@ -56,7 +56,7 @@ func (r *EvolutionsQueryResolver) tracingPreEvolution(pokemon *model.Pokemon) er
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				break
 			} else {
-				return errors.WithStack(err)
+				return err
 			}
 		}
 
@@ -72,7 +72,7 @@ func (r *EvolutionsQueryResolver) getEvolutions(pokemon *model.Pokemon) ([]*mode
 	// add a starting point.
 	err := r.resolveRelations(pokemon)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 
 	pokemons = append(pokemons, pokemon)
@@ -80,7 +80,7 @@ func (r *EvolutionsQueryResolver) getEvolutions(pokemon *model.Pokemon) ([]*mode
 	for {
 		err := r.resolveRelations(pokemon)
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, err
 		}
 
 		if pokemon.Evolution == nil {
@@ -105,27 +105,27 @@ func (r *EvolutionsQueryResolver) resolveRelations(pokemon *model.Pokemon) error
 
 	err := dao.ScanEvolution(pokemon)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	err = dao.ScanGenders(pokemon)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	err = dao.ScanTypes(pokemon)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	err = dao.ScanCharacteristics(pokemon)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	err = dao.ScanDescriptions(pokemon)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	return nil

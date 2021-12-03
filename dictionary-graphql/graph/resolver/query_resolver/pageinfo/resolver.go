@@ -18,7 +18,7 @@ func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, e
 
 	tx := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID)
 	if tx.Error != nil {
-		return nil, errors.WithStack(tx.Error)
+		return nil, tx.Error
 	}
 
 	if tx.RowsAffected <= 0 {
@@ -35,7 +35,7 @@ func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, e
 	tx = r.DB.Model(&model.Pokemon{}).Where("id = ?", i.PrevID).First(&model.Pokemon{})
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, errors.WithStack(tx.Error)
+			return nil, tx.Error
 		}
 	}
 
@@ -44,7 +44,7 @@ func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, e
 	tx = r.DB.Model(&model.Pokemon{}).Where("id = ?", i.NextID).First(&model.Pokemon{})
 	if tx.Error != nil {
 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, errors.WithStack(tx.Error)
+			return nil, tx.Error
 		}
 	}
 

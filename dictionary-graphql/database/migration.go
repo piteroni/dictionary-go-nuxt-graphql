@@ -3,7 +3,6 @@ package database
 import (
 	"piteroni/dictionary-go-nuxt-graphql/model"
 
-	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +18,7 @@ func Migrate(db *gorm.DB) error {
 	for _, model := range m {
 		err := db.AutoMigrate(model)
 		if err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 	}
 

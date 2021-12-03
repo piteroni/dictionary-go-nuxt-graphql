@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 
-	"github.com/pkg/errors"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -50,7 +49,7 @@ func ConnectToDatabase() (*gorm.DB, error) {
 	})
 
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 
 	return db, nil

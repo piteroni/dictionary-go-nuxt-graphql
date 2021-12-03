@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -27,7 +28,7 @@ func main() {
 func serve() error {
 	db, err := database.ConnectToDatabase()
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	r := &graph.Resolver{
@@ -39,7 +40,16 @@ func serve() error {
 	srv := handler.NewDefaultServer(schema)
 
 	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
-		logger.Printf("unexpected error: %#v", err)
+		message := ""
+
+		e, ok := err.(error)
+		if ok {
+			message = fmt.Sprintf("unexpected error: %+v", errors.WithStack(e))
+		} else {
+			message = fmt.Sprintf("unexpected error: %#v", err)
+		}
+
+		logger.Print(message)
 
 		return errors.New("Internal server error!!")
 	})
@@ -55,7 +65,7 @@ func serve() error {
 
 	c, err := cors()
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	router.Use(c)
@@ -77,7 +87,7 @@ func cors() (func(http.Handler) http.Handler, error) {
 	origins := []string{}
 	err = json.Unmarshal([]byte(o), &origins)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 
 	methods := []string{

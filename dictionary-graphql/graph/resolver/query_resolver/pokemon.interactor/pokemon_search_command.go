@@ -93,14 +93,11 @@ func (c *PokemonSearchCommandImpl) decideParameters(first *int, after *int) (int
 func (c *PokemonSearchCommandImpl) findPokemons(first int, after int) (*[]*model.Pokemon, error) {
 	pokemons := &[]*model.Pokemon{}
 
-	err := c.DB.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after, after+first).Scan(pokemons).Error
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.Cause(&PokemonNotFound{})
-		}
-
-		return nil, errors.WithStack(err)
+	tx := c.DB.Model(&model.Pokemon{}).Where("id BETWEEN ? AND ?", after, after+first).Scan(pokemons)
+	if tx.Error != nil {
+		return nil, tx.Error
+	} else if tx.RowsAffected == 0 {
+		return nil, errors.Cause(&PokemonNotFound{})
 	}
 
 	return pokemons, nil
@@ -148,7 +145,7 @@ func (c *PokemonSearchCommandImpl) resolveRelations(pokemons *[]*model.Pokemon) 
 		Find(&rs).Error
 
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	s := map[uint]*[]*result{}

@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"fmt"
 	"io"
 	"log"
 )
@@ -22,7 +23,7 @@ func (l *AppLogger) Print(message string) {
 }
 
 func (l *AppLogger) Printf(format string, v ...interface{}) {
-	l.logger.Println(format, v)
+	l.logger.Printf(fmt.Sprintf(format, v...))
 }
 
 func (l *AppLogger) Error(err error) {
