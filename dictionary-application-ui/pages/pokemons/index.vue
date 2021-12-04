@@ -5,8 +5,6 @@
     </app-header>
 
     <pokemon-list />
-
-    <!-- <app-footer /> -->
   </div>
 </template>
 
@@ -14,36 +12,24 @@
 import { Vue, Component } from "nuxt-property-decorator"
 import { PokemonsDocument, PokemonsQuery, PokemonsQueryVariables } from "@/graphql/generated"
 import { HttpStatusCode } from "@/shared/http"
-import { PokemonsQueryType } from "@/store/pokemonConnection"
+import { fetchCount, PokemonsQueryType } from "@/store/pokemonConnection"
 import Header from "@/components/singletons/Header.vue"
 import Logo from "@/components/singletons/Logo.vue"
-import PPP from "@/components/tightly-coupled/pokemons/index/PokemonList.vue"
+import List from "@/components/tightly-coupled/pokemons/index/PokemonList.vue"
 import Footer from "@/components/singletons/Footer.vue"
 
 @Component({
   components: {
     "app-header": Header,
     "site-logo": Logo,
-    "pokemon-list": PPP,
+    "pokemon-list": List,
     "app-footer": Footer
   },
   async fetch({ app, error }) {
-    let response
-
-    const initial = 64
-
-    try {
-      response = await app.apolloProvider!!.defaultClient.query<PokemonsQuery, PokemonsQueryVariables>({
-        query: PokemonsDocument,
-        variables: { after: null, first: initial }
-      })
-    } catch (e) {
-      console.error(e)
-
-      return error({
-        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
-      })
-    }
+    const response = await app.apolloProvider!!.defaultClient.query<PokemonsQuery, PokemonsQueryVariables>({
+      query: PokemonsDocument,
+      variables: { after: null, first: fetchCount }
+    })
 
     switch (response.data.pokemons.__typename) {
       case "PokemonConnection":
@@ -58,13 +44,8 @@ import Footer from "@/components/singletons/Footer.vue"
         return error({
           statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
         })
-      default:
-        return error({
-          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
-        })
     }
   }
 })
-export default class PokemonList extends Vue {
-}
+export default class PokemonList extends Vue {}
 </script>

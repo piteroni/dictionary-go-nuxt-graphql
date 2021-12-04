@@ -41,20 +41,10 @@ import Footer from "@/components/singletons/Footer.vue"
   async fetch({ params, app, error }) {
     const pokemonId = parseInt(params.id)
 
-    let response
-
-    try {
-      response = await app.apolloProvider!!.defaultClient.query<PokemonQuery, PokemonQueryVariables>({
-        query: PokemonDocument,
-        variables: { pokemonId }
-      })
-    } catch (e) {
-      console.error(e)
-
-      return error({
-        statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
-      })
-    }
+    const response = await app.apolloProvider!!.defaultClient.query<PokemonQuery, PokemonQueryVariables>({
+      query: PokemonDocument,
+      variables: { pokemonId }
+    })
 
     if (response.data.pokemon.__typename === "PokemonNotFound") {
       return error({ statusCode: HttpStatusCode.NOT_FOUND })
@@ -65,10 +55,9 @@ import Footer from "@/components/singletons/Footer.vue"
       evolutions: response.data.evolutions as PokemonQueryType<"evolutions", "Evolutions">,
       pageInfo: response.data.pageInfo as PokemonQueryType<"pageInfo", "PageInfo">
     })
-  },
+  }
 })
-export default class PokemonDetails extends Vue {
-}
+export default class PokemonDetails extends Vue {}
 </script>
 
 <style scoped>

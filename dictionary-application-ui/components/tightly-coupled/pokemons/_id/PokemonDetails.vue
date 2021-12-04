@@ -169,6 +169,10 @@ export default class PokemonDetails extends Vue {
   }
 
   public get descriptionText(): string {
+    if (!this.$accessor.pokemonDataset.description.text) {
+      return ""
+    }
+
     return `${this.$accessor.pokemonDataset.description.text}（${this.$accessor.pokemonDataset.description.series}）`
   }
 

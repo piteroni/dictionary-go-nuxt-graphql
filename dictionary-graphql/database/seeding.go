@@ -58,6 +58,11 @@ func Seed(db *gorm.DB) error {
 		return err
 	}
 
+	err = registerPagenationData(db)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -465,4 +470,35 @@ func createDarkrai(db *gorm.DB) (*model.Pokemon, error) {
 	}
 
 	return pokemon, nil
+}
+
+func registerPagenationData(db *gorm.DB) error {
+	data := []*model.Pokemon{}
+
+	max := 320 // 64 * 5
+
+	for i := 0; i < max; i++ {
+		pokemon := &model.Pokemon{
+			NationalNo:          90000 + i,
+			Name:                fmt.Sprintf("pagenation edge %d", i),
+			Species:             "",
+			ImageURL:            "/image/question.svg",
+			Height:              "??",
+			Weight:              "??",
+			HeartPoint:          40,
+			AttackPoint:         40,
+			DefensePoint:        40,
+			SpecialAttackPoint:  40,
+			SpecialDefensePoint: 40,
+			SpeedPoint:          40,
+		}
+		data = append(data, pokemon)
+	}
+
+	err := db.Create(data).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

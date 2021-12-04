@@ -53,6 +53,11 @@ func (_ *GraphQLModelMapper) Mapping(pokemon *model.Pokemon) *graph.Pokemon {
 			Text:   pokemon.Descriptions[0].Text,
 			Series: pokemon.Descriptions[0].Series,
 		}
+	} else {
+		m.Description = &graph.Description{
+			Text:   "",
+			Series: "",
+		}
 	}
 
 	return m

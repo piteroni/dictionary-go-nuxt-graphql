@@ -96,10 +96,10 @@ export default class PokemonHeading extends Vue {
 
 <style scoped>
 .heading-container {
-  height: 22.5em;
+  height: 24.5em;
 }
 .nav {
-  height: 22.5em;
+  height: 24.5em;
 }
 .nav-button {
   height: 130px;
@@ -111,7 +111,7 @@ export default class PokemonHeading extends Vue {
   border: 2px solid rgb(204, 204, 204);
 }
 .pokemon-heading {
-  height: 22.5em;
+  height: 24.5em;
   padding-left: 160px;
   padding-right: 80px;
 }
