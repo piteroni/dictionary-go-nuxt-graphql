@@ -2,7 +2,7 @@
   <div class="footer w-full flex justify-center items-center text-sm">
     <div>
       <p class="flex justify-center">
-      ©2021 Pokémon. ©1995-2021 Nintendo/Creatures Inc./GAME FREAK inc.
+        ©2021 Pokémon. ©1995-2021 Nintendo/Creatures Inc./GAME FREAK inc.
       </p>
       <p>
         ポケットモンスター・ポケモン・Pokémonは任天堂・クリーチャーズ・ゲームフリークの登録商標です。

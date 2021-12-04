@@ -3,8 +3,8 @@
     <div class="flex flex-wrap px-8">
       <div
         v-for="pokemon, key in pokemons" :key="key"
-        @click="() => moveToDetails(pokemon.id)"
         class="cursor-pointer mb-12"
+        @click="() => moveToDetails(pokemon.id)"
       >
         <img
           class="pokemon-image-border transition duration-300 hover:opacity-80 mr-2"
@@ -25,11 +25,11 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator"
+import ConnectionLoading from "./ConnectionLoading.vue"
 import { fetchCount, PokemonsQueryType } from "@/store/pokemonConnection"
 import { PokemonsDocument, PokemonsQuery, PokemonsQueryVariables } from "@/graphql/generated"
 import { HttpStatusCode } from "@/shared/http"
 import Footer from "@/components/singletons/Footer.vue"
-import ConnectionLoading from "./ConnectionLoading.vue"
 
 @Component({
   components: {
