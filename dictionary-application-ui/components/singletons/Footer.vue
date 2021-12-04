@@ -14,6 +14,8 @@
 <style scoped>
 .footer {
   height: 110px;
+  bottom: 0;
+  border-top: solid 1.5px #d7d7d7;
   background-color: white;
   box-shadow: 3px 3px 6px 0 rgba(99, 78, 78, 0.2);
 }

@@ -30,7 +30,7 @@
         "name": "PokemonConnectionResult",
         "possibleTypes": [
           {
-            "name": "IllegalArgument"
+            "name": "IllegalArguments"
           },
           {
             "name": "PokemonConnection"

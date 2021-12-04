@@ -83,7 +83,7 @@ query pokemons($first: Int, $after: Int) {
       }
     }
 
-    ... on IllegalArgument {
+    ... on IllegalArguments {
       message
     }
 

@@ -47,7 +47,7 @@ func (c *PokemonSearchCommandImpl) decideParameters(first *int, after *int) (int
 
 	const (
 		firstMin = 0
-		firstMax = 15
+		firstMax = 64
 		afterMin = 0
 	)
 
