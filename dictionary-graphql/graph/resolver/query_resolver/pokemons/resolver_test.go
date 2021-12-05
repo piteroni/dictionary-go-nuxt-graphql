@@ -1,7 +1,7 @@
 package pokemons
 
 import (
-	"os"
+	"io/ioutil"
 	"testing"
 
 	"piteroni/dictionary-go-nuxt-graphql/driver"
@@ -25,22 +25,25 @@ func TestPokemonsQueryResolver(t *testing.T) {
 		expected := graph.PokemonConnection{
 			Items: []*graph.Pokemon{
 				{
-					ID:         200,
-					NationalNo: 200,
-					Name:       "pokemon-200",
-					Ability:    &graph.Ability{},
+					ID:          200,
+					NationalNo:  200,
+					Name:        "pokemon-200",
+					Ability:     &graph.Ability{},
+					Description: &graph.Description{},
 				},
 				{
-					ID:         201,
-					NationalNo: 201,
-					Name:       "pokemon-201",
-					Ability:    &graph.Ability{},
+					ID:          201,
+					NationalNo:  201,
+					Name:        "pokemon-201",
+					Ability:     &graph.Ability{},
+					Description: &graph.Description{},
 				},
 				{
-					ID:         202,
-					NationalNo: 202,
-					Name:       "pokemon-202",
-					Ability:    &graph.Ability{},
+					ID:          202,
+					NationalNo:  202,
+					Name:        "pokemon-202",
+					Ability:     &graph.Ability{},
+					Description: &graph.Description{},
 				},
 			},
 			NextID: 203,
@@ -54,8 +57,8 @@ func TestPokemonsQueryResolver(t *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 
-	t.Run("指定したIDに一致するポケモンが存在しない場合、例外が返る", func(t *testing.T) {
-		logger := driver.NewLogger(os.Stdout)
+	t.Run("指f定したIDに一致するポケモンが存在しない場合、例外が返る", func(t *testing.T) {
+		logger := driver.NewLogger(ioutil.Discard)
 
 		r := &PokemonsQueryResolver{
 			GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
@@ -74,7 +77,7 @@ func TestPokemonsQueryResolver(t *testing.T) {
 	})
 
 	t.Run("パラメーターの値が不正な場合、例外が返る", func(t *testing.T) {
-		logger := driver.NewLogger(os.Stdout)
+		logger := driver.NewLogger(ioutil.Discard)
 
 		r := &PokemonsQueryResolver{
 			GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},

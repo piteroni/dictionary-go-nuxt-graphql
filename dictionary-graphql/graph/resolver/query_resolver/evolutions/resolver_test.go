@@ -80,6 +80,7 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 						Name:         "pokemon-1",
 						CanEvolution: true,
 						Ability:      &graph.Ability{},
+						Description:  &graph.Description{},
 					},
 					{
 						ID:           2,
@@ -87,6 +88,7 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 						Name:         "pokemon-2",
 						CanEvolution: true,
 						Ability:      &graph.Ability{},
+						Description:  &graph.Description{},
 					},
 					{
 						ID:           3,
@@ -94,6 +96,7 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 						Name:         "pokemon-3",
 						CanEvolution: false,
 						Ability:      &graph.Ability{},
+						Description:  &graph.Description{},
 					},
 				},
 			})
@@ -191,8 +194,9 @@ func TestEvolutionsQueryResolver(t *testing.T) {
 					ID:           2,
 					NationalNo:   2,
 					Name:         "pokemon-2",
-					Ability:      &graph.Ability{},
 					CanEvolution: false,
+					Ability:      &graph.Ability{},
+					Description:  &graph.Description{},
 				},
 			},
 		})

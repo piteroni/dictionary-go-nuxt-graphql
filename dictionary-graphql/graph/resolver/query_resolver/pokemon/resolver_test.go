@@ -19,10 +19,11 @@ func TestPokemonQueryResolver(t *testing.T) {
 		}
 
 		expected := &graph.Pokemon{
-			ID:         100,
-			NationalNo: 100,
-			Name:       "pokemon-100",
-			Ability:    &graph.Ability{},
+			ID:          100,
+			NationalNo:  100,
+			Name:        "pokemon-100",
+			Ability:     &graph.Ability{},
+			Description: &graph.Description{},
 		}
 
 		actual, err := r.Pokemon(100)
