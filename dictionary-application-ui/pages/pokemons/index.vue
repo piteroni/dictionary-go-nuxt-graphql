@@ -26,10 +26,14 @@ import Footer from "@/components/singletons/Footer.vue"
     "app-footer": Footer
   },
   async fetch({ app, error }) {
-    const response = await app.apolloProvider!!.defaultClient.query<PokemonsQuery, PokemonsQueryVariables>({
-      query: PokemonsDocument,
-      variables: { after: null, first: fetchCount }
-    })
+    let response
+
+    try {
+      response = await app.apolloProvider!!.defaultClient.query<PokemonsQuery, PokemonsQueryVariables>({
+        query: PokemonsDocument,
+        variables: { after: null, first: fetchCount }
+      })
+    } catch { return }
 
     switch (response.data.pokemons.__typename) {
       case "PokemonConnection":

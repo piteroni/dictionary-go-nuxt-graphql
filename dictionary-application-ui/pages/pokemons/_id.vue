@@ -41,10 +41,14 @@ import Footer from "@/components/singletons/Footer.vue"
   async fetch({ params, app, error }) {
     const pokemonId = parseInt(params.id)
 
-    const response = await app.apolloProvider!!.defaultClient.query<PokemonQuery, PokemonQueryVariables>({
-      query: PokemonDocument,
-      variables: { pokemonId }
-    })
+    let response
+
+    try {
+      response = await app.apolloProvider!!.defaultClient.query<PokemonQuery, PokemonQueryVariables>({
+        query: PokemonDocument,
+        variables: { pokemonId }
+      })
+    } catch { return }
 
     if (response.data.pokemon.__typename === "PokemonNotFound") {
       return error({ statusCode: HttpStatusCode.NOT_FOUND })

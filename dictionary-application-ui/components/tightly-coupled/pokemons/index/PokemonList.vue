@@ -79,10 +79,14 @@ export default class PokemenList extends Vue {
   private async fetchConnection() {
     const nextId = this.$accessor.pokemonConnection.nextID
 
-    const response = await this.$apollo.query<PokemonsQuery, PokemonsQueryVariables>({
-      query: PokemonsDocument,
-      variables: { after: nextId, first: fetchCount }
-    })
+    let response
+
+    try {
+      response = await this.$apollo.query<PokemonsQuery, PokemonsQueryVariables>({
+        query: PokemonsDocument,
+        variables: { after: nextId, first: fetchCount }
+      })
+    } catch { return }
 
     switch (response.data.pokemons.__typename) {
       case "PokemonConnection":
