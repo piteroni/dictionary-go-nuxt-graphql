@@ -3,7 +3,6 @@ package registry
 import (
 	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
 	"reflect"
-	"time"
 
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
@@ -33,31 +32,13 @@ func (rc *RecordEncoder) EncodeValue(ec bsoncodec.EncodeContext, vw bsonrw.Value
 		return errors.WithStack(err)
 	}
 
-	if val.FieldByName("ID").IsNil() {
+	if !reflect.DeepEqual(val.FieldByName("ID"), primitive.NilObjectID) {
 		ew, err := w.WriteDocumentElement("_id")
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
 		ew.WriteObjectID(primitive.NewObjectID())
-	}
-
-	if val.FieldByName("CreatedAt").FieldByName("wall").Uint() == 0 {
-		ew, err := w.WriteDocumentElement("created_at")
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		ew.WriteDateTime(time.Now().Unix())
-	}
-
-	if val.FieldByName("UpdatedAt").FieldByName("wall").Uint() == 0 {
-		ew, err := w.WriteDocumentElement("updated_at")
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
-		ew.WriteDateTime(time.Now().Unix())
 	}
 
 	w.WriteDocumentEnd()

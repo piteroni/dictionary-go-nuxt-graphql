@@ -5,6 +5,7 @@ import (
 )
 
 type Characteristic struct {
+	Record
 	Name        string `bson:"name"`
 	Description string `bson:"description"`
 

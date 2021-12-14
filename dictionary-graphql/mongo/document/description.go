@@ -5,6 +5,7 @@ import (
 )
 
 type Description struct {
+	Record
 	Text   string `bson:"text"`
 	Series string `bson:"series"`
 

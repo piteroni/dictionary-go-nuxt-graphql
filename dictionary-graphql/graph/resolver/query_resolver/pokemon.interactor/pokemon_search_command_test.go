@@ -2,7 +2,6 @@ package pokemon_interactor
 
 import (
 	"context"
-	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
 	"piteroni/dictionary-go-nuxt-graphql/mongo/database"
 	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
@@ -115,10 +114,12 @@ func TestInValidArguments(t *testing.T) {
 }
 
 func TestFindPokemon(t *testing.T) {
-	db, _, err := itesting.ConnnectToDatabaseForTest()
+	db, close, err := itesting.ConnnectToTestDatabase()
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	defer close()
 
 	cleanup := func() {
 		err = database.Drop(context.Background(), db)
@@ -141,8 +142,6 @@ func TestFindPokemon(t *testing.T) {
 		defer cleanup()
 
 		pokemons, err := c.Execute(itesting.Int(1), nil)
-
-		fmt.Printf("pokemons[0]: %#v\n", pokemons[0].Record)
 
 		assert.Nil(t, err)
 		assert.NotNil(t, pokemons)
