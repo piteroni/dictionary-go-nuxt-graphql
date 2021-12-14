@@ -4,4 +4,4 @@ set -eu
 
 cd "$(dirname "$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)")"
 
-./scripts/attach-db mysql --defaults-extra-file="/dbaccess.cnf" dictionary_go_nuxt_graphql
+./scripts/attach-db bash -c 'mongosh --shell mongodb://root:password@host.docker.internal:27017 -f <(echo "use dictionary_go_nuxt_graphql")'

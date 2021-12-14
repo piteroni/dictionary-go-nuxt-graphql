@@ -26,7 +26,7 @@ func main() {
 		}
 	}()
 
-	err = database.Drop(context.TODO(), db)
+	err = database.Seed(context.Background(), db)
 	if err != nil {
 		logger.Error(errors.WithStack(err))
 		return

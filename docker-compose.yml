@@ -20,24 +20,23 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: password
       DB_HOST: db
-      DB_PORT: 3306
+      DB_PORT: 27017
       DB_NAME: dictionary_go_nuxt_graphql
+      TEST_DB_NAME: dictionary_go_nuxt_graphql_test
       ALLOW_ORIGINS: '["http://localhost:3000"]'
   db:
     build:
       context: ./
       dockerfile: db.Dockerfile
     hostname: db
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
     volumes:
-      - 7ca68c27cf80449e54cbf07c:/var/lib/mysql
-      - 11eaa23ef3c226f65104912e:/var/run/mysqld
-      - ./dbaccess.cnf:/dbaccess.cnf
+      - db_data:/data/db
+      - db_config:/data/configdb
     ports:
-      - 3306:3306
+      - 27017:27017
     environment:
-      MYSQL_DATABASE: dictionary_go_nuxt_graphql
-      MYSQL_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
   application-ui:
     build: 
       context: ./dictionary-application-ui
@@ -52,15 +51,12 @@ services:
     hostname: application-ui
     volumes:
       - ./dictionary-application-ui:/app
-      - 05b1be63bda84a6eba2ff7c6:/app/node_modules
+      - application_ui_node_modules:/app/node_modules
       - ./schema.graphql:/schema.graphql
     ports:
       - 3000:3000
 
 volumes:
-  # database data
-  7ca68c27cf80449e54cbf07c:
-  # database socket
-  11eaa23ef3c226f65104912e:
-  # node modules
-  05b1be63bda84a6eba2ff7c6:
+  application_ui_node_modules:
+  db_data:
+  db_config:

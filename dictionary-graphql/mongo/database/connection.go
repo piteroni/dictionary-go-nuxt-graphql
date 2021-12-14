@@ -1,15 +1,16 @@
-package testing
+package database
 
 import (
 	"context"
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/registry"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ConnnectToDatabaseForTest() (*mongo.Database, func() error, error) {
+func Connect() (*mongo.Database, func() error, error) {
 	username, err := driver.Env("DB_USERNAME")
 	if err != nil {
 		return nil, nil, err
@@ -30,14 +31,16 @@ func ConnnectToDatabaseForTest() (*mongo.Database, func() error, error) {
 		return nil, nil, err
 	}
 
-	dbname, err := driver.Env("TEST_DB_NAME")
+	dbname, err := driver.Env("DB_NAME")
 	if err != nil {
 		return nil, nil, err
 	}
 
 	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s", username, password, host, port)
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	registry := registry.NewRegistry()
+
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri).SetRegistry(registry))
 	if err != nil {
 		return nil, nil, err
 	}

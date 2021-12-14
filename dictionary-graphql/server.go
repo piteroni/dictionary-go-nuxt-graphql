@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"piteroni/dictionary-go-nuxt-graphql/database"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 	"piteroni/dictionary-go-nuxt-graphql/graph"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
@@ -26,13 +25,13 @@ func main() {
 }
 
 func serve() error {
-	db, err := database.ConnectToDatabase()
-	if err != nil {
-		return errors.WithStack(err)
-	}
+	// db, err := database.ConnectToDatabase()
+	// if err != nil {
+	// 	return errors.WithStack(err)
+	// }
 
 	r := &graph.Resolver{
-		DB:        db,
+		// DB:        db,
 		AppLogger: logger,
 	}
 
@@ -40,16 +39,16 @@ func serve() error {
 	srv := handler.NewDefaultServer(schema)
 
 	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
-		message := ""
+		s := ""
 
 		e, ok := err.(error)
 		if ok {
-			message = fmt.Sprintf("unexpected error: %+v", errors.WithStack(e))
+			s = fmt.Sprintf("%+v", errors.WithStack(e))
 		} else {
-			message = fmt.Sprintf("unexpected error: %#v", err)
+			s = fmt.Sprintf("%#v", err)
 		}
 
-		logger.Print(message)
+		logger.Printf("unexpected error: %s", s)
 
 		return errors.New("Internal server error!!")
 	})
