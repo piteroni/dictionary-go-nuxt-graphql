@@ -14,7 +14,5 @@ require (
 	go.mongodb.org/mongo-driver v1.8.0
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	gorm.io/driver/mysql v1.1.2
-	gorm.io/driver/sqlite v1.2.4
 	gorm.io/gorm v1.22.2
 )
