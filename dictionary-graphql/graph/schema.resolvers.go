@@ -9,7 +9,7 @@ import (
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
 )
 
-func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.PokemonResult, error) {
+func (r *queryResolver) Pokemon(ctx context.Context, pokemonID string) (model.PokemonResult, error) {
 	panic("NOT IMPLEMENTED")
 	// qr := pokemon.PokemonQueryResolver{
 	// 	DB:                   r.DB,
@@ -20,7 +20,7 @@ func (r *queryResolver) Pokemon(ctx context.Context, pokemonID int) (model.Pokem
 	// return qr.Pokemon(pokemonID)
 }
 
-func (r *queryResolver) Evolutions(ctx context.Context, pokemonID int) (model.EvolutionsResult, error) {
+func (r *queryResolver) Evolutions(ctx context.Context, pokemonID string) (model.EvolutionsResult, error) {
 	panic("NOT IMPLEMENTED")
 	// qr := evolutions.EvolutionsQueryResolver{
 	// 	DB:                 r.DB,
@@ -30,7 +30,7 @@ func (r *queryResolver) Evolutions(ctx context.Context, pokemonID int) (model.Ev
 	// return qr.Evolutions(pokemonID)
 }
 
-func (r *queryResolver) PageInfo(ctx context.Context, pokemonID int) (model.PageInfoResult, error) {
+func (r *queryResolver) PageInfo(ctx context.Context, pokemonID string) (model.PageInfoResult, error) {
 	panic("NOT IMPLEMENTED")
 	// qr := pageinfo.PageInfoQueryResolver{
 	// 	DB: r.DB,
@@ -39,7 +39,7 @@ func (r *queryResolver) PageInfo(ctx context.Context, pokemonID int) (model.Page
 	// return qr.PageInfo(pokemonID)
 }
 
-func (r *queryResolver) Pokemons(ctx context.Context, first *int, after *int) (model.PokemonConnectionResult, error) {
+func (r *queryResolver) Pokemons(ctx context.Context, first *int, after *string) (model.PokemonConnectionResult, error) {
 	panic("NOT IMPLEMENTED")
 	// qr := pokemons.PokemonsQueryResolver{
 	// 	AppLogger:            r.AppLogger,

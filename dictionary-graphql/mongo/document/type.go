@@ -1,14 +1,11 @@
 package document
 
 import (
-	"time"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Type struct {
-	Record
-	Name    string `bson:"name"`
-	IconURL string `bson:"icon_url"`
-
-	CreatedAt time.Time `bson:"created_at"`
-	UpdatedAt time.Time `bson:"updated_at"`
+	ID      primitive.ObjectID `bson:"_id"`
+	Name    string             `bson:"name"`
+	IconURL string             `bson:"icon_url"`
 }

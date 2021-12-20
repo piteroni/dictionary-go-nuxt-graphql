@@ -108,10 +108,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Evolutions func(childComplexity int, pokemonID int) int
-		PageInfo   func(childComplexity int, pokemonID int) int
-		Pokemon    func(childComplexity int, pokemonID int) int
-		Pokemons   func(childComplexity int, first *int, after *int) int
+		Evolutions func(childComplexity int, pokemonID string) int
+		PageInfo   func(childComplexity int, pokemonID string) int
+		Pokemon    func(childComplexity int, pokemonID string) int
+		Pokemons   func(childComplexity int, first *int, after *string) int
 	}
 
 	Type struct {
@@ -121,10 +121,10 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	Pokemon(ctx context.Context, pokemonID int) (model.PokemonResult, error)
-	Evolutions(ctx context.Context, pokemonID int) (model.EvolutionsResult, error)
-	PageInfo(ctx context.Context, pokemonID int) (model.PageInfoResult, error)
-	Pokemons(ctx context.Context, first *int, after *int) (model.PokemonConnectionResult, error)
+	Pokemon(ctx context.Context, pokemonID string) (model.PokemonResult, error)
+	Evolutions(ctx context.Context, pokemonID string) (model.EvolutionsResult, error)
+	PageInfo(ctx context.Context, pokemonID string) (model.PageInfoResult, error)
+	Pokemons(ctx context.Context, first *int, after *string) (model.PokemonConnectionResult, error)
 }
 
 type executableSchema struct {
@@ -390,7 +390,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Evolutions(childComplexity, args["pokemonId"].(int)), true
+		return e.complexity.Query.Evolutions(childComplexity, args["pokemonId"].(string)), true
 
 	case "Query.pageInfo":
 		if e.complexity.Query.PageInfo == nil {
@@ -402,7 +402,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.PageInfo(childComplexity, args["pokemonId"].(int)), true
+		return e.complexity.Query.PageInfo(childComplexity, args["pokemonId"].(string)), true
 
 	case "Query.pokemon":
 		if e.complexity.Query.Pokemon == nil {
@@ -414,7 +414,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Pokemon(childComplexity, args["pokemonId"].(int)), true
+		return e.complexity.Query.Pokemon(childComplexity, args["pokemonId"].(string)), true
 
 	case "Query.pokemons":
 		if e.complexity.Query.Pokemons == nil {
@@ -426,7 +426,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Pokemons(childComplexity, args["first"].(*int), args["after"].(*int)), true
+		return e.complexity.Query.Pokemons(childComplexity, args["first"].(*int), args["after"].(*string)), true
 
 	case "Type.iconURL":
 		if e.complexity.Type.IconURL == nil {
@@ -493,7 +493,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "/schema.graphql", Input: `type Pokemon {
-  id: Int!
+  id: String!
   nationalNo: Int!
   name: String!
   imageURL: String!
@@ -567,10 +567,10 @@ union PageInfoResult = PageInfo | PokemonNotFound
 union PokemonConnectionResult = PokemonConnection | IllegalArguments | PokemonNotFound
 
 type Query {
-  pokemon(pokemonId: Int!): PokemonResult!
-  evolutions(pokemonId: Int!): EvolutionsResult!
-  pageInfo(pokemonId: Int!): PageInfoResult!
-  pokemons(first: Int, after: Int): PokemonConnectionResult!
+  pokemon(pokemonId: String!): PokemonResult!
+  evolutions(pokemonId: String!): EvolutionsResult!
+  pageInfo(pokemonId: String!): PageInfoResult!
+  pokemons(first: Int, after: String): PokemonConnectionResult!
 }
 `, BuiltIn: false},
 }
@@ -598,10 +598,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_evolutions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 string
 	if tmp, ok := rawArgs["pokemonId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pokemonId"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -613,10 +613,10 @@ func (ec *executionContext) field_Query_evolutions_args(ctx context.Context, raw
 func (ec *executionContext) field_Query_pageInfo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 string
 	if tmp, ok := rawArgs["pokemonId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pokemonId"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -628,10 +628,10 @@ func (ec *executionContext) field_Query_pageInfo_args(ctx context.Context, rawAr
 func (ec *executionContext) field_Query_pokemon_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 string
 	if tmp, ok := rawArgs["pokemonId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pokemonId"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -652,10 +652,10 @@ func (ec *executionContext) field_Query_pokemons_args(ctx context.Context, rawAr
 		}
 	}
 	args["first"] = arg0
-	var arg1 *int
+	var arg1 *string
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1362,9 +1362,9 @@ func (ec *executionContext) _Pokemon_id(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pokemon_nationalNo(ctx context.Context, field graphql.CollectedField, obj *model.Pokemon) (ret graphql.Marshaler) {
@@ -1917,7 +1917,7 @@ func (ec *executionContext) _Query_pokemon(ctx context.Context, field graphql.Co
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Pokemon(rctx, args["pokemonId"].(int))
+		return ec.resolvers.Query().Pokemon(rctx, args["pokemonId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1959,7 +1959,7 @@ func (ec *executionContext) _Query_evolutions(ctx context.Context, field graphql
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Evolutions(rctx, args["pokemonId"].(int))
+		return ec.resolvers.Query().Evolutions(rctx, args["pokemonId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2001,7 +2001,7 @@ func (ec *executionContext) _Query_pageInfo(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().PageInfo(rctx, args["pokemonId"].(int))
+		return ec.resolvers.Query().PageInfo(rctx, args["pokemonId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2043,7 +2043,7 @@ func (ec *executionContext) _Query_pokemons(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Pokemons(rctx, args["first"].(*int), args["after"].(*int))
+		return ec.resolvers.Query().Pokemons(rctx, args["first"].(*int), args["after"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

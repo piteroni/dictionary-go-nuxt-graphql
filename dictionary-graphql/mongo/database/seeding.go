@@ -65,74 +65,92 @@ func Seed(ctx context.Context, db *mongo.Database) error {
 func createTypes(ctx context.Context, db *mongo.Database) error {
 	types := []interface{}{
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "ノーマル",
 			IconURL: "/image/icon_type_1_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "ほのお",
 			IconURL: "/image/icon_type_2_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "みず",
 			IconURL: "/image/icon_type_3_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "でんき",
 			IconURL: "/image/icon_type_5_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "くさ",
 			IconURL: "/image/icon_type_4_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "こおり",
 			IconURL: "/image/icon_type_6_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "かくとう",
 			IconURL: "/image/icon_type_7_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "どく",
 			IconURL: "/image/icon_type_8_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "じめん",
 			IconURL: "/image/icon_type_9_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "ひこう",
 			IconURL: "/image/icon_type_10_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "エスパー",
 			IconURL: "/image/icon_type_11_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "むし",
 			IconURL: "/image/icon_type_12_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "いわ",
 			IconURL: "/image/icon_type_13_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "ゴースト",
 			IconURL: "/image/icon_type_14_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "ドラゴン",
 			IconURL: "/image/icon_type_15_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "あく",
 			IconURL: "/image/icon_type_16_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "はがね",
 			IconURL: "/image/icon_type_17_on.svg",
 		},
 		document.Type{
+			ID:      primitive.NewObjectID(),
 			Name:    "フェアリー",
 			IconURL: "/image/icon_type_18_on.svg",
 		},
@@ -149,10 +167,12 @@ func createTypes(ctx context.Context, db *mongo.Database) error {
 func createGenders(ctx context.Context, db *mongo.Database) error {
 	genders := []interface{}{
 		document.Gender{
+			ID:      primitive.NewObjectID(),
 			Name:    "male",
 			IconURL: "/image/icon_male.svg",
 		},
 		document.Gender{
+			ID:      primitive.NewObjectID(),
 			Name:    "female",
 			IconURL: "/image/icon_female.svg",
 		},
@@ -169,14 +189,17 @@ func createGenders(ctx context.Context, db *mongo.Database) error {
 func createCharacteristics(ctx context.Context, db *mongo.Database) error {
 	characteristics := []interface{}{
 		document.Characteristic{
+			ID:          primitive.NewObjectID(),
 			Name:        "しんりょく",
 			Description: "ＨＰが　へったとき　くさタイプの　わざの　いりょくが　あがる。",
 		},
 		document.Characteristic{
+			ID:          primitive.NewObjectID(),
 			Name:        "あついしぼう",
 			Description: "あつい　しぼうで　まもられているので　ほのおタイプと　こおりタイプの　わざの　ダメージを　はんげんさせる。",
 		},
 		document.Characteristic{
+			ID:          primitive.NewObjectID(),
 			Name:        "ナイトメア",
 			Description: "ねむり　じょうたいの　あいてにダメージを　あたえる。",
 		},
@@ -238,28 +261,31 @@ func createBulbasaur(ctx context.Context, db *mongo.Database) error {
 		return errors.WithStack(err)
 	}
 
-	err = cursor.Close(ctx)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
 	characteristicIds := []primitive.ObjectID{}
 	for cursor.Next(ctx) {
 		characteristicIds = append(characteristicIds, cursor.Current.Lookup("_id").ObjectID())
 	}
 
+	err = cursor.Close(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
 	descriptions := []document.Description{
 		{
+			ID:     primitive.NewObjectID(),
 			Text:   "うまれたときから　せなかに　しょくぶつの　タネが　あって　すこしずつ　おおきく　そだつ。",
 			Series: "ポケモン ソード",
 		},
 		{
+			ID:     primitive.NewObjectID(),
 			Text:   "うまれて　しばらくの　あいだ　せなかの　タネに　つまった　えいようを　とって　そだつ。",
 			Series: "ポケモン シールド",
 		},
 	}
 
 	bulbasaur := document.Pokemon{
+		ID:                  primitive.NewObjectID(),
 		NationalNo:          1,
 		Name:                "フシギダネ",
 		Species:             "たねポケモン",
@@ -272,10 +298,12 @@ func createBulbasaur(ctx context.Context, db *mongo.Database) error {
 		SpecialAttackPoint:  65,
 		SpecialDefensePoint: 65,
 		SpeedPoint:          45,
-		Descriptions:        &descriptions,
-		Types:               &typeIds,
-		Genders:             &genderIds,
-		Characteristics:     &characteristicIds,
+		Descriptions:        descriptions,
+		References: document.PokemonReferences{
+			Types:           typeIds,
+			Genders:         genderIds,
+			Characteristics: characteristicIds,
+		},
 	}
 
 	_, err = db.Collection(collection.Pokemons).InsertOne(ctx, bulbasaur)
@@ -334,28 +362,31 @@ func createIvysaur(ctx context.Context, db *mongo.Database) error {
 		return errors.WithStack(err)
 	}
 
-	err = cursor.Close(ctx)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
 	characteristicIds := []primitive.ObjectID{}
 	for cursor.Next(ctx) {
 		characteristicIds = append(characteristicIds, cursor.Current.Lookup("_id").ObjectID())
 	}
 
+	err = cursor.Close(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
 	descriptions := []document.Description{
 		{
+			ID:     primitive.NewObjectID(),
 			Text:   "せなかの　つぼみが　おおきく　そだってくると　２ほんあしで　たつことが　できなくなるらしい。",
 			Series: "ポケモン ソード",
 		},
 		{
+			ID:     primitive.NewObjectID(),
 			Text:   "たいようの　ひかりを　あびるほど　からだに　ちからが　わいて　せなかの　つぼみが　そだっていく。",
 			Series: "ポケモン シールド",
 		},
 	}
 
 	ivysaur := document.Pokemon{
+		ID:                  primitive.NewObjectID(),
 		NationalNo:          2,
 		Name:                "フシギソウ",
 		Species:             "たねポケモン",
@@ -368,10 +399,12 @@ func createIvysaur(ctx context.Context, db *mongo.Database) error {
 		SpecialAttackPoint:  80,
 		SpecialDefensePoint: 80,
 		SpeedPoint:          60,
-		Descriptions:        &descriptions,
-		Types:               &typeIds,
-		Genders:             &genderIds,
-		Characteristics:     &characteristicIds,
+		Descriptions:        descriptions,
+		References: document.PokemonReferences{
+			Types:           typeIds,
+			Genders:         genderIds,
+			Characteristics: characteristicIds,
+		},
 	}
 
 	_, err = db.Collection(collection.Pokemons).InsertOne(ctx, ivysaur)
@@ -430,28 +463,31 @@ func createVenusaur(ctx context.Context, db *mongo.Database) error {
 		return errors.WithStack(err)
 	}
 
-	err = cursor.Close(ctx)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
 	characteristicIds := []primitive.ObjectID{}
 	for cursor.Next(ctx) {
 		characteristicIds = append(characteristicIds, cursor.Current.Lookup("_id").ObjectID())
 	}
 
+	err = cursor.Close(ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
 	descriptions := []document.Description{
 		{
+			ID:     primitive.NewObjectID(),
 			Text:   "たいようエネルギーを　えいようにして　おおきなハナが　ひらく。　ひなたに　ひきよせられるように　いどうする。",
 			Series: "ポケモン ソード",
 		},
 		{
+			ID:     primitive.NewObjectID(),
 			Text:   "はなから　うっとりする　かおりが　ただよい　たたかうものの　きもちを　なだめてしまう。",
 			Series: "ポケモン シールド",
 		},
 	}
 
 	ivysaur := document.Pokemon{
+		ID:                  primitive.NewObjectID(),
 		NationalNo:          3,
 		Name:                "フシギバナ",
 		Species:             "たねポケモン",
@@ -464,15 +500,15 @@ func createVenusaur(ctx context.Context, db *mongo.Database) error {
 		SpecialAttackPoint:  100,
 		SpecialDefensePoint: 100,
 		SpeedPoint:          80,
-		Descriptions:        &descriptions,
-		Types:               &typeIds,
-		Genders:             &genderIds,
-		Characteristics:     &characteristicIds,
+		Descriptions:        descriptions,
+		References: document.PokemonReferences{
+			Types:           typeIds,
+			Genders:         genderIds,
+			Characteristics: characteristicIds,
+		},
 	}
 
-	iopt := options.InsertOneOptions{}
-
-	_, err = db.Collection(collection.Pokemons).InsertOne(ctx, ivysaur, &iopt)
+	_, err = db.Collection(collection.Pokemons).InsertOne(ctx, ivysaur)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -502,12 +538,14 @@ func createDarkrai(ctx context.Context, db *mongo.Database) error {
 
 	descriptions := []document.Description{
 		{
+			ID:     primitive.NewObjectID(),
 			Text:   "ひとびとを　ふかい　ねむりに　さそいゆめを　みせる　のうりょくを　もつ。　しんげつの　よるに　かつどうする。",
 			Series: "ポケモン Y",
 		},
 	}
 
 	darkrai := document.Pokemon{
+		ID:                  primitive.NewObjectID(),
 		NationalNo:          491,
 		Name:                "ダークライ",
 		Species:             "あんこくポケモン",
@@ -520,8 +558,10 @@ func createDarkrai(ctx context.Context, db *mongo.Database) error {
 		SpecialAttackPoint:  135,
 		SpecialDefensePoint: 90,
 		SpeedPoint:          125,
-		Descriptions:        &descriptions,
-		Characteristics:     &characteristicIds,
+		Descriptions:        descriptions,
+		References: document.PokemonReferences{
+			Characteristics: characteristicIds,
+		},
 	}
 
 	_, err = db.Collection(collection.Pokemons).InsertOne(ctx, darkrai)
@@ -578,6 +618,7 @@ func createPaginationEdges(ctx context.Context, db *mongo.Database) error {
 
 	for i := 0; i < max; i++ {
 		pokemon := document.Pokemon{
+			ID:                  primitive.NewObjectID(),
 			NationalNo:          90000 + i,
 			Name:                fmt.Sprintf("pagenation edge %d", i),
 			Species:             "",

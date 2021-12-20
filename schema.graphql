@@ -1,5 +1,5 @@
 type Pokemon {
-  id: Int!
+  id: String!
   nationalNo: Int!
   name: String!
   imageURL: String!
@@ -73,8 +73,8 @@ union PageInfoResult = PageInfo | PokemonNotFound
 union PokemonConnectionResult = PokemonConnection | IllegalArguments | PokemonNotFound
 
 type Query {
-  pokemon(pokemonId: Int!): PokemonResult!
-  evolutions(pokemonId: Int!): EvolutionsResult!
-  pageInfo(pokemonId: Int!): PageInfoResult!
-  pokemons(first: Int, after: Int): PokemonConnectionResult!
+  pokemon(pokemonId: String!): PokemonResult!
+  evolutions(pokemonId: String!): EvolutionsResult!
+  pageInfo(pokemonId: String!): PageInfoResult!
+  pokemons(first: Int, after: String): PokemonConnectionResult!
 }

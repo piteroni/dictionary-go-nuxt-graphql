@@ -1,13 +1,11 @@
 package document
 
 import (
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Pokemon struct {
-	Record
+	ID          primitive.ObjectID  `bson:"_id"`
 	NationalNo  int                 `bson:"national_no"`
 	EvolutionID *primitive.ObjectID `bson:"evolution_id"`
 	Name        string              `bson:"name"`
@@ -24,11 +22,17 @@ type Pokemon struct {
 	SpecialDefensePoint int `bson:"special_defense_point"`
 	SpeedPoint          int `bson:"speed_point"`
 
-	Descriptions    *[]Description        `bson:"descriptions"`
-	Types           *[]primitive.ObjectID `bson:"types"`
-	Genders         *[]primitive.ObjectID `bson:"genders"`
-	Characteristics *[]primitive.ObjectID `bson:"characteristics"`
+	Descriptions []Description `bson:"descriptions"`
 
-	CreatedAt time.Time `bson:"created_at"`
-	UpdatedAt time.Time `bson:"updated_at"`
+	Types           *[]Type           `bson:",omitempty"`
+	Genders         *[]Gender         `bson:",omitempty"`
+	Characteristics *[]Characteristic `bson:",omitempty"`
+
+	References PokemonReferences `bson:"references"`
+}
+
+type PokemonReferences struct {
+	Types           []primitive.ObjectID `bson:"types"`
+	Genders         []primitive.ObjectID `bson:"genders"`
+	Characteristics []primitive.ObjectID `bson:"characteristics"`
 }

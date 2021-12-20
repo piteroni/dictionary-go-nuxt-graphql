@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
-	"piteroni/dictionary-go-nuxt-graphql/mongo/registry"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -38,9 +37,7 @@ func Connect() (*mongo.Database, func() error, error) {
 
 	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s", username, password, host, port)
 
-	registry := registry.NewRegistry()
-
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri).SetRegistry(registry))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, nil, err
 	}

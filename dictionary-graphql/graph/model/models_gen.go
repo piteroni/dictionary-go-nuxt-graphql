@@ -64,7 +64,7 @@ type PageInfo struct {
 func (PageInfo) IsPageInfoResult() {}
 
 type Pokemon struct {
-	ID              int               `json:"id"`
+	ID              string            `json:"id"`
 	NationalNo      int               `json:"nationalNo"`
 	Name            string            `json:"name"`
 	ImageURL        string            `json:"imageURL"`

@@ -1,10 +1,12 @@
-package testing
+package testutils
 
 import (
 	"context"
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
+	"testing"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -60,4 +62,13 @@ func ConnnectToTestDatabase() (*mongo.Database, func() error, error) {
 	}
 
 	return client.Database(dbname), close, nil
+}
+
+func ObjectID(t *testing.T, value string) primitive.ObjectID {
+	objectId, err := primitive.ObjectIDFromHex(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return objectId
 }
