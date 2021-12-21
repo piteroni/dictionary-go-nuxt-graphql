@@ -8,7 +8,7 @@ import (
 
 type GraphQLModelMapper struct{}
 
-func (_ *GraphQLModelMapper) Mapping(pokemon *document.Pokemon) *graph.Pokemon {
+func (GraphQLModelMapper) Mapping(pokemon *document.Pokemon) *graph.Pokemon {
 	m := &graph.Pokemon{
 		ID:           pokemon.ID.Hex(),
 		NationalNo:   pokemon.NationalNo,

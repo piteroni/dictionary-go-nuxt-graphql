@@ -1,98 +1,113 @@
 package pageinfo
 
-// import (
-// 	"piteroni/dictionary-go-nuxt-graphql/database"
-// 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
-// 	"piteroni/dictionary-go-nuxt-graphql/model"
-// 	itesting "piteroni/dictionary-go-nuxt-graphql/testing"
-// 	"testing"
+import (
+	"context"
+	"fmt"
+	"piteroni/dictionary-go-nuxt-graphql/graph/model"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/database"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
+	"piteroni/dictionary-go-nuxt-graphql/testutils"
+	"testing"
 
-// 	"github.com/stretchr/testify/assert"
-// 	"gorm.io/gorm"
-// )
+	"github.com/stretchr/testify/assert"
+)
 
-// func TestPageInfoQueryResolver(t *testing.T) {
-// 	db, err := itesting.ConnnectToInMemoryDatabase()
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+func TestPageInfoQueryResolver(t *testing.T) {
+	db, close, err := testutils.ConnnectToTestDatabase()
+	if err != nil {
+		t.Fatal(err)
+	}
 
-// 	err = database.Migrate(db)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+	defer close()
 
-// 	cleanup := func() {
-// 		err := itesting.RefreshInMemoryDatabase(db)
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-// 	}
+	cleanup := func() {
+		err = database.Drop(context.Background(), db)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
 
-// 	r := &PageInfoQueryResolver{DB: db}
+	r := &PageInfoQueryResolver{DB: db, Context: context.Background()}
 
-// 	t.Run("前後にポケモンが登録されているか取得できる", func(t *testing.T) {
-// 		data := []*model.Pokemon{
-// 			{
-// 				Model:      gorm.Model{ID: 1},
-// 				NationalNo: 1,
-// 				Name:       "pokemon-1",
-// 			},
-// 			{
-// 				Model:      gorm.Model{ID: 2},
-// 				NationalNo: 2,
-// 				Name:       "pokemon-2",
-// 			},
-// 		}
+	t.Run("id of pokemon", func(t *testing.T) {
+		data := []interface{}{
+			document.Pokemon{
+				ID: testutils.ObjectID(t, "000000000000000000000001"),
+			},
+			document.Pokemon{
+				ID: testutils.ObjectID(t, "000000000000000000000002"),
+			},
+			document.Pokemon{
+				ID: testutils.ObjectID(t, "000000000000000000000003"),
+			},
+		}
 
-// 		err := db.Create(data).Error
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
+		_, err = db.Collection(collection.Pokemons).InsertMany(r.Context, data)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-// 		defer cleanup()
+		defer cleanup()
 
-// 		t.Run(`
-// 			渡したオブジェクトの前に位置するレコードが存在しない場合、HasPrevはfalseに設定される
-// 			また渡したオブジェクトの次に位置するレコードが存在する場合、HasNextはtrueに設定される
-// 		`, func(t *testing.T) {
-// 			actual, err := r.PageInfo(1)
+		tests := []struct {
+			name     string
+			params   string
+			expected model.PageInfo
+		}{
+			{
+				name:   "first pokemon id",
+				params: "000000000000000000000001",
+				expected: model.PageInfo{
+					PrevID:  "",
+					NextID:  "000000000000000000000002",
+					HasPrev: false,
+					HasNext: true,
+				},
+			},
+			{
+				name:   "middle pokemon id",
+				params: "000000000000000000000002",
+				expected: model.PageInfo{
+					PrevID:  "000000000000000000000001",
+					NextID:  "000000000000000000000003",
+					HasPrev: true,
+					HasNext: true,
+				},
+			},
+			{
+				name:   "last pokemon id",
+				params: "000000000000000000000003",
+				expected: model.PageInfo{
+					PrevID:  "000000000000000000000002",
+					NextID:  "",
+					HasPrev: true,
+					HasNext: false,
+				},
+			},
+		}
 
-// 			expected := graph.PageInfo{
-// 				PrevID:  0,
-// 				NextID:  2,
-// 				HasPrev: false,
-// 				HasNext: true,
-// 			}
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				actual, err := r.PageInfo(test.params)
 
-// 			assert.Equal(t, expected, actual)
-// 			assert.Nil(t, err)
-// 		})
+				assert.Nil(t, err, fmt.Errorf("%+v", err))
+				assert.Equal(t, test.expected, actual)
+			})
+		}
+	})
 
-// 		t.Run(`
-// 			渡したオブジェクトの前に位置するレコードが存在する場合、HasPrevはtrueに設定される
-// 			また渡したオブジェクトの次に位置するレコードが存在しない場合、HasNextはfalseに設定される
-// 		`, func(t *testing.T) {
-// 			actual, err := r.PageInfo(2)
+	t.Run("id of unexists pokemon", func(t *testing.T) {
+		actual, err := r.PageInfo("000000000000000000000001")
 
-// 			expected := graph.PageInfo{
-// 				PrevID:  1,
-// 				NextID:  3,
-// 				HasPrev: true,
-// 				HasNext: false,
-// 			}
+		assert.Nil(t, err)
+		assert.IsType(t, model.PokemonNotFound{}, actual)
+	})
 
-// 			assert.Equal(t, expected, actual)
-// 			assert.Nil(t, err)
-// 		})
-// 	})
+	t.Run("invalid pokemon id", func(t *testing.T) {
+		actual, err := r.PageInfo("invalid-pokemon-id")
 
-// 	t.Run("指定されたIDに一致するポケモンが存在しない場合、例外が送出される", func(t *testing.T) {
-// 		actual, err := r.PageInfo(1)
-
-// 		expected := graph.PokemonNotFound{}
-
-// 		assert.IsType(t, expected, actual)
-// 		assert.Nil(t, err)
-// 	})
-// }
+		assert.Nil(t, err)
+		assert.IsType(t, model.IllegalArguments{}, actual)
+	})
+}

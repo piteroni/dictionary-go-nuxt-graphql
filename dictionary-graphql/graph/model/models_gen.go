@@ -52,13 +52,16 @@ type IllegalArguments struct {
 	Message string `json:"message"`
 }
 
+func (IllegalArguments) IsPokemonResult()           {}
+func (IllegalArguments) IsEvolutionsResult()        {}
+func (IllegalArguments) IsPageInfoResult()          {}
 func (IllegalArguments) IsPokemonConnectionResult() {}
 
 type PageInfo struct {
-	PrevID  int  `json:"prevId"`
-	NextID  int  `json:"nextId"`
-	HasPrev bool `json:"hasPrev"`
-	HasNext bool `json:"hasNext"`
+	PrevID  string `json:"prevId"`
+	NextID  string `json:"nextId"`
+	HasPrev bool   `json:"hasPrev"`
+	HasNext bool   `json:"hasNext"`
 }
 
 func (PageInfo) IsPageInfoResult() {}
@@ -82,8 +85,9 @@ type Pokemon struct {
 func (Pokemon) IsPokemonResult() {}
 
 type PokemonConnection struct {
-	NextID int        `json:"nextID"`
-	Items  []*Pokemon `json:"items"`
+	EndCursor string     `json:"endCursor"`
+	HasNext   bool       `json:"hasNext"`
+	Items     []*Pokemon `json:"items"`
 }
 
 func (PokemonConnection) IsPokemonConnectionResult() {}

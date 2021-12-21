@@ -5,5 +5,5 @@ set -eu
 cd "$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 [ ! -d tmp ] && mkdir tmp
-gotest -cover ./... -coverprofile=tmp/cover.out
+gotest -cover ./... -p 1 -coverprofile=tmp/cover.out
 go tool cover -html=tmp/cover.out -o tmp/cover.html

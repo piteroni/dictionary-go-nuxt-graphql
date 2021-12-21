@@ -13,9 +13,9 @@ func (e *PokemonNotFound) Error() string {
 var _ error = (*IllegalArguments)(nil)
 
 type IllegalArguments struct {
-	message string
+	Message string
 }
 
 func (e *IllegalArguments) Error() string {
-	return e.message
+	return e.Message
 }

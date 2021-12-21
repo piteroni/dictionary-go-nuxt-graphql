@@ -1,54 +1,81 @@
 package pageinfo
 
-// import (
-// 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
-// 	"piteroni/dictionary-go-nuxt-graphql/model"
+import (
+	"context"
+	"piteroni/dictionary-go-nuxt-graphql/graph/model"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
 
-// 	"github.com/pkg/errors"
+	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
 
-// 	"gorm.io/gorm"
-// )
+type PageInfoQueryResolver struct {
+	DB      *mongo.Database
+	Context context.Context
+}
 
-// type PageInfoQueryResolver struct {
-// 	DB *gorm.DB
-// }
+func (r *PageInfoQueryResolver) PageInfo(pokemonID string) (model.PageInfoResult, error) {
+	objectID, err := primitive.ObjectIDFromHex(pokemonID)
+	if err != nil {
+		return model.IllegalArguments{Message: err.Error()}, nil
+	}
 
-// func (r *PageInfoQueryResolver) PageInfo(pokemonID int) (graph.PageInfoResult, error) {
-// 	pokemon := &model.Pokemon{}
+	condition := bson.D{{Key: "_id", Value: objectID}}
+	pokemon := document.Pokemon{}
+	opt := options.FindOneOptions{Projection: bson.D{{Key: "_id", Value: 1}}}
 
-// 	tx := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID)
-// 	if tx.Error != nil {
-// 		return nil, tx.Error
-// 	}
+	err = r.DB.Collection(collection.Pokemons).FindOne(r.Context, condition, &opt).Decode(&pokemon)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return model.PokemonNotFound{}, nil
+		}
 
-// 	if tx.RowsAffected <= 0 {
-// 		return graph.PokemonNotFound{}, nil
-// 	}
+		return nil, errors.WithStack(err)
+	}
 
-// 	i := graph.PageInfo{
-// 		PrevID: int(pokemon.ID - 1),
-// 		NextID: int(pokemon.ID + 1),
-// 	}
+	condition = bson.D{{Key: "_id", Value: bson.M{"$lt": pokemon.ID}}}
+	prev := document.Pokemon{}
+	opt = options.FindOneOptions{
+		Projection: bson.D{{Key: "_id", Value: 1}},
+		Sort:       bson.D{{Key: "_id", Value: -1}},
+	}
 
-// 	tx = &gorm.DB{}
+	err = r.DB.Collection(collection.Pokemons).FindOne(r.Context, condition, &opt).Decode(&prev)
+	if err != nil {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, errors.WithStack(err)
+		}
+	}
 
-// 	tx = r.DB.Model(&model.Pokemon{}).Where("id = ?", i.PrevID).First(&model.Pokemon{})
-// 	if tx.Error != nil {
-// 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-// 			return nil, tx.Error
-// 		}
-// 	}
+	condition = bson.D{{Key: "_id", Value: bson.M{"$gt": pokemon.ID}}}
+	next := document.Pokemon{}
+	opt = options.FindOneOptions{
+		Projection: bson.D{{Key: "_id", Value: 1}},
+		Sort:       bson.D{{Key: "_id", Value: 1}},
+	}
 
-// 	i.HasPrev = tx.RowsAffected > 0
+	err = r.DB.Collection(collection.Pokemons).FindOne(r.Context, condition, &opt).Decode(&next)
+	if err != nil {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, errors.WithStack(err)
+		}
+	}
 
-// 	tx = r.DB.Model(&model.Pokemon{}).Where("id = ?", i.NextID).First(&model.Pokemon{})
-// 	if tx.Error != nil {
-// 		if !errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-// 			return nil, tx.Error
-// 		}
-// 	}
+	pageInfo := model.PageInfo{}
 
-// 	i.HasNext = tx.RowsAffected > 0
+	if !prev.ID.IsZero() {
+		pageInfo.HasPrev = true
+		pageInfo.PrevID = prev.ID.Hex()
+	}
 
-// 	return i, nil
-// }
+	if !next.ID.IsZero() {
+		pageInfo.HasNext = true
+		pageInfo.NextID = next.ID.Hex()
+	}
+
+	return pageInfo, nil
+}

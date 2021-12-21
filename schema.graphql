@@ -48,14 +48,15 @@ type Ability {
 }
 
 type PageInfo {
-  prevId: Int!
-  nextId: Int!
+  prevId: String!
+  nextId: String!
   hasPrev: Boolean!
   hasNext: Boolean!
 }
 
 type PokemonConnection {
-  nextID: Int!
+  endCursor: String!
+  hasNext: Boolean!
   items: [Pokemon!]!
 }
 
@@ -67,9 +68,9 @@ type PokemonNotFound {
   message: String!
 }
 
-union PokemonResult = Pokemon | PokemonNotFound
-union EvolutionsResult = Evolutions | PokemonNotFound
-union PageInfoResult = PageInfo | PokemonNotFound
+union PokemonResult = Pokemon | IllegalArguments | PokemonNotFound
+union EvolutionsResult = Evolutions | IllegalArguments | PokemonNotFound
+union PageInfoResult = PageInfo | IllegalArguments | PokemonNotFound
 union PokemonConnectionResult = PokemonConnection | IllegalArguments | PokemonNotFound
 
 type Query {

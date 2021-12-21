@@ -1,54 +1,136 @@
 package pokemons
 
-// import (
-// 	"piteroni/dictionary-go-nuxt-graphql/driver"
-// 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
-// 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
-// 	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
-// )
+import (
+	"context"
+	"fmt"
+	"piteroni/dictionary-go-nuxt-graphql/graph/model"
+	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
 
-// type PokemonsQueryResolver struct {
-// 	*driver.AppLogger
-// 	*pokemon_interactor.GraphQLModelMapper
-// 	pokemon_interactor.PokemonSearchCommand
-// }
+	"github.com/pkg/errors"
 
-// func (r *PokemonsQueryResolver) Pokemons(first *int, after *int) (model.PokemonConnectionResult, error) {
-// 	p, err := r.PokemonSearchCommand.Execute(first, after)
-// 	if err != nil {
-// 		var e error
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
-// 		e, ok := err.(*pokemon_interactor.PokemonNotFound)
-// 		if ok {
-// 			r.AppLogger.Print(e.Error())
+type PokemonsQueryResolver struct {
+	DB      *mongo.Database
+	Context context.Context
+	*pokemon_interactor.GraphQLModelMapper
+}
 
-// 			return model.PokemonNotFound{
-// 				Message: e.Error(),
-// 			}, nil
-// 		}
+func (r *PokemonsQueryResolver) Pokemons(first *int, after *string) (model.PokemonConnectionResult, error) {
+	f, a, err := r.prepareParams(first, after)
+	if err != nil {
+		e, ok := err.(*pokemon_interactor.IllegalArguments)
+		if ok {
+			return model.IllegalArguments{Message: e.Error()}, nil
+		}
 
-// 		e, ok = err.(*pokemon_interactor.IllegalArguments)
-// 		if ok {
-// 			r.AppLogger.Print(e.Error())
+		return nil, err
+	}
 
-// 			return model.IllegalArguments{
-// 				Message: e.Error(),
-// 			}, nil
-// 		}
+	p, err := r.findPokemons(f, a)
+	if err != nil {
+		return nil, err
+	}
 
-// 		return nil, err
-// 	}
+	pokemons := []*model.Pokemon{}
 
-// 	pokemons := []*graph.Pokemon{}
+	for _, pokemon := range p {
+		pokemons = append(pokemons, r.GraphQLModelMapper.Mapping(pokemon))
+	}
 
-// 	for _, pokemon := range p {
-// 		pokemons = append(pokemons, r.GraphQLModelMapper.Mapping(pokemon))
-// 	}
+	endCursor := ""
 
-// 	token := pokemons[len(pokemons)-1].ID + 1
+	if len(pokemons) != 0 {
+		endCursor = pokemons[len(pokemons)-1].ID
+	}
 
-// 	return model.PokemonConnection{
-// 		NextID: token,
-// 		Items:  pokemons,
-// 	}, nil
-// }
+	hasNext := len(pokemons) != 0
+	pokemonConnection := model.PokemonConnection{
+		HasNext:   hasNext,
+		EndCursor: endCursor,
+		Items:     pokemons,
+	}
+
+	return pokemonConnection, nil
+}
+
+func (r *PokemonsQueryResolver) prepareParams(first *int, after *string) (int, primitive.ObjectID, error) {
+	f := 0
+
+	const (
+		min = 0
+		max = 64
+	)
+
+	if first != nil {
+		value := *first
+
+		if value < min {
+			err := errors.Cause(&pokemon_interactor.IllegalArguments{
+				Message: fmt.Sprintf("first less then %d: first = %d", min, value),
+			})
+
+			return 0, primitive.NilObjectID, err
+		}
+
+		if value > max {
+			err := errors.Cause(&pokemon_interactor.IllegalArguments{
+				Message: fmt.Sprintf("first graeter then %d: first = %d", max, value),
+			})
+
+			return 0, primitive.NilObjectID, err
+		}
+
+		f = value
+	} else {
+		f = max
+	}
+
+	if after == nil {
+		return f, primitive.ObjectID{}, nil
+	}
+
+	a, err := primitive.ObjectIDFromHex(*after)
+	if err != nil {
+		e := errors.Cause(&pokemon_interactor.IllegalArguments{Message: err.Error()})
+		return 0, primitive.NilObjectID, e
+	}
+
+	return f, a, nil
+}
+
+func (r *PokemonsQueryResolver) findPokemons(first int, after primitive.ObjectID) ([]*document.Pokemon, error) {
+	pipe := document.PokemonAggregate{}.StagesOfLookUp()
+
+	if !after.IsZero() {
+		pipe = append(pipe, bson.D{{
+			Key: "$match", Value: bson.M{"_id": bson.M{"$gt": after}},
+		}})
+	}
+
+	pipe = append(pipe, bson.D{{Key: "$limit", Value: first}})
+
+	cursor, err := r.DB.Collection(collection.Pokemons).Aggregate(r.Context, pipe)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	pokemons := []*document.Pokemon{}
+
+	err = cursor.All(r.Context, &pokemons)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	err = cursor.Close(r.Context)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return pokemons, nil
+}
