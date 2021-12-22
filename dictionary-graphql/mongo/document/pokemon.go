@@ -1,9 +1,6 @@
 package document
 
 import (
-	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
-
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -38,35 +35,4 @@ type PokemonReferences struct {
 	Types           []primitive.ObjectID `bson:"types"`
 	Genders         []primitive.ObjectID `bson:"genders"`
 	Characteristics []primitive.ObjectID `bson:"characteristics"`
-}
-
-type PokemonAggregate struct{}
-
-func (c PokemonAggregate) StagesOfLookUp() []bson.D {
-	return []bson.D{
-		{{
-			Key: "$lookup", Value: bson.M{
-				"from":         collection.Types,
-				"localField":   "references.types",
-				"foreignField": "_id",
-				"as":           "types",
-			},
-		}},
-		{{
-			Key: "$lookup", Value: bson.M{
-				"from":         collection.Genders,
-				"localField":   "references.genders",
-				"foreignField": "_id",
-				"as":           "genders",
-			},
-		}},
-		{{
-			Key: "$lookup", Value: bson.M{
-				"from":         collection.Characteristics,
-				"localField":   "references.characteristics",
-				"foreignField": "_id",
-				"as":           "characteristics",
-			},
-		}},
-	}
 }
