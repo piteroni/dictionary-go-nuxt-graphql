@@ -7,47 +7,50 @@ import (
 	"context"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
+	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/evolutions"
+	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pageinfo"
+	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon"
+	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
+	"piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemons"
 )
 
 func (r *queryResolver) Pokemon(ctx context.Context, pokemonID string) (model.PokemonResult, error) {
-	panic("NOT IMPLEMENTED")
-	// qr := pokemon.PokemonQueryResolver{
-	// 	DB:                   r.DB,
-	// 	PokemonSearchCommand: &pokemon_interactor.PokemonSearchCommandImpl{DB: r.DB},
-	// 	GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
-	// }
+	qr := pokemon.PokemonQueryResolver{
+		DB:                 r.DB,
+		Context:            r.Context,
+		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
+	}
 
-	// return qr.Pokemon(pokemonID)
+	return qr.Pokemon(pokemonID)
 }
 
 func (r *queryResolver) Evolutions(ctx context.Context, pokemonID string) (model.EvolutionsResult, error) {
-	panic("NOT IMPLEMENTED")
-	// qr := evolutions.EvolutionsQueryResolver{
-	// 	DB:                 r.DB,
-	// 	GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-	// }
+	qr := evolutions.EvolutionsQueryResolver{
+		DB:                 r.DB,
+		Context:            r.Context,
+		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
+	}
 
-	// return qr.Evolutions(pokemonID)
+	return qr.Evolutions(pokemonID)
 }
 
 func (r *queryResolver) PageInfo(ctx context.Context, pokemonID string) (model.PageInfoResult, error) {
-	panic("NOT IMPLEMENTED")
-	// qr := pageinfo.PageInfoQueryResolver{
-	// 	DB: r.DB,
-	// }
+	qr := pageinfo.PageInfoQueryResolver{
+		DB:      r.DB,
+		Context: r.Context,
+	}
 
-	// return qr.PageInfo(pokemonID)
+	return qr.PageInfo(pokemonID)
 }
 
 func (r *queryResolver) Pokemons(ctx context.Context, first *int, after *string) (model.PokemonConnectionResult, error) {
-	panic("NOT IMPLEMENTED")
-	// qr := pokemons.PokemonsQueryResolver{
-	// 	AppLogger:            r.AppLogger,
-	// 	GraphQLModelMapper:   &pokemon_interactor.GraphQLModelMapper{},
-	// 	PokemonSearchCommand: &pokemon_interactor.PokemonSearchCommandImpl{DB: r.DB},
-	// }
+	qr := pokemons.PokemonsQueryResolver{
+		DB:                 r.DB,
+		Context:            r.Context,
+		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
+	}
 
-	// return qr.Pokemons(first, after)
+	return qr.Pokemons(first, after)
 }
 
 // Query returns generated.QueryResolver implementation.

@@ -7,17 +7,20 @@ export type PokemonsQueryType<Model extends keyof Omit<PokemonsQuery, "__typenam
 export const fetchCount = 64
 
 export const state = () => ({
-  nextID: 0,
+  endCursor: "",
+  hasNext: false,
   pokemons: [] as PokemonsQueryType<"pokemons", "PokemonConnection">["items"]
 })
 
 export const mutations = mutationTree(state, {
   save(state, params: PokemonsQueryType<"pokemons", "PokemonConnection">): void {
-    state.nextID = params.nextID
+    state.endCursor = params.endCursor
+    state.hasNext = params.hasNext
     state.pokemons = params.items
   },
   accumulate(state, params: PokemonsQueryType<"pokemons", "PokemonConnection">): void {
-    state.nextID = params.nextID
+    state.endCursor = params.endCursor
+    state.hasNext = params.hasNext
     state.pokemons.push(...params.items)
   }
 })

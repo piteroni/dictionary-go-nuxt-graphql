@@ -35,23 +35,22 @@ import Footer from "@/components/singletons/Footer.vue"
     "evolution-table": EvolutionTable,
     "app-footer": Footer
   },
-  validate({ params }): boolean {
-    return /^\d+$/.test(params.id)
-  },
   async fetch({ params, app, error }) {
-    const pokemonId = parseInt(params.id)
-
     let response
 
     try {
       response = await app.apolloProvider!!.defaultClient.query<PokemonQuery, PokemonQueryVariables>({
         query: PokemonDocument,
-        variables: { pokemonId }
+        variables: { pokemonId: params.id }
       })
     } catch { return }
 
     if (response.data.pokemon.__typename === "PokemonNotFound") {
       return error({ statusCode: HttpStatusCode.NOT_FOUND })
+    }
+
+    if (response.data.pokemon.__typename === "IllegalArguments") {
+      return error({ statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR })
     }
 
     app.$accessor.pokemonDataset.save({

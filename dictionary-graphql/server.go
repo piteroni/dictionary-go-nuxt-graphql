@@ -11,6 +11,7 @@ import (
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 	"piteroni/dictionary-go-nuxt-graphql/graph"
 	"piteroni/dictionary-go-nuxt-graphql/graph/generated"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/database"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -25,14 +26,25 @@ func main() {
 }
 
 func serve() error {
-	// db, err := database.ConnectToDatabase()
-	// if err != nil {
-	// 	return errors.WithStack(err)
-	// }
+	db, close, err := database.Connect()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	defer func() {
+		err = close()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	defer cancel()
 
 	r := &graph.Resolver{
-		// DB:        db,
-		AppLogger: logger,
+		DB:      db,
+		Context: ctx,
 	}
 
 	schema := generated.NewExecutableSchema(generated.Config{Resolvers: r})

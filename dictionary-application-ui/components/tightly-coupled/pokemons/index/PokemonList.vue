@@ -54,7 +54,7 @@ export default class PokemenList extends Vue {
     window.removeEventListener("scroll", this.handleScroll)
   }
 
-  public moveToDetails(pokemonId: number): void {
+  public moveToDetails(pokemonId: string): void {
     this.$router.push(`/pokemons/${pokemonId}`)
   }
 
@@ -77,24 +77,27 @@ export default class PokemenList extends Vue {
   }
 
   private async fetchConnection() {
-    const nextId = this.$accessor.pokemonConnection.nextID
+    const endCursor = this.$accessor.pokemonConnection.endCursor
 
     let response
 
     try {
       response = await this.$apollo.query<PokemonsQuery, PokemonsQueryVariables>({
         query: PokemonsDocument,
-        variables: { after: nextId, first: fetchCount }
+        variables: { after: endCursor, first: fetchCount }
       })
     } catch { return }
 
     switch (response.data.pokemons.__typename) {
       case "PokemonConnection":
-        return this.$accessor.pokemonConnection.accumulate(
+        this.$accessor.pokemonConnection.accumulate(
           response.data.pokemons as PokemonsQueryType<"pokemons", "PokemonConnection">
         )
-      case "PokemonNotFound":
-        this.isFetchAll = true
+
+        if (!this.$accessor.pokemonConnection.hasNext) {
+          this.isFetchAll = true
+        }
+
         return
       case "IllegalArguments":
         return this.$nuxt.error({

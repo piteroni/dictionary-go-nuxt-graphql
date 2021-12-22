@@ -1,4 +1,4 @@
-query pokemon($pokemonId: Int!) {
+query pokemon($pokemonId: String!) {
   pokemon(pokemonId: $pokemonId) {
     __typename
 
@@ -33,6 +33,10 @@ query pokemon($pokemonId: Int!) {
         specialDefense
         speed
       }
+    }
+
+    ... on IllegalArguments {
+      message
     }
 
     ... on PokemonNotFound {
@@ -70,12 +74,13 @@ query pokemon($pokemonId: Int!) {
   }
 }
 
-query pokemons($first: Int, $after: Int) {
+query pokemons($first: Int, $after: String) {
   pokemons(first: $first, after: $after) {
     __typename
 
     ... on PokemonConnection {
-      nextID
+      endCursor
+      hasNext
       items {
         id
         name

@@ -1,12 +1,14 @@
 package graph
 
 import (
+	"context"
 	"piteroni/dictionary-go-nuxt-graphql/driver"
 
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Resolver struct {
-	*gorm.DB
-	*driver.AppLogger
+	DB      *mongo.Database
+	Logger  *driver.AppLogger
+	Context context.Context
 }

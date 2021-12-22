@@ -9,6 +9,9 @@
             "name": "Evolutions"
           },
           {
+            "name": "IllegalArguments"
+          },
+          {
             "name": "PokemonNotFound"
           }
         ]
@@ -17,6 +20,9 @@
         "kind": "UNION",
         "name": "PageInfoResult",
         "possibleTypes": [
+          {
+            "name": "IllegalArguments"
+          },
           {
             "name": "PageInfo"
           },
@@ -44,6 +50,9 @@
         "kind": "UNION",
         "name": "PokemonResult",
         "possibleTypes": [
+          {
+            "name": "IllegalArguments"
+          },
           {
             "name": "Pokemon"
           },

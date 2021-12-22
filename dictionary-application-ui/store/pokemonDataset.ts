@@ -27,8 +27,8 @@ export const state = () => ({
     speed: 0
   } as Ability,
   pageInfo: {
-    prevId: 0,
-    nextId: 0,
+    prevId: "",
+    nextId: "",
     hasPrev: false,
     hasNext: false
   } as PokemonQueryType<"pageInfo", "PageInfo">,

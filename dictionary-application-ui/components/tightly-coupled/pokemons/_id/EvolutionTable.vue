@@ -75,7 +75,7 @@ export default class EvolutionTable extends Vue {
     })
   }
 
-  public showPokemon(pokemonId: number): void {
+  public showPokemon(pokemonId: string): void {
     this.$router.push(`/pokemons/${pokemonId}`)
   }
 }
