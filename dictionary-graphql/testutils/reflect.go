@@ -22,6 +22,8 @@ func BytesPtr(v []byte) *[]byte {
 	return &v
 }
 
-func ObjectIDPtr(t *testing.T, value primitive.ObjectID) *primitive.ObjectID {
-	return &value
+func ObjectIDPtr(t *testing.T, value string) *primitive.ObjectID {
+	o := ObjectID(t, value)
+
+	return &o
 }

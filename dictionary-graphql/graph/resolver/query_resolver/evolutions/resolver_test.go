@@ -1,240 +1,408 @@
 package evolutions
 
-// import (
-// 	"testing"
+import (
+	"context"
+	"piteroni/dictionary-go-nuxt-graphql/graph/model"
+	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/database"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
+	"piteroni/dictionary-go-nuxt-graphql/testutils"
+	"testing"
 
-// 	"piteroni/dictionary-go-nuxt-graphql/database"
-// 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
-// 	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
-// 	"piteroni/dictionary-go-nuxt-graphql/model"
-// 	itesting "piteroni/dictionary-go-nuxt-graphql/testing"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
-// 	"github.com/stretchr/testify/assert"
-// 	"gorm.io/gorm"
-// )
+	"github.com/stretchr/testify/assert"
+)
 
-// func TestEvolutionsQueryResolver(t *testing.T) {
-// 	db, err := itesting.ConnnectToInMemoryDatabase()
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+func TestEvolutionsQueryResolver(t *testing.T) {
+	db, close, err := testutils.ConnnectToTestDatabase()
+	if err != nil {
+		t.Fatal(err)
+	}
 
-// 	err = database.Migrate(db)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+	defer close()
 
-// 	cleanup := func() {
-// 		err := itesting.RefreshInMemoryDatabase(db)
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-// 	}
+	cleanup := func() {
+		err = database.Drop(context.Background(), db)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
 
-// 	r := &EvolutionsQueryResolver{
-// 		DB:                 db,
-// 		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
-// 	}
+	r := &EvolutionsQueryResolver{
+		DB:                 db,
+		Context:            context.Background(),
+		GraphQLModelMapper: &pokemon_interactor.GraphQLModelMapper{},
+	}
 
-// 	t.Run("指定したポケモンの進化表を取得できる", func(t *testing.T) {
-// 		data := []*model.Pokemon{
-// 			{
-// 				Model:       gorm.Model{ID: 1},
-// 				NationalNo:  1,
-// 				Name:        "pokemon-1",
-// 				EvolutionID: itesting.UInt(2),
-// 			},
-// 			{
-// 				Model:       gorm.Model{ID: 2},
-// 				NationalNo:  2,
-// 				Name:        "pokemon-2",
-// 				EvolutionID: itesting.UInt(3),
-// 			},
-// 			{
-// 				Model:      gorm.Model{ID: 3},
-// 				NationalNo: 3,
-// 				Name:       "pokemon-3",
-// 			},
-// 		}
+	t.Run("id of pokemon", func(t *testing.T) {
+		// #region
+		data := map[string][]interface{}{
+			collection.Pokemons: {
+				document.Pokemon{
+					ID:                  testutils.ObjectID(t, "000000000000000000000001"),
+					NationalNo:          1,
+					Name:                "pokemon-1",
+					ImageURL:            "pokemon-1.jpg",
+					Species:             "pokemon-1-species",
+					Height:              "1.0m",
+					Weight:              "1kg",
+					EvolutionID:         testutils.ObjectIDPtr(t, "000000000000000000000002"),
+					HeartPoint:          10,
+					AttackPoint:         10,
+					DefensePoint:        10,
+					SpecialAttackPoint:  10,
+					SpecialDefensePoint: 10,
+					SpeedPoint:          10,
+					Descriptions: []document.Description{
+						{
+							ID:     testutils.ObjectID(t, "000000000000000000000001"),
+							Text:   "description-1",
+							Series: "series-1",
+						},
+						{
+							ID:     testutils.ObjectID(t, "000000000000000000000002"),
+							Text:   "description-2",
+							Series: "series-2",
+						},
+					},
+					References: document.PokemonReferences{
+						Types: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+						Genders: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+						Characteristics: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+					},
+				},
+				document.Pokemon{
+					ID:                  testutils.ObjectID(t, "000000000000000000000002"),
+					NationalNo:          2,
+					Name:                "pokemon-2",
+					ImageURL:            "pokemon-2.jpg",
+					Species:             "pokemon-2-species",
+					Height:              "1.0m",
+					Weight:              "1kg",
+					EvolutionID:         testutils.ObjectIDPtr(t, "000000000000000000000003"),
+					HeartPoint:          10,
+					AttackPoint:         10,
+					DefensePoint:        10,
+					SpecialAttackPoint:  10,
+					SpecialDefensePoint: 10,
+					SpeedPoint:          10,
+					Descriptions: []document.Description{
+						{
+							ID:     testutils.ObjectID(t, "000000000000000000000003"),
+							Text:   "description-3",
+							Series: "series-3",
+						},
+						{
+							ID:     testutils.ObjectID(t, "000000000000000000000004"),
+							Text:   "description-4",
+							Series: "series-4",
+						},
+					},
+					References: document.PokemonReferences{
+						Types: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+						Genders: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+						Characteristics: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+					},
+				},
+				document.Pokemon{
+					ID:                  testutils.ObjectID(t, "000000000000000000000003"),
+					NationalNo:          3,
+					Name:                "pokemon-3",
+					ImageURL:            "pokemon-3.jpg",
+					Species:             "pokemon-3-species",
+					Height:              "1.0m",
+					Weight:              "1kg",
+					EvolutionID:         nil,
+					HeartPoint:          10,
+					AttackPoint:         10,
+					DefensePoint:        10,
+					SpecialAttackPoint:  10,
+					SpecialDefensePoint: 10,
+					SpeedPoint:          10,
+					Descriptions: []document.Description{
+						{
+							ID:     testutils.ObjectID(t, "000000000000000000000005"),
+							Text:   "description-5",
+							Series: "series-5",
+						},
+						{
+							ID:     testutils.ObjectID(t, "000000000000000000000006"),
+							Text:   "description-6",
+							Series: "series-6",
+						},
+					},
+					References: document.PokemonReferences{
+						Types: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+						Genders: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+						Characteristics: []primitive.ObjectID{
+							testutils.ObjectID(t, "000000000000000000000001"),
+							testutils.ObjectID(t, "000000000000000000000002"),
+						},
+					},
+				},
+			},
+			collection.Types: {
+				document.Type{
+					ID:      testutils.ObjectID(t, "000000000000000000000001"),
+					Name:    "type-1",
+					IconURL: "type-1.jpg",
+				},
+				document.Type{
+					ID:      testutils.ObjectID(t, "000000000000000000000002"),
+					Name:    "type-2",
+					IconURL: "type-2.jpg",
+				},
+			},
+			collection.Genders: {
+				document.Gender{
+					ID:      testutils.ObjectID(t, "000000000000000000000001"),
+					Name:    "gender-1",
+					IconURL: "gender-1.jpg",
+				},
+				document.Gender{
+					ID:      testutils.ObjectID(t, "000000000000000000000002"),
+					Name:    "gender-2",
+					IconURL: "gender-2.jpg",
+				},
+			},
+			collection.Characteristics: {
+				document.Characteristic{
+					ID:          testutils.ObjectID(t, "000000000000000000000001"),
+					Name:        "characteristic-1",
+					Description: "characteristic-1-description",
+				},
+				document.Characteristic{
+					ID:          testutils.ObjectID(t, "000000000000000000000002"),
+					Name:        "characteristic-2",
+					Description: "characteristic-2-description",
+				},
+			},
+		}
+		// #endregion
 
-// 		err := db.Create(data).Error
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
+		// #region
+		expected := model.Evolutions{
+			Pokemons: []*model.Pokemon{
+				{
+					ID:           "000000000000000000000001",
+					NationalNo:   1,
+					Name:         "pokemon-1",
+					ImageURL:     "pokemon-1.jpg",
+					Species:      "pokemon-1-species",
+					Height:       "1.0m",
+					Weight:       "1kg",
+					CanEvolution: true,
+					Description: &model.Description{
+						Text:   "description-1",
+						Series: "series-1",
+					},
+					Ability: &model.Ability{
+						Heart:          10,
+						Attack:         10,
+						Defense:        10,
+						SpecialAttack:  10,
+						SpecialDefense: 10,
+						Speed:          10,
+					},
+					Types: []*model.Type{
+						{
+							Name:    "type-1",
+							IconURL: "type-1.jpg",
+						},
+						{
+							Name:    "type-2",
+							IconURL: "type-2.jpg",
+						},
+					},
+					Genders: []*model.Gender{
+						{
+							Name:    "gender-1",
+							IconURL: "gender-1.jpg",
+						},
+						{
+							Name:    "gender-2",
+							IconURL: "gender-2.jpg",
+						},
+					},
+					Characteristics: []*model.Characteristic{
+						{
+							Name:        "characteristic-1",
+							Description: "characteristic-1-description",
+						},
+						{
+							Name:        "characteristic-2",
+							Description: "characteristic-2-description",
+						},
+					},
+				},
+				{
+					ID:           "000000000000000000000002",
+					NationalNo:   2,
+					Name:         "pokemon-2",
+					ImageURL:     "pokemon-2.jpg",
+					Species:      "pokemon-2-species",
+					Height:       "1.0m",
+					Weight:       "1kg",
+					CanEvolution: true,
+					Description: &model.Description{
+						Text:   "description-3",
+						Series: "series-3",
+					},
+					Ability: &model.Ability{
+						Heart:          10,
+						Attack:         10,
+						Defense:        10,
+						SpecialAttack:  10,
+						SpecialDefense: 10,
+						Speed:          10,
+					},
+					Types: []*model.Type{
+						{
+							Name:    "type-1",
+							IconURL: "type-1.jpg",
+						},
+						{
+							Name:    "type-2",
+							IconURL: "type-2.jpg",
+						},
+					},
+					Genders: []*model.Gender{
+						{
+							Name:    "gender-1",
+							IconURL: "gender-1.jpg",
+						},
+						{
+							Name:    "gender-2",
+							IconURL: "gender-2.jpg",
+						},
+					},
+					Characteristics: []*model.Characteristic{
+						{
+							Name:        "characteristic-1",
+							Description: "characteristic-1-description",
+						},
+						{
+							Name:        "characteristic-2",
+							Description: "characteristic-2-description",
+						},
+					},
+				},
+				{
+					ID:           "000000000000000000000003",
+					NationalNo:   3,
+					Name:         "pokemon-3",
+					ImageURL:     "pokemon-3.jpg",
+					Species:      "pokemon-3-species",
+					Height:       "1.0m",
+					Weight:       "1kg",
+					CanEvolution: false,
+					Description: &model.Description{
+						Text:   "description-5",
+						Series: "series-5",
+					},
+					Ability: &model.Ability{
+						Heart:          10,
+						Attack:         10,
+						Defense:        10,
+						SpecialAttack:  10,
+						SpecialDefense: 10,
+						Speed:          10,
+					},
+					Types: []*model.Type{
+						{
+							Name:    "type-1",
+							IconURL: "type-1.jpg",
+						},
+						{
+							Name:    "type-2",
+							IconURL: "type-2.jpg",
+						},
+					},
+					Genders: []*model.Gender{
+						{
+							Name:    "gender-1",
+							IconURL: "gender-1.jpg",
+						},
+						{
+							Name:    "gender-2",
+							IconURL: "gender-2.jpg",
+						},
+					},
+					Characteristics: []*model.Characteristic{
+						{
+							Name:        "characteristic-1",
+							Description: "characteristic-1-description",
+						},
+						{
+							Name:        "characteristic-2",
+							Description: "characteristic-2-description",
+						},
+					},
+				},
+			},
+		}
+		// #endregion
 
-// 		defer cleanup()
+		tests := []struct {
+			name   string
+			params string
+		}{
+			{
+				name:   "first id",
+				params: "000000000000000000000001",
+			},
+			{
+				name:   "middle id",
+				params: "000000000000000000000002",
+			},
+			{
+				name:   "last id",
+				params: "000000000000000000000003",
+			},
+		}
 
-// 		// same result can be obtained by specifying ID 1 to 3.
-// 		for _, id := range []int{1, 2, 3} {
-// 			evolutions, err := r.Evolutions(id)
+		for c, d := range data {
+			_, err = db.Collection(c).InsertMany(r.Context, d)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
 
-// 			assert.NotNil(t, evolutions)
-// 			assert.Nil(t, err)
+		defer cleanup()
 
-// 			assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 3)
-// 			assert.Equal(t, evolutions, graph.Evolutions{
-// 				Pokemons: []*graph.Pokemon{
-// 					{
-// 						ID:           1,
-// 						NationalNo:   1,
-// 						Name:         "pokemon-1",
-// 						CanEvolution: true,
-// 						Ability:      &graph.Ability{},
-// 						Description:  &graph.Description{},
-// 					},
-// 					{
-// 						ID:           2,
-// 						NationalNo:   2,
-// 						Name:         "pokemon-2",
-// 						CanEvolution: true,
-// 						Ability:      &graph.Ability{},
-// 						Description:  &graph.Description{},
-// 					},
-// 					{
-// 						ID:           3,
-// 						NationalNo:   3,
-// 						Name:         "pokemon-3",
-// 						CanEvolution: false,
-// 						Ability:      &graph.Ability{},
-// 						Description:  &graph.Description{},
-// 					},
-// 				},
-// 			})
-// 		}
-// 	})
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				actual, err := r.Evolutions(test.params)
 
-// 	t.Run("進化表データには関連テーブル情報が含まれる", func(t *testing.T) {
-// 		data := []*model.Pokemon{
-// 			{
-// 				Model:       gorm.Model{ID: 1},
-// 				NationalNo:  1,
-// 				Name:        "pokemon-1",
-// 				EvolutionID: itesting.UInt(2),
-// 				Genders: []model.Gender{
-// 					{
-// 						Model:   gorm.Model{ID: 1},
-// 						Name:    "gender-1",
-// 						IconURL: "gender-1.jpg",
-// 					},
-// 				},
-// 				Types: []model.Type{
-// 					{
-// 						Model:   gorm.Model{ID: 1},
-// 						Name:    "type-1",
-// 						IconURL: "type-1.jpg",
-// 					},
-// 				},
-// 				Characteristics: []model.Characteristic{
-// 					{
-// 						Model:       gorm.Model{ID: 1},
-// 						Name:        "characteristic-1",
-// 						Description: "characteristic-1-description",
-// 					},
-// 				},
-// 				Descriptions: []model.Description{
-// 					{
-// 						Model:  gorm.Model{ID: 1},
-// 						Text:   "description-1-text",
-// 						Series: "description-1-series",
-// 					},
-// 				},
-// 			},
-// 			{
-// 				Model:      gorm.Model{ID: 2},
-// 				NationalNo: 2,
-// 				Name:       "pokemon-2",
-// 			},
-// 		}
-
-// 		err := db.Create(data).Error
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-
-// 		defer cleanup()
-
-// 		evolutions, err := r.Evolutions(1)
-
-// 		assert.NotNil(t, evolutions)
-// 		assert.Nil(t, err)
-
-// 		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 2)
-// 		assert.Equal(t, evolutions, graph.Evolutions{
-// 			Pokemons: []*graph.Pokemon{
-// 				{
-// 					ID:           1,
-// 					NationalNo:   1,
-// 					Name:         "pokemon-1",
-// 					CanEvolution: true,
-// 					Ability:      &graph.Ability{},
-// 					Genders: []*graph.Gender{
-// 						{
-// 							Name:    "gender-1",
-// 							IconURL: "gender-1.jpg",
-// 						},
-// 					},
-// 					Types: []*graph.Type{
-// 						{
-// 							Name:    "type-1",
-// 							IconURL: "type-1.jpg",
-// 						},
-// 					},
-// 					Characteristics: []*graph.Characteristic{
-// 						{
-// 							Name:        "characteristic-1",
-// 							Description: "characteristic-1-description",
-// 						},
-// 					},
-// 					Description: &graph.Description{
-// 						Text:   "description-1-text",
-// 						Series: "description-1-series",
-// 					},
-// 				},
-// 				{
-// 					ID:           2,
-// 					NationalNo:   2,
-// 					Name:         "pokemon-2",
-// 					CanEvolution: false,
-// 					Ability:      &graph.Ability{},
-// 					Description:  &graph.Description{},
-// 				},
-// 			},
-// 		})
-// 	})
-
-// 	t.Run("指定したポケモンが進化しない場合、空の進化表が返ってくる", func(t *testing.T) {
-// 		data := []*model.Pokemon{
-// 			{
-// 				Model:       gorm.Model{ID: 1},
-// 				NationalNo:  1,
-// 				Name:        "pokemon-1",
-// 				EvolutionID: nil,
-// 			},
-// 		}
-
-// 		err := db.Create(data).Error
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-
-// 		defer cleanup()
-
-// 		evolutions, err := r.Evolutions(1)
-
-// 		assert.NotNil(t, evolutions)
-// 		assert.Nil(t, err)
-
-// 		assert.Len(t, evolutions.(graph.Evolutions).Pokemons, 0)
-// 		assert.Equal(t, graph.Evolutions{Pokemons: []*graph.Pokemon{}}, evolutions)
-// 	})
-
-// 	t.Run("指定したポケモンが存在しない場合、例外が送出される", func(t *testing.T) {
-// 		actual, err := r.Evolutions(1)
-// 		expected := graph.PokemonNotFound{}
-
-// 		assert.NotNil(t, actual)
-// 		assert.Nil(t, err)
-
-// 		assert.IsType(t, expected, actual)
-// 	})
-// }
+				assert.Nil(t, err)
+				assert.Equal(t, expected, actual)
+			})
+		}
+	})
+}

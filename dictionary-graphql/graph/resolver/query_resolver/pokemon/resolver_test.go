@@ -48,7 +48,7 @@ func TestPokemonQueryResolver(t *testing.T) {
 					Species:             "pokemon-100-species",
 					Height:              "1.0m",
 					Weight:              "1kg",
-					EvolutionID:         testutils.ObjectIDPtr(t, testutils.ObjectID(t, "000000000000000000001000")),
+					EvolutionID:         testutils.ObjectIDPtr(t, "000000000000000000001000"),
 					HeartPoint:          10,
 					AttackPoint:         10,
 					DefensePoint:        10,

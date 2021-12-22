@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"piteroni/dictionary-go-nuxt-graphql/graph/model"
 	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
-	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/dao"
 	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
 
 	"github.com/pkg/errors"
@@ -105,7 +105,12 @@ func (r *PokemonsQueryResolver) prepareParams(first *int, after *string) (int, p
 }
 
 func (r *PokemonsQueryResolver) findPokemons(first int, after primitive.ObjectID) ([]*document.Pokemon, error) {
-	pipe := document.PokemonAggregate{}.StagesOfLookUp()
+	pokemonDAO := dao.PokemonDAO{
+		DB:      r.DB,
+		Context: r.Context,
+	}
+
+	pipe := mongo.Pipeline{}
 
 	if !after.IsZero() {
 		pipe = append(pipe, bson.D{{
@@ -115,19 +120,9 @@ func (r *PokemonsQueryResolver) findPokemons(first int, after primitive.ObjectID
 
 	pipe = append(pipe, bson.D{{Key: "$limit", Value: first}})
 
-	cursor, err := r.DB.Collection(collection.Pokemons).Aggregate(r.Context, pipe)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
 	pokemons := []*document.Pokemon{}
 
-	err = cursor.All(r.Context, &pokemons)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	err = cursor.Close(r.Context)
+	err := pokemonDAO.FindWithLookup(&pokemons, pipe...)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

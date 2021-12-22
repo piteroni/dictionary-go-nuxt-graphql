@@ -1,132 +1,119 @@
 package evolutions
 
-// import (
-// 	graph "piteroni/dictionary-go-nuxt-graphql/graph/model"
-// 	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
-// 	"piteroni/dictionary-go-nuxt-graphql/model"
-// 	"piteroni/dictionary-go-nuxt-graphql/persistence"
+import (
+	"context"
+	"piteroni/dictionary-go-nuxt-graphql/graph/model"
+	pokemon_interactor "piteroni/dictionary-go-nuxt-graphql/graph/resolver/query_resolver/pokemon.interactor"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/collection"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/dao"
+	"piteroni/dictionary-go-nuxt-graphql/mongo/document"
 
-// 	"github.com/pkg/errors"
-// 	"gorm.io/gorm"
-// )
+	"github.com/pkg/errors"
 
-// type EvolutionsQueryResolver struct {
-// 	*gorm.DB
-// 	*pokemon_interactor.GraphQLModelMapper
-// }
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
 
-// func (r *EvolutionsQueryResolver) Evolutions(pokemonID int) (graph.EvolutionsResult, error) {
-// 	pokemon := &model.Pokemon{}
+type EvolutionsQueryResolver struct {
+	DB      *mongo.Database
+	Context context.Context
+	*pokemon_interactor.GraphQLModelMapper
+}
 
-// 	tx := r.DB.Model(&model.Pokemon{}).Find(pokemon, pokemonID)
-// 	if tx.Error != nil {
-// 		return nil, tx.Error
-// 	}
+func (r *EvolutionsQueryResolver) Evolutions(pokemonID string) (model.EvolutionsResult, error) {
+	objectID, err := primitive.ObjectIDFromHex(pokemonID)
+	if err != nil {
+		return model.IllegalArguments{Message: err.Error()}, nil
+	}
 
-// 	if tx.RowsAffected == 0 {
-// 		return graph.PokemonNotFound{}, nil
-// 	}
+	pokemon := document.Pokemon{}
 
-// 	err := r.tracingPreEvolution(pokemon)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	condition := bson.D{{Key: "_id", Value: objectID}}
+	opt := options.FindOneOptions{Projection: bson.D{{Key: "_id", Value: 1}}}
 
-// 	pokemons, err := r.getEvolutions(pokemon)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	err = r.DB.Collection(collection.Pokemons).FindOne(r.Context, condition, &opt).Decode(&pokemon)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return model.PokemonNotFound{}, nil
+		}
 
-// 	p := []*graph.Pokemon{}
+		return nil, errors.WithStack(err)
+	}
 
-// 	for _, pokemon := range pokemons {
-// 		g := r.GraphQLModelMapper.Mapping(pokemon)
-// 		p = append(p, g)
-// 	}
+	err = r.tracingPreEvolution(&pokemon)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return graph.Evolutions{Pokemons: p}, nil
-// }
+	pokemons, err := r.getEvolutions(pokemon.ID)
+	if err != nil {
+		return nil, err
+	}
 
-// func (r *EvolutionsQueryResolver) tracingPreEvolution(pokemon *model.Pokemon) error {
-// 	for {
-// 		row := &model.Pokemon{}
+	p := []*model.Pokemon{}
 
-// 		err := r.DB.Model(&model.Pokemon{}).Where("evolution_id = ?", pokemon.ID).First(row).Error
-// 		if err != nil {
-// 			if errors.Is(err, gorm.ErrRecordNotFound) {
-// 				break
-// 			} else {
-// 				return err
-// 			}
-// 		}
+	for _, pokemon := range pokemons {
+		g := r.GraphQLModelMapper.Mapping(pokemon)
+		p = append(p, g)
+	}
 
-// 		*pokemon = *row
-// 	}
+	return model.Evolutions{Pokemons: p}, nil
+}
 
-// 	return nil
-// }
+func (r *EvolutionsQueryResolver) tracingPreEvolution(pokemon *document.Pokemon) error {
+	opt := options.FindOneOptions{Projection: bson.D{{Key: "_id", Value: 1}}}
 
-// func (r *EvolutionsQueryResolver) getEvolutions(pokemon *model.Pokemon) ([]*model.Pokemon, error) {
-// 	pokemons := []*model.Pokemon{}
+	for {
+		row := &document.Pokemon{}
+		condition := bson.D{{Key: "evolution_id", Value: pokemon.ID}}
 
-// 	// add a starting point.
-// 	err := r.resolveRelations(pokemon)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+		err := r.DB.Collection(collection.Pokemons).FindOne(r.Context, condition, &opt).Decode(&row)
+		if err != nil {
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				break
+			} else {
+				return errors.WithStack(err)
+			}
+		}
 
-// 	pokemons = append(pokemons, pokemon)
+		*pokemon = *row
+	}
 
-// 	for {
-// 		err := r.resolveRelations(pokemon)
-// 		if err != nil {
-// 			return nil, err
-// 		}
+	return nil
+}
 
-// 		if pokemon.Evolution == nil {
-// 			break
-// 		}
+func (r *EvolutionsQueryResolver) getEvolutions(pokemonID primitive.ObjectID) ([]*document.Pokemon, error) {
+	pokemonDAO := dao.PokemonDAO{
+		DB:      r.DB,
+		Context: r.Context,
+	}
 
-// 		pokemons = append(pokemons, pokemon.Evolution)
+	objectID := &pokemonID
+	pokemons := []*document.Pokemon{}
 
-// 		pokemon = pokemon.Evolution
-// 	}
+	for {
+		if objectID == nil {
+			break
+		}
 
-// 	// return empty list when evolution.
-// 	if len(pokemons) == 1 && pokemons[0].ID == pokemon.ID {
-// 		return []*model.Pokemon{}, nil
-// 	}
+		pokemon := document.Pokemon{}
 
-// 	return pokemons, nil
-// }
+		err := pokemonDAO.FindOneWithLookup(&pokemon, *objectID)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
 
-// func (r *EvolutionsQueryResolver) resolveRelations(pokemon *model.Pokemon) error {
-// 	dao := persistence.NewPokemonDAO(r.DB)
+		pokemons = append(pokemons, &pokemon)
 
-// 	err := dao.ScanEvolution(pokemon)
-// 	if err != nil {
-// 		return err
-// 	}
+		objectID = pokemon.EvolutionID
+	}
 
-// 	err = dao.ScanGenders(pokemon)
-// 	if err != nil {
-// 		return err
-// 	}
+	// return empty list when evolution.
+	if len(pokemons) == 1 && pokemons[0].ID == pokemonID {
+		return []*document.Pokemon{}, nil
+	}
 
-// 	err = dao.ScanTypes(pokemon)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = dao.ScanCharacteristics(pokemon)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = dao.ScanDescriptions(pokemon)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
+	return pokemons, nil
+}
