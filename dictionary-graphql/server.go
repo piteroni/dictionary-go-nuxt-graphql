@@ -26,13 +26,13 @@ func main() {
 }
 
 func serve() error {
-	db, close, err := database.Connect()
+	db, closeFunc, err := database.Connect()
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	defer func() {
-		err = close()
+		err = closeFunc()
 		if err != nil {
 			panic(err)
 		}
